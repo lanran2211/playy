@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍪 姜饼人圣诞夜 🎄</title>
+    <style>
+        /* ==================== 圣诞童话配色 ==================== */
+        :root {
+            --gingerbread: #8B4513;      /* 姜饼人色 */
+            --icing-red: #FF6B6B;        /* 糖霜红 */
+            --icing-green: #51A3A3;      /* 糖霜绿 */
+            --icing-white: #FFF8E7;      /* 糖霜白 */
+            --bg-dark: #1A0F0F;          /* 深背景 */
+            --bg-card: #2D1B1B;          /* 卡片背景 */
+            --text-light: #FFF8E7;       /* 浅文字 */
+            --star-gold: #FFD700;        /* 星星金 */
+            --cat-orange: #FFA500;       /* 猫咪橙 */
+            --bird-blue: #87CEEB;        /* 小鸟蓝 */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', '楷体', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #2D1B1B 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+        
+        /* 雪花背景 */
+        .snowflakes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .snowflake {
+            position: absolute;
+            color: var(--icing-white);
+            font-size: 1.5rem;
+            animation: fall linear infinite;
+        }
+        
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        /* 游戏阶段控制 */
+        .game-phase {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .game-phase.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* ==================== 标题样式 ==================== */
+        .title-section {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+        
+        .main-title {
+            font-size: 2.5rem;
+            color: var(--icing-red);
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 var(--gingerbread);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .subtitle {
+            color: var(--icing-green);
+            font-size: 1.2rem;
+        }
+        
+        /* ==================== 卡片样式 ==================== */
+        .game-card {
+            background: var(--bg-card);
+            border: 3px solid var(--icing-red);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card::before {
+            content: '❄️';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+        
+        /* 状态卡片 */
+        .status-card {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--gingerbread), #6B3E13);
+            border-radius: 15px;
+            border: 2px solid var(--icing-red);
+        }
+        
+        .status-label {
+            font-size: 0.8rem;
+            color: var(--icing-white);
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--star-gold);
+        }
+        
+        /* 物品栏 */
+        .inventory-card {
+            margin-bottom: 15px;
+        }
+        
+        .inventory-title {
+            color: var(--icing-green);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .inventory-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .item {
+            padding: 8px 12px;
+            background: linear-gradient(135deg, var(--icing-red), var(--icing-green));
+            border-radius: 10px;
+            font-size: 0.9rem;
+            border: 2px solid var(--star-gold);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* 地图网格 */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .floor-section {
+            background: linear-gradient(135deg, var(--gingerbread), #6B3E13);
+            border: 2px solid var(--icing-red);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .floor-title {
+            color: var(--icing-white);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px dotted var(--icing-red);
+        }
+        
+        .room-btn {
+            width: 100%;
+            padding: 10px 12px;
+            margin: 5px 0;
+            background: linear-gradient(135deg, var(--icing-red), #FF8E8E);
+            border: 2px solid var(--star-gold);
+            border-radius: 10px;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .room-btn:hover:not(.disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(255, 107, 107, 0.3);
+        }
+        
+        .room-btn.current-room {
+            background: linear-gradient(135deg, var(--icing-green), #6BC4C4);
+            border-color: var(--star-gold);
+        }
+        
+        .room-btn.disabled {
+            background: #666;
+            border-color: #999;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* 角色状态 */
+        .player-status {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .player-card {
+            background: linear-gradient(135deg, var(--gingerbread), #6B3E13);
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px solid;
+        }
+        
+        .player-card.player-a {
+            border-color: var(--icing-red);
+        }
+        
+        .player-card.player-b {
+            border-color: var(--icing-green);
+        }
+        
+        .player-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .player-stats {
+            font-size: 0.9rem;
+        }
+        
+        /* 日志区域 */
+        .log-container {
+            background: var(--bg-card);
+            border: 2px solid var(--icing-green);
+            border-radius: 15px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .log-time {
+            color: var(--star-gold);
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--icing-red), #FF8E8E);
+            border: 3px solid var(--star-gold);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover:not(.disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn:active:not(.disabled) {
+            transform: translateY(1px);
+        }
+        
+        .btn.disabled {
+            background: #666;
+            border-color: #999;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .btn-green {
+            background: linear-gradient(135deg, var(--icing-green), #6BC4C4);
+        }
+        
+        .btn-green:hover:not(.disabled) {
+            box-shadow: 0 5px 15px rgba(81, 163, 163, 0.4);
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 15, 15, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border: 4px solid var(--icing-red);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-title {
+            color: var(--icing-red);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        
+        .modal-description {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        /* 行动选项 */
+        .action-options {
+            margin: 20px 0;
+        }
+        
+        .action-option {
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: linear-gradient(135deg, var(--gingerbread), #6B3E13);
+            border: 2px solid var(--icing-red);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-option:hover:not(.used) {
+            transform: translateX(5px);
+            border-color: var(--star-gold);
+        }
+        
+        .action-option.used {
+            background: #666;
+            border-color: #999;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .option-title {
+            color: var(--icing-white);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .option-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* 剧情文本 */
+        .story-text {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            line-height: 1.6;
+            border-left: 4px solid var(--icing-red);
+        }
+        
+        .player-text {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            padding-left: 15px;
+        }
+        
+        .player-a-text {
+            border-left: 4px solid var(--icing-red);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        
+        .player-b-text {
+            border-left: 4px solid var(--icing-green);
+            background: rgba(81, 163, 163, 0.1);
+        }
+        
+        /* 骰子结果 */
+        .dice-result {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        
+        .dice-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .critical-success { color: #4CAF50; animation: glow 1s infinite; }
+        .success { color: #8BC34A; }
+        .failure { color: #FF9800; }
+        .critical-failure { color: #FF4444; animation: shake 0.5s; }
+        
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #4CAF50; }
+            50% { text-shadow: 0 0 20px #4CAF50; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        /* 后果框 */
+        .consequence-box {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .consequence-good {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: #4CAF50;
+        }
+        
+        .consequence-bad {
+            background: rgba(255, 68, 68, 0.1);
+            border-color: #FF4444;
+        }
+        
+        /* 结局界面 */
+        .ending-card {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .ending-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        .ending-title {
+            color: var(--icing-red);
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .ending-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .map-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-card {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .main-title {
+                font-size: 2rem;
+            }
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 雪花背景 -->
+    <div class="snowflakes" id="snowflakes"></div>
+    
+    <div class="container">
+        <!-- 开场剧情 -->
+        <div id="phase-intro" class="game-phase active">
+            <div class="title-section">
+                <h1 class="main-title">🍪 姜饼人圣诞夜 🎄</h1>
+                <p class="subtitle">平安夜的魔法冒险，开始了！</p>
+            </div>
+            
+            <div class="game-card">
+                <div style="padding: 20px; text-align: center;">
+                    <h2 style="color: var(--icing-red); margin-bottom: 20px;">欢迎来到姜饼人世界！</h2>
+                    
+                    <div style="margin-bottom: 20px; text-align: left; line-height: 1.6;">
+                        <p>🎁 平安夜的神奇魔法让你们变成了姜饼人！</p>
+                        <p>🏠 在这栋三层别墅中探险，寻找变回人类的方法吧！</p>
+                        <p>⏰ 记得要在3小时内找到解除魔法的方法哦～</p>
+                        <p>🐱 小心外面的野猫糖霜和松鸦松果！</p>
+                        
+                        <div style="background: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 6px; border-left: 3px solid var(--icing-red); margin: 15px 0;">
+                            <strong>🎮 游戏提示：</strong><br>
+                            • 每个房间为一个回合<br>
+                            • 每个行动只能使用一次<br>
+                            • 收集星星⭐推进剧情<br>
+                            • 3小时倒计时开始！
+                        </div>
+                    </div>
+                    
+                    <button class="btn" onclick="startCharacterCreation()">开始创建人物 ✨</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 人物创建 -->
+        <div id="phase-creation" class="game-phase">
+            <div class="title-section">
+                <h1 class="main-title">创建你的姜饼人</h1>
+                <p class="subtitle">总点数450点，单项上限100点</p>
+            </div>
+            
+            <div id="character-creation" class="game-card">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 主游戏界面 -->
+        <div id="phase-game" class="game-phase">
+            <!-- 状态显示 -->
+            <div class="status-card">
+                <div class="status-item">
+                    <div class="status-label">游戏时间</div>
+                    <div id="game-time" class="status-value">06:00</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">当前位置</div>
+                    <div id="current-location" class="status-value">客厅</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">星星收集</div>
+                    <div id="star-count" class="status-value">0/7</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">回合数</div>
+                    <div id="current-turn" class="status-value">1</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">剩余时间</div>
+                    <div id="time-left" class="status-value">3:00</div>
+                </div>
+            </div>
+            
+            <!-- 物品栏 -->
+            <div class="game-card inventory-card">
+                <h3 class="inventory-title">📦 物品栏 <span id="item-count">0</span>个</h3>
+                <div class="inventory-items" id="inventory-items">
+                    <div class="item">空的</div>
+                </div>
+            </div>
+            
+            <!-- 角色状态 -->
+            <div class="game-card">
+                <h3 style="color: var(--icing-green); margin-bottom: 10px;">👥 角色状态</h3>
+                <div class="player-status" id="player-status">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+            
+            <!-- 地图区域 -->
+            <div class="map-grid">
+                <div class="floor-section">
+                    <h3 class="floor-title">一楼</h3>
+                    <button class="room-btn" onclick="enterRoom('客厅')">客厅 🛋️</button>
+                    <button class="room-btn" onclick="enterRoom('餐厅')">餐厅 🍽️</button>
+                    <button class="room-btn" onclick="enterRoom('厨房')">厨房 🔪</button>
+                    <button class="room-btn" onclick="enterRoom('玄关')">玄关 🚪</button>
+                </div>
+                
+                <div class="floor-section">
+                    <h3 class="floor-title">二楼</h3>
+                    <button class="room-btn" onclick="enterRoom('主卧室')">主卧室 🛏️</button>
+                    <button class="room-btn" onclick="enterRoom('次卧室')">次卧室 🌙</button>
+                    <button class="room-btn" onclick="enterRoom('书房')">书房 📚</button>
+                    <button class="room-btn" onclick="enterRoom('浴室')">浴室 🛁</button>
+                </div>
+                
+                <div class="floor-section">
+                    <h3 class="floor-title">三楼</h3>
+                    <button class="room-btn" onclick="enterRoom('阁楼')">阁楼 📦</button>
+                    <button class="room-btn" onclick="enterRoom('儿童房')">儿童房 🧸</button>
+                    <button class="room-btn" onclick="enterRoom('阳台')">阳台 🌟</button>
+                </div>
+                
+                <div class="floor-section">
+                    <h3 class="floor-title">户外</h3>
+                    <button class="room-btn" onclick="enterRoom('花园')">花园 🌷</button>
+                    <button class="room-btn disabled">后院 🌲</button>
+                    <button class="room-btn disabled">前院 🏡</button>
+                </div>
+            </div>
+            
+            <!-- 游戏日志 -->
+            <div class="game-card">
+                <h3 style="color: var(--icing-green); margin-bottom: 10px;">📜 游戏日志</h3>
+                <div class="log-container" id="game-log">
+                    <div class="log-entry">游戏准备就绪！🎮</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 游戏结束界面 -->
+        <div id="phase-ending" class="game-phase">
+            <div class="title-section">
+                <h1 class="main-title" id="ending-title">游戏结束</h1>
+            </div>
+            <div class="game-card ending-card">
+                <div id="ending-icon" class="ending-icon">🎄</div>
+                <div id="ending-content" class="ending-text">
+                    <!-- 结局内容 -->
+                </div>
+                <button class="btn" onclick="restartGame()">重新开始 🔄</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 房间行动窗口 -->
+    <div id="room-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-room-title" class="modal-title">房间名称</h3>
+            <div id="modal-room-time" style="color: var(--star-gold); margin-bottom: 10px; text-align: center;">
+                时间：<span id="modal-time-display">06:00</span> | 回合：<span id="modal-turn-display">1</span>
+            </div>
+            <div id="modal-room-description" class="modal-description">
+                <!-- 动态填充 -->
+            </div>
+            
+            <div class="action-options" id="room-actions">
+                <!-- 行动选项动态生成 -->
+            </div>
+            
+            <button class="btn btn-green" onclick="endTurn()">结束回合（离开房间）🚪</button>
+        </div>
+    </div>
+    
+    <!-- 检定结果窗口 -->
+    <div id="check-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="check-title" class="modal-title">检定结果</h3>
+            <div id="check-story" class="story-text">
+                <!-- 剧情发展 -->
+            </div>
+            <div id="dice-results" style="margin: 20px 0;">
+                <!-- 骰子结果 -->
+            </div>
+            <div id="consequences" style="margin: 20px 0;">
+                <!-- 后果 -->
+            </div>
+            <button class="btn" onclick="closeCheckModal()" id="check-confirm-btn">继续 ➡️</button>
+        </div>
+    </div>
