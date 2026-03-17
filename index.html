@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>🍪 姜饼人：悔恨与救赎</title>
+    <title>🍪 姜饼人：平安夜的救赎契约</title>
     <style>
         :root {
             --gingerbread: #8B4513; --icing-red: #FF6B6B; --icing-green: #51A3A3;
@@ -17,46 +17,46 @@
 
         /* --- 角色创建 --- */
         .char-setup { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        .char-card { background: var(--bg-card); border: 2px solid var(--icing-red); border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .name-tag { font-size: 0.8rem; color: var(--icing-green); margin-bottom: 5px; display: block; }
+        .char-card { background: var(--bg-card); border: 2px solid var(--icing-red); border-radius: 20px; padding: 25px; }
         .name-input { width: 90%; background: rgba(0,0,0,0.4); border: 1px solid var(--icing-green); color: var(--star-gold); padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 1.1rem; text-align: center; }
         .stat-row { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; }
         .pool-box { text-align: center; font-size: 1.3rem; color: var(--star-gold); margin-bottom: 20px; background: var(--gingerbread); padding: 15px; border-radius: 15px; border: 2px solid var(--star-gold); }
-        .btn-ctrl { width: 35px; height: 35px; border: none; background: var(--icing-green); color: white; border-radius: 5px; cursor: pointer; }
+        .btn-ctrl { width: 30px; height: 30px; border: none; background: var(--icing-green); color: white; border-radius: 5px; cursor: pointer; }
         
         /* --- 游戏主界面 --- */
         .status-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 15px; margin-bottom: 20px; }
         .status-item { background: rgba(255,255,255,0.08); padding: 15px; border-radius: 15px; border: 1px solid var(--icing-green); text-align: center; }
-        .room-box { background: var(--bg-card); border-radius: 25px; padding: 35px; border: 2px solid var(--icing-green); position: relative; box-shadow: inset 0 0 50px rgba(0,0,0,0.5); }
+        .room-box { background: var(--bg-card); border-radius: 25px; padding: 35px; border: 2px solid var(--icing-green); min-height: 300px; }
         .warning-banner { background: linear-gradient(90deg, transparent, var(--icing-red), transparent); color: white; padding: 8px; text-align: center; font-weight: bold; margin-bottom: 15px; display: none; }
 
-        .action-btn { display: block; width: 100%; padding: 16px; margin: 12px 0; background: var(--icing-white); color: var(--gingerbread); border: none; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem; }
-        .b-decision-btn { background: #8B0000 !important; color: #FFD700 !important; border: 2px solid #FFD700 !important; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        .action-btn { display: block; width: 100%; padding: 16px; margin: 12px 0; background: var(--icing-white); color: var(--gingerbread); border: none; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .b-decision-btn { background: #8B0000 !important; color: #FFD700 !important; border: 2px solid #FFD700 !important; font-size: 1.2rem; }
         
         .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 25px; }
-        .nav-btn { padding: 15px; background: var(--icing-green); color: white; border: none; border-radius: 12px; cursor: pointer; }
-        .nav-btn.visited { background: var(--disabled); color: #666; cursor: not-allowed; text-decoration: line-through; }
+        .nav-btn { padding: 15px; background: var(--icing-green); color: white; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; }
+        .nav-btn:disabled { background: var(--disabled); color: #666; cursor: not-allowed; opacity: 0.6; }
 
-        .modal-content { background: var(--bg-card); width: 85%; max-width: 700px; padding: 40px; border-radius: 30px; border: 5px solid var(--icing-red); position: relative; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; z-index: 100; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--bg-card); width: 85%; max-width: 700px; padding: 40px; border-radius: 30px; border: 5px solid var(--icing-red); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="phase-char" class="game-phase active">
-        <h1 style="text-align:center; color:var(--icing-red); text-shadow: 2px 2px 0px #000;">🕯️ 灵魂契约：平安夜的余温</h1>
+        <h1 style="text-align:center; color:var(--icing-red)">🕯️ 灵魂契约：平安夜的余温</h1>
         <p style="text-align:center; font-style: italic; color: #aaa;">“这原本只是一个关于永不分离的愿望，直到魔法失去了控制。”</p>
-        <div class="pool-box">剩余灵魂能量：<span id="total-pool">900</span></div>
+        <div class="pool-box">剩余能量：<span id="total-pool">900</span></div>
         <div class="char-setup" id="setup-root"></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:25px;">
-            <button class="action-btn" onclick="randomizeStats()">🎲 随机灵魂属性</button>
+            <button class="action-btn" onclick="randomizeStats()">🎲 随机属性</button>
             <button class="action-btn" onclick="startGame()" style="background:var(--icing-red); color:white;">确认，进入梦境</button>
         </div>
     </div>
 
     <div id="phase-main" class="game-phase">
-        <div id="cat-warning" class="warning-banner">🚨 落地窗缝隙里，野猫贪婪的哈气声已清晰可闻！</div>
+        <div id="cat-warning" class="warning-banner">🚨 落地窗缝隙里，野猫贪婪的低吼声越来越近了！</div>
         <div class="status-grid">
             <div id="time-display" class="status-item">⌛ 06:00</div>
             <div id="inventory-display" class="status-item">🎒 道具: 无</div>
@@ -73,8 +73,8 @@
 
 <div id="modal-res" class="modal">
     <div class="modal-content">
-        <h3 id="res-title" style="text-align:center; color:var(--star-gold); margin-bottom: 20px;">🎲 灵魂感应结果</h3>
-        <div id="res-body" style="font-size: 1.1rem; background: rgba(0,0,0,0.3); padding: 25px; border-radius: 20px; border: 1px solid #555;"></div>
+        <h3 id="res-title" style="text-align:center; color:var(--star-gold); margin-bottom: 20px;">🎲 命运投骰</h3>
+        <div id="res-body"></div>
         <button id="modal-close-btn" class="action-btn" onclick="closeModal()" style="margin-top: 25px;">收悉 ✨</button>
     </div>
 </div>
@@ -92,43 +92,43 @@
 
     const storyDB = {
         '客厅': {
-            desc: "平安夜的壁炉本该温暖，但此刻却只剩下刺骨的寒意。你们那酥脆的姜饼小腿在空旷的客厅地板上显得如此无助。在那扇敞开的落地窗外，暗处闪烁着野猫金色的竖瞳，它正打量着这两个散发着甜味的‘猎物’。你们隐约记得，几个小时前两人还坐在这里对饮，但[B]那时的神情显得如此孤独、如此渴望留住这一刻……这种强烈的‘回归’执念成了你们唯一的动力。",
+            desc: "平安夜的壁炉里只剩下冰冷的灰烬。你们惊恐地低头，看见自己的手指变成了酥脆的姜饼，指尖还残留着未干的糖霜。落地窗外，暗处闪烁着野猫金色的竖瞳，正贪婪地注视着这两个散发着甜味的‘点心’。[B]的眼神里透着一丝躲闪，他隐约记得昨晚因为害怕[A]离开，在醉意中启动了某种古老的仪式……",
             actions: [
-                { label: "🔒 拼死拉上落地窗插销", skill: "DEX", difficulty: 55,
-                  onSuccess: () => { state.windowClosed = true; return `[A]和[B]奋力奔跑，赶在利爪探入前合力撞上了门闩。野猫在窗外发出一声悻悻的低吼，金色的眼睛满是不甘。`; },
-                  onFail: () => `窗户纹丝不动！[A]的姜饼手臂甚至被冻得裂开了一道纹。窗外的野猫发出了一阵令人毛骨悚然的‘咕噜’声。` }
+                { label: "🔒 协力拉上落地窗（防止野猫）", skill: "DEX", difficulty: 55,
+                  onSuccess: () => { state.windowClosed = true; return `[A]和[B]拼尽全力撞上了门闩。野猫在窗外发出一声悻悻的低吼，金色的眼睛满是不甘。`; },
+                  onFail: () => `窗户纹丝不动！冷风灌了进来，野猫的哈气声已经近在咫尺。` }
             ],
             nav: ['厨房', '餐厅', '走廊']
         },
         '厨房': {
-            desc: "巨大的烤箱像是一座即将喷发的火山，散发着甜腻而令人窒息的余温。料理台上散落着面粉和肉桂，那正是重塑你们身体的材料。每一个细节都在提醒着你们：如果不能回归，你们最终的宿命就是成为这间屋子里的残渣。空气中混合着酒精与蜂蜜的味道，那是[B]酒后冲动留下的痕迹。",
+            desc: "这里是梦魇的起点。烤箱散发着令人窒息的余温，空气中混合着酒精与蜂蜜的味道。料理台上散落着面粉，那是重塑身体的材料，也是[B]酒后冲动留下的罪证。如果不能找回肉身，你们将永远与这股甜香绑定，最终化为灰烬。",
             actions: [
-                { label: "🥣 调查面粉中的仪式痕迹", skill: "INT",
-                  onSuccess: () => { state.stars++; return `[B]在面粉堆里摸到了一个空酒瓶，瓶身上贴着一张歪歪扭扭的便签：『如果时间能永远停在平安夜就好了。』[B]的眼神变得复杂，他似乎想起了那个酒后的瞬间。`; } }
+                { label: "🥣 调查面粉中的残留便签", skill: "INT",
+                  onSuccess: () => { state.stars++; return `[B]在面粉堆里摸到了一个空酒瓶，瓶身上贴着歪歪扭扭的字：『我只是不想一个人跨年……』。愧疚的情绪在[B]眼中弥漫开来。`; } }
             ],
             nav: ['客厅']
         },
         '餐厅': {
-            desc: "华丽的长餐桌在姜饼人的视角下如同一座山脉。你们曾经在这里谈笑风生，现在却只能在桌腿的阴影中求生。那种‘想变回人类’的渴望从未如此强烈。你们需要那把通往秘密爆发点——书房的钥匙。",
+            desc: "巨大的餐桌在姜饼人的视角下如同一座山脉。你们曾经在这里谈笑风生，现在却只能在黑暗的阴影中求生。那种‘想变回人类’的本能愿望如火焰般燃烧。你们必须找到通往书房的钥匙。",
             actions: [
-                { label: "🍷 翻找倾倒的高脚杯", skill: "DEX",
-                  onSuccess: () => { state.hasKey = true; state.stars++; return `[A]灵巧地翻过翻倒的杯塔，在红酒渍中找到了一把沉重的【银钥匙】。钥匙柄上刻着：『锁住寂寞』。`; } }
+                { label: "🍷 在酒渍中翻找银钥匙", skill: "DEX",
+                  onSuccess: () => { state.hasKey = true; state.stars++; return `[A]从一只倾倒的高脚杯里捞出了一把刻着『锁住寂寞』的【银钥匙】。这把钥匙是通向真相的唯一凭证。`; } }
             ],
             nav: ['客厅']
         },
         '走廊': {
-            desc: "走廊墙上的时钟每一下摆动都像是在撞击你们的灵魂。两旁的肖像画里，你们的肉身正并排躺在书房的躺椅上，面色苍白。那种回归的紧迫感让姜饼的身体几乎要自燃。你们已经收集到了足够的线索，书房的大门就在前方。",
+            desc: "墙上的时钟每摆动一下，姜饼身体似乎就变脆了一分。肖像画里你们的肉身正躺在书房里呼吸微弱。一种强烈的回归本能指引着你们。如果已经拿到了钥匙，那就去终结这场错乱的梦境吧。",
             actions: [
-                { label: "🖼️ 凝视那幅平安夜合影", skill: "POW",
-                  onSuccess: () => { state.stars++; return `画面中[B]紧紧抓着[A]的手。这强烈的执念让法阵产生了共鸣，你们仿佛听到了灵魂回归肉身的召唤。`; } }
+                { label: "🖼️ 凝视那幅破碎的合影", skill: "POW",
+                  onSuccess: () => { state.stars++; return `画面中[B]紧握着[A]的手。这强烈的回归欲望让你们的灵魂产生了共鸣，线索更加清晰了。`; } }
             ],
             nav: ['客厅']
         },
         '书房': {
-            desc: "【秘密与爆发】书房里充满了尚未散去的魔法波纹。桌上那本被翻开的禁忌之书、带血的肉桂笔……一切都指向了那个瞬间：[B]因为怕寂寞、怕[A]会在新的一年离去，在平安夜的微醺中启动了契约。但在清醒后的那一刻，他看着变成姜饼的[A]，内心早已被悔恨吞噬。法阵中央，你们的肉身正呼吸微弱。这不只是一个魔法，更是一个求救信号。",
+            desc: "【秘密爆发点】书房里充满了悔恨的味道。禁忌之书上满是[B]酒醒后狂乱涂抹的印记。他害怕失去，却差点毁掉了一切。法阵中心，你们的肉身正安详地躺在躺椅上。现在，轮到[B]做出最后的选择了。",
             actions: [
-                { label: "📖 解读最后的悔恨日记", skill: "EDU",
-                  onSuccess: () => { state.stars++; return `[A]读到了最后一行：『我错了，我只是不想一个人跨年……如果能重来，我宁愿碎掉的是我。』`; } }
+                { label: "📖 解读最后的回归符文", skill: "EDU",
+                  onSuccess: () => { state.stars++; return `日记的最后一页写着：『如果我能清醒一点，绝不会让这种事发生……[A]，对不起。』`; } }
             ],
             nav: []
         }
@@ -138,11 +138,11 @@
         const root = document.getElementById('setup-root');
         root.innerHTML = state.players.map(p => `
             <div class="char-card">
-                <span class="name-tag">${p.id===0?'理性而坚定的':'孤独而悔恨的'} 玩家${p.id===0?'A':'B'}</span>
+                <span style="color:var(--icing-green)">${p.id===0?'理性而坚韧的':'悔恨而孤独的'} 玩家${p.id===0?'A':'B'}</span>
                 <input type="text" class="name-input" id="name-${p.id}" placeholder="输入名字" value="${p.name}" onchange="state.players[${p.id}].name=this.value">
                 ${Object.keys(p.stats).map(s => `
                     <div class="stat-row">
-                        <span style="font-weight:bold;">${s}</span>
+                        <span>${s}</span>
                         <div>
                             <button class="btn-ctrl" onclick="modStat(${p.id},'${s}',-5)">-</button>
                             <span class="stat-val" id="v-${p.id}-${s}">${p.stats[s]}</span>
@@ -197,28 +197,46 @@
             alist.appendChild(b);
         });
 
-        // 如果在书房，且动作已做完/线索齐了，显示 B 的抉择
+        // 书房专属 B 的抉择
         if(state.currentRoom === '书房') {
             const bBtn = document.createElement('button');
             bBtn.className = 'action-btn b-decision-btn';
-            bBtn.textContent = `✨ [${nB}的抉择]：粉碎寂寞的执念，引导回归`;
+            bBtn.textContent = `✨ [${nB}的抉择]：粉碎寂寞，全速回归`;
             bBtn.onclick = () => triggerBEnding();
             alist.appendChild(bBtn);
         }
 
         const ngrid = document.getElementById('nav-grid');
         ngrid.innerHTML = '';
-        let navPaths = [...r.nav];
-        if(state.hasKey && state.currentRoom === '走廊') navPaths.push('书房');
+        
+        // 核心修复：客厅是中转站，只有分支房间去过才变灰
+        let navPaths = [];
+        if (state.currentRoom === '客厅') {
+            navPaths = ['厨房', '餐厅', '走廊'];
+        } else {
+            navPaths = ['客厅']; // 分支房间只能回客厅
+        }
 
         navPaths.forEach(n => {
             const btn = document.createElement('button');
-            const visited = state.visitedRooms.has(n);
-            btn.className = `nav-btn ${visited ? 'visited' : ''}`;
-            btn.textContent = visited ? `[封锁] ${n}` : `前往 ${n}`;
-            btn.disabled = visited;
+            // 如果是分支房间且去过，则禁用
+            const isExploredBranch = (n !== '客厅' && state.visitedRooms.has(n));
+            btn.className = `nav-btn`;
+            btn.textContent = isExploredBranch ? `[封锁] ${n}` : `前往 ${n}`;
+            btn.disabled = isExploredBranch;
+            
+            // 特殊逻辑：只有在走廊且有钥匙才能去书房
+            if (state.currentRoom === '走廊' && state.hasKey) {
+                const sBtn = document.createElement('button');
+                sBtn.className = 'nav-btn';
+                sBtn.style.background = 'var(--icing-red)';
+                sBtn.textContent = "🔓 进入书房";
+                sBtn.onclick = () => { state.currentRoom = '书房'; updateUI(); };
+                ngrid.appendChild(sBtn);
+            }
+
             btn.onclick = () => {
-                state.visitedRooms.add(state.currentRoom);
+                if(state.currentRoom !== '客厅') state.visitedRooms.add(state.currentRoom);
                 state.currentRoom = n;
                 state.time += 30;
                 checkCatAttack();
@@ -232,22 +250,18 @@
         const roll = Math.floor(Math.random() * 100) + 1;
         const avg = (state.players[0].stats[act.skill] + state.players[1].stats[act.skill]) / 2;
         const success = roll <= (act.difficulty || avg);
-        let msg = success ? act.onSuccess() : (act.onFail ? act.onFail() : "姜饼身体在颤抖，你们什么也做不到。");
+        let msg = success ? act.onSuccess() : (act.onFail ? act.onFail() : "姜饼身体在颤抖，你们徒劳无功。");
         msg = msg.replace(/\[A\]/g, state.players[0].name).replace(/\[B\]/g, state.players[1].name);
 
-        document.getElementById('res-body').innerHTML = `
-            <p style="text-align:center; color:${success?'#51A3A3':'#FF6B6B'}">━━ ${success?'灵魂共鸣':'意志消沉'} ━━</p>
-            <p style="padding-top:10px;">${msg}</p>
-        `;
+        document.getElementById('res-body').innerHTML = `<p>${msg}</p>`;
         document.getElementById('modal-res').classList.add('active');
     }
 
     function checkCatAttack() {
         if(!state.windowClosed && state.time >= 480 && !state.catAttack) {
             state.catAttack = true;
-            alert(`🚨 野猫扑进来了！它的爪子扫过，你们那香脆的姜饼身体被抓掉了一大块！所有属性永久大幅降低！`);
+            alert(`🚨 野猫扑进来了！残破的姜饼身体被抓掉了一大块！属性永久下降！`);
             state.players.forEach(p => Object.keys(p.stats).forEach(s => p.stats[s] -= 25));
-            // 极端情况检测
             if(state.players[0].stats.STR <= 0) triggerCatBE();
         }
     }
@@ -263,26 +277,26 @@
         const nA = state.players[0].name;
         const nB = state.players[1].name;
         if(state.stars >= 4) {
-            showEnding("☀️ 真结局：晨曦下的和解 (TE)", `${nB} 颤抖着按向日记上的回归符文，那是他酒醒后偷偷留下的‘后门’。泪水滴在姜饼上，将法阵的冰冷熔化。你们在第一缕阳光照进书房前，感受到了血肉的温暖。${nA} 睁开眼，看见了身旁哭得像个孩子的 ${nB}。平安夜结束了，但你们的故事才刚开始。`);
+            showEnding("☀️ 真结局：晨曦下的救赎 (TE)", `${nB} 颤抖着粉碎了那张寂寞的契约，那是他酒醒后留下的唯一退路。泪水滴在姜饼上，熔化了诅咒。你们在第一缕阳光照进屋子前，感受到了真实的呼吸。${nA} 睁开眼，握紧了 ${nB} 冰冷的手。`);
         } else {
-            showEnding("🎁 好结局：苦涩的回归 (HE)", `虽然回到了人类身体，但法阵的逆转并不完全。${nA} 失去了关于这一晚的记忆，而 ${nB} 独自背负着那个孤独而冲动的秘密。每当肉桂的味道飘过，${nB} 都会下意识地握紧 ${nA} 的手，再也不敢松开。`);
+            showEnding("🎁 好结局：残缺的奇迹 (HE)", `你们变回了人，但 ${nA} 失去了关于这一晚的所有记忆。${nB} 独自背负着那个孤独的秘密，在每个平安夜都会下意识地关紧窗户，生怕再次失去。`);
         }
     }
 
     function triggerTimeBE() {
-        showEnding("🌌 坏结局：沉睡的饼干 (BE)", `清晨 09:00。阳光将你们彻底晒干。那一丝回归肉身的火花最终熄灭了。屋子里多了两个做工精美、永不腐坏的姜饼人。`);
+        showEnding("🌌 坏结局：永远的姜饼 (BE)", `清晨 09:00。阳光将你们彻底晒干。那一丝回归肉身的火花熄灭了。桌上多了两个精美的装饰品。`);
     }
 
     function triggerCatBE() {
-        showEnding("🐾 惨剧：沦为猎物 (BE)", `野猫最终还是闯了进来。残破的姜饼身体无法承载灵魂的重量，在一阵令人心碎的碎裂声中，你们消失在了猫的腹中。平安夜，只有一地散乱的糖粉。`);
+        showEnding("🐾 惨剧：野猫的晚餐 (BE)", `野猫最终还是闯了进来。在一阵恐怖的碎裂声中，你们沦为了猫的腹中物。平安夜，只有一地散乱的糖粉。`);
     }
 
     function showEnding(t, c) {
         document.body.innerHTML = `
             <div style="text-align:center; padding:100px 20px; max-width:700px; margin:0 auto;">
-                <h1 style="color:var(--star-gold); margin-bottom:30px;">${t}</h1>
-                <div style="font-size:1.3rem; background:rgba(255,255,255,0.1); padding:40px; border-radius:30px; border:2px solid var(--icing-red); line-height:2;">${c}</div>
-                <button class="action-btn" onclick="location.reload()" style="width:200px; margin:40px auto;">再次尝试救赎</button>
+                <h1 style="color:var(--star-gold);">${t}</h1>
+                <div style="font-size:1.3rem; background:rgba(255,255,255,0.1); padding:40px; border-radius:30px; line-height:2;">${c}</div>
+                <button class="action-btn" onclick="location.reload()" style="width:200px; margin-top:30px;">重新尝试救赎</button>
             </div>
         `;
     }
