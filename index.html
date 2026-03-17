@@ -812,6 +812,32 @@
             currentCheck: null
         };
 
+            // ==================== 游戏流程控制 ====================
+    function setPhase(phase) {
+        document.querySelectorAll('.game-phase').forEach(el => {
+            el.classList.remove('active');
+        });
+        document.getElementById(`phase-${phase}`).classList.add('active');
+        gameData.phase = phase;
+    }
+
+    function startCharacterCreation() {
+        console.log('点击了"开始创建人物"按钮');
+        setPhase('creation');
+        
+        // 调用人物创建初始化
+        if (typeof initCharacterCreation === 'function') {
+            initCharacterCreation();
+        } else {
+            alert('人物创建系统加载中...');
+        }
+    }
+    
+    // 确保按钮能调用
+    window.startCharacterCreation = startCharacterCreation;
+    window.setPhase = setPhase;
+
+
         // ==================== 工具函数 ====================
         function addLog(message, type = 'info', player = null) {
             const log = document.getElementById('game-log');
