@@ -1130,7 +1130,6 @@ function checkAllPlayersConfirmed() {
     }
 }
         
-
         function setSecretHolder(player) {
             gameData.secretHolder = player;
             addLog(`玩家${player}被选为秘密持有者`, 'event');
@@ -1185,8 +1184,91 @@ function checkAllPlayersConfirmed() {
             document.getElementById('room-modal').classList.remove('active');
         }
 
-        // ==================== 检定系统 ====================
-        function performCheck(checkType, skillValue) {
+        // ==================== 剧情事件系统 ====================
+        const roomEvents = {
+            '客厅': {
+                '侦查成功': '你在沙发下发现一把小巧的铜钥匙，上面刻着奇怪的花纹。',
+                '侦查大成功': '🎉 大成功！你在沙发下不仅找到了钥匙，还发现了一本笔记，上面写着"地下室法阵..."',
+                '侦查失败': '房间里似乎没什么特别的东西，只有圣诞装饰在闪烁。',
+                '侦查大失败': '💥 大失败！你不小心碰倒了圣诞树装饰，巨大的装饰球滚向你！',
+                '检查窗户': '落地窗外有爪印...昨晚有东西来过。必须关好窗户！',
+                '幸运成功': '刚好在野猫出现前关上了窗户！',
+                '幸运失败': '窗户没关严，听到外面有猫叫声...'
+            },
+            '餐厅': {
+                '侦查成功': '魔法书上记载着灵魂出窍的仪式："在平安夜，以姜饼为媒介..."',
+                '侦查大成功': '🎉 大成功！你发现书页间夹着一张地下室的地图！',
+                '侦查失败': '餐盘上的食物对现在的你们来说太大了，无法调查。',
+                '检查窗户': '这里的窗户是封闭的，打不开。'
+            },
+            '主卧室': {
+                '侦查成功': '你认出了床上的身体！那就是你们自己！呼吸平稳，但怎么也叫不醒。',
+                '侦查大成功': '🎉 大成功！你在床头柜发现了法阵的草图，和地下室的一模一样！',
+                '侦查失败': '床太高了，姜饼人的身体爬不上去。',
+                '看到身体': '😱 SAN检定：看到自己的身体躺在床上，意识到灵魂出窍了！'
+            },
+            '法阵房间': {
+                '侦查成功': '门上的符号和你们身上的姜饼装饰一模一样！',
+                '侦查大成功': '🎉 大成功！你认出门上的符号是"灵魂链接"的古代符文！',
+                '侦查失败': '门锁得很紧，姜饼人的力量打不开。',
+                '有钥匙': '用客厅找到的钥匙打开了门！里面是...发光的法阵！'
+            },
+            '书房': {
+                '侦查成功': '书桌上的图纸详细画着法阵的结构，还有...平安夜的日期。',
+                '侦查大成功': '🎉 大成功！你找到了仪式笔记："需要两名参与者的同意..."',
+                '侦查失败': '书桌上的图纸对姜饼人来说像壁画，看不懂。'
+            },
+            '废弃储藏室': {
+                '侦查成功': '在旧箱子后发现一个发光的符文石。',
+                '侦查失败': '满是灰尘，看不清什么东西。'
+            },
+            '厨房': {
+                '侦查成功': '注意避开危险区域！',
+                '侦查失败': '太危险了，赶紧离开厨房！'
+            }
+        };
+
+        // 线索系统
+        const gameClues = {
+            '客厅钥匙': { 
+                id: 'key', 
+                found: false, 
+                description: '一把小巧的铜钥匙，刻着螺旋花纹',
+                location: '客厅',
+                use: '可以打开地下室法阵房间的门'
+            },
+            '魔法书': { 
+                id: 'spellbook', 
+                found: false, 
+                description: '《灵魂超脱仪式指南》，翻到关于姜饼媒介的章节',
+                location: '餐厅',
+                use: '解释了灵魂出窍的原理'
+            },
+            '身体发现': { 
+                id: 'bodies', 
+                found: false, 
+                description: '确认你们的身体在主卧室，处于昏迷状态',
+                location: '主卧室',
+                use: '知道目标地点了'
+            },
+            '法阵草图': { 
+                id: 'blueprint', 
+                found: false, 
+                description: '地下室法阵的详细结构图',
+                location: '书房',
+                use: '了解法阵的运作方式'
+            },
+            '仪式笔记': { 
+                id: 'ritual_note', 
+                found: false, 
+                description: '手写笔记："平安夜，两名参与者，姜饼媒介，灵魂暂离"',
+                location: '书房',
+                use: '知道仪式的基本要求'
+            }
+        };
+
+        // 新的检定函数，带剧情
+        function performCheckWithStory(checkType, skillValue) {
             const resultsDiv = document.getElementById('check-results');
             resultsDiv.classList.remove('hidden');
             
@@ -1200,77 +1282,260 @@ function checkAllPlayersConfirmed() {
             });
             
             // 为两个玩家分别检定
+            let playerResults = [];
+            let completedCount = 0;
+            
             gameData.players.forEach((player, index) => {
                 setTimeout(() => {
-                    rollDiceForPlayer(player, index, checkType, skillValue);
+                    rollDiceForPlayerWithStory(player, index, checkType, skillValue).then(result => {
+                        playerResults[index] = result;
+                        completedCount++;
+                        
+                        // 两个玩家都检定完后，触发剧情
+                        if (completedCount === 2) {
+                            handleCheckResults(playerResults, checkType);
+                        }
+                    });
                 }, index * 800);
             });
         }
 
-        function rollDiceForPlayer(player, playerIndex, checkType, skillValue) {
-            const diceElement = document.querySelectorAll('.dice-roll')[playerIndex];
-            const detailsElement = document.querySelectorAll('.check-details')[playerIndex];
-            
-            // 动画
-            diceElement.textContent = '🎲';
-            diceElement.classList.add('rolling');
-            
-            setTimeout(() => {
-                diceElement.classList.remove('rolling');
-                const roll = Math.floor(Math.random() * 100) + 1;
-                diceElement.textContent = roll;
+        function rollDiceForPlayerWithStory(player, playerIndex, checkType, skillValue) {
+            return new Promise((resolve) => {
+                const diceElement = document.querySelectorAll('.dice-roll')[playerIndex];
+                const detailsElement = document.querySelectorAll('.check-details')[playerIndex];
                 
-                let resultClass = '';
-                let resultText = '';
+                // 动画
+                diceElement.textContent = '🎲';
+                diceElement.classList.add('rolling');
                 
-                if (roll <= 5) {
-                    resultClass = 'critical';
-                    resultText = '💥 大成功！';
-                } else if (roll <= skillValue) {
-                    resultClass = 'success';
-                    resultText = '✅ 成功';
-                } else if (roll >= 96) {
-                    resultClass = 'critical';
-                    resultText = '💀 大失败！';
-                } else {
-                    resultClass = 'failure';
-                    resultText = '❌ 失败';
+                setTimeout(() => {
+                    diceElement.classList.remove('rolling');
+                    const roll = Math.floor(Math.random() * 100) + 1;
+                    diceElement.textContent = roll;
+                    
+                    let resultClass = '';
+                    let resultText = '';
+                    let successLevel = '';
+                    
+                    if (roll <= 5) {
+                        resultClass = 'critical';
+                        resultText = '💥 大成功！';
+                        successLevel = 'critical_success';
+                    } else if (roll <= skillValue) {
+                        resultClass = 'success';
+                        resultText = '✅ 成功';
+                        successLevel = 'success';
+                    } else if (roll >= 96) {
+                        resultClass = 'critical';
+                        resultText = '💀 大失败！';
+                        successLevel = 'critical_failure';
+                    } else {
+                        resultClass = 'failure';
+                        resultText = '❌ 失败';
+                        successLevel = 'failure';
+                    }
+                    
+                    diceElement.className = `dice-roll ${resultClass}`;
+                    detailsElement.textContent = `掷出: ${roll}，技能值: ${skillValue} - ${resultText}`;
+                    detailsElement.className = `check-details ${resultClass}`;
+                    
+                    addLog(`${player.name} ${checkType}: ${roll}/${skillValue} - ${resultText}`, 'dice', player.name);
+                    
+                    // 返回结果
+                    const result = {
+                        player: player.name,
+                        roll: roll,
+                        skill: skillValue,
+                        success: roll <= skillValue,
+                        criticalSuccess: roll <= 5,
+                        criticalFailure: roll >= 96,
+                        successLevel: successLevel
+                    };
+                    
+                    // SAN Check
+                    if (checkType === '侦查检定' && roll > skillValue && roll >= 96) {
+                        setTimeout(() => {
+                            const sanLoss = Math.floor(Math.random() * 10) + 1;
+                            gameData.gameState.san -= sanLoss;
+                            updateStatus();
+                            addLog(`${player.name} SAN损失: ${sanLoss}点`, 'san', player.name);
+                        }, 500);
+                    }
+                    
+                    resolve(result);
+                }, 600);
+            });
+        }
+
+        function handleCheckResults(results, checkType) {
+            const room = gameData.currentRoom;
+            
+            addLog(`=== ${room} 调查结果 ===`, 'title');
+            
+            // 检查是否有玩家成功
+            const anySuccess = results.some(r => r.success);
+            const anyCriticalSuccess = results.some(r => r.criticalSuccess);
+            const allFailed = results.every(r => !r.success);
+            
+            // 根据结果触发剧情
+            if (roomEvents[room]) {
+                let eventKey = '';
+                
+                if (anyCriticalSuccess) {
+                    eventKey = '侦查大成功';
+                } else if (anySuccess) {
+                    eventKey = '侦查成功';
+                } else if (allFailed) {
+                    // 检查是否有大失败
+                    const anyCriticalFailure = results.some(r => r.criticalFailure);
+                    eventKey = anyCriticalFailure ? '侦查大失败' : '侦查失败';
                 }
                 
-                diceElement.className = `dice-roll ${resultClass}`;
-                detailsElement.textContent = `掷出: ${roll}，技能值: ${skillValue} - ${resultText}`;
-                detailsElement.className = `check-details ${resultClass}`;
-                
-                addLog(`${player.name} ${checkType}: ${roll}/${skillValue} - ${resultText}`, 'dice', player.name);
-                
-                // SAN Check
-                if (checkType === '侦查检定' && roll > skillValue && roll >= 96) {
+                if (roomEvents[room][eventKey]) {
+                    // 显示剧情
                     setTimeout(() => {
-                        const sanLoss = Math.floor(Math.random() * 10) + 1;
-                        gameData.gameState.san -= sanLoss;
-                        updateStatus();
-                        addLog(`${player.name} SAN损失: ${sanLoss}点`, 'san', player.name);
-                    }, 500);
+                        addLog(roomEvents[room][eventKey], 'event');
+                        
+                        // 触发线索发现
+                        triggerClueDiscovery(room, eventKey);
+                        
+                        // 特殊事件
+                        triggerSpecialEvent(room, eventKey);
+                    }, 1000);
                 }
-            }, 600);
+            }
+            
+            // 记录到游戏状态
+            if (anySuccess) {
+                if (!gameData.gameState.clues.includes(`${room}_investigated`)) {
+                    gameData.gameState.clues.push(`${room}_investigated`);
+                }
+            }
+        }
+
+        function triggerClueDiscovery(room, result) {
+            // 客厅钥匙
+            if (room === '客厅' && (result === '侦查成功' || result === '侦查大成功')) {
+                if (!gameClues['客厅钥匙'].found) {
+                    gameClues['客厅钥匙'].found = true;
+                    gameData.gameState.items.push('铜钥匙');
+                    addLog('🎯 获得线索：铜钥匙', 'success');
+                    addLog('物品栏：铜钥匙（可以打开地下室的门）', 'info');
+                }
+            }
+            
+            // 魔法书
+            if (room === '餐厅' && (result === '侦查成功' || result === '侦查大成功')) {
+                if (!gameClues['魔法书'].found) {
+                    gameClues['魔法书'].found = true;
+                    addLog('🎯 获得线索：灵魂出窍的魔法书', 'success');
+                    addLog('书中记载：以姜饼为媒介，灵魂可暂离身体', 'info');
+                }
+            }
+            
+            // 身体发现
+            if (room === '主卧室' && (result === '侦查成功' || result === '侦查大成功')) {
+                if (!gameClues['身体发现'].found) {
+                    gameClues['身体发现'].found = true;
+                    addLog('🎯 重要发现：找到你们的身体了！', 'event');
+                    addLog('身体在床上，但灵魂被困在姜饼人中', 'info');
+                    
+                    // SAN Check
+                    setTimeout(() => {
+                        addLog('😱 看到自己的身体，进行SAN检定...', 'san');
+                        performSanCheck(5, '看到自己的身体');
+                    }, 1500);
+                }
+            }
+            
+            // 法阵草图
+            if (room === '书房' && (result === '侦查成功' || result === '侦查大成功')) {
+                if (!gameClues['法阵草图'].found) {
+                    gameClues['法阵草图'].found = true;
+                    addLog('🎯 获得线索：法阵结构图', 'success');
+                    addLog('图纸显示法阵需要两具身体作为锚点', 'info');
+                }
+            }
+            
+            // 仪式笔记
+            if (room === '书房' && result === '侦查大成功') {
+                if (!gameClues['仪式笔记'].found) {
+                    gameClues['仪式笔记'].found = true;
+                    addLog('🎯 获得线索：仪式手写笔记', 'success');
+                    addLog('笔记："必须双方都同意，才能让灵魂回归"', 'info');
+                }
+            }
+        }
+
+        function triggerSpecialEvent(room, result) {
+            // 法阵房间有钥匙
+            if (room === '法阵房间') {
+                if (gameData.gameState.items.includes('铜钥匙')) {
+                    setTimeout(() => {
+                        addLog('🗝️ 用铜钥匙打开了法阵房间的门！', 'event');
+                        addLog('房间里是发光的法阵，墙上刻着你们的名字...', 'description');
+                        
+                        // 结局触发条件
+                        gameData.gameState.clues.push('法阵房间打开');
+                    }, 2000);
+                }
+            }
+        }
+
+        function performSanCheck(loss, reason) {
+            const sanLoss = loss === 5 ? Math.floor(Math.random() * 5) + 1 : loss;
+            gameData.gameState.san -= sanLoss;
+            updateStatus();
+            
+            addLog(`SAN损失: ${sanLoss}点，原因: ${reason}`, 'san');
+            addLog(`当前SAN: ${gameData.gameState.san}`, 'info');
+            
+            if (gameData.gameState.san <= 0) {
+                addLog('💀 理智归零，陷入永久疯狂！', 'critical');
+            } else if (gameData.gameState.san < 50) {
+                addLog('⚠️ 理智低落，可能陷入临时疯狂', 'warning');
+            }
         }
 
         // ==================== 行动函数 ====================
         function investigateCurrentRoom() {
             addLog(`调查${gameData.currentRoom}...`, 'info');
-            performCheck('侦查检定', 50);
+            performCheckWithStory('侦查检定', 50);
         }
 
         function checkWindows() {
             if (gameData.currentRoom === '客厅') {
                 if (!gameData.gameState.windowClosed) {
-                    addLog('关闭了落地窗', 'success');
-                    gameData.gameState.windowClosed = true;
+                    addLog('检查落地窗...', 'info');
+                    
+                    // 先显示剧情
+                    setTimeout(() => {
+                        addLog(roomEvents['客厅']['检查窗户'], 'event');
+                    }, 500);
+                    
+                    // 幸运检定避免野猫
+                    setTimeout(() => {
+                        addLog('需要进行幸运检定避免野生动物...', 'warning');
+                        performCheckWithStory('幸运检定', 60);
+                    }, 1500);
+                    
+                    // 无论检定结果如何，都尝试关闭
+                    setTimeout(() => {
+                        const success = Math.random() > 0.3; // 70%成功率
+                        if (success) {
+                            addLog('成功关上了落地窗！', 'success');
+                            gameData.gameState.windowClosed = true;
+                        } else {
+                            addLog('窗户卡住了，没关严！', 'warning');
+                            addLog('听到外面有猫叫声越来越近...', 'critical');
+                        }
+                    }, 3000);
                 } else {
-                    addLog('窗户已关好', 'info');
+                    addLog('窗户已关好。', 'info');
                 }
             } else {
-                addLog('这里没有窗户', 'info');
+                addLog('这里没有窗户。', 'info');
             }
         }
 
@@ -1287,11 +1552,13 @@ function checkAllPlayersConfirmed() {
         }
 
         function rollLuckCheck() {
-            performCheck('幸运检定', 50);
+            addLog(`幸运检定...`, 'info');
+            performCheckWithStory('幸运检定', 50);
         }
 
         function rollSpotCheck() {
-            performCheck('侦查检定', 60);
+            addLog(`侦查检定...`, 'info');
+            performCheckWithStory('侦查检定', 60);
         }
 
         function endTurnFromModal() {
@@ -1316,7 +1583,7 @@ function checkAllPlayersConfirmed() {
             // 每2回合检查野猫
             if (gameData.gameState.turn % 2 === 0 && !gameData.gameState.windowClosed) {
                 addLog('⚠️ 30分钟过去，检查野生动物...', 'warning');
-                performCheck('幸运检定', 60);
+                performCheckWithStory('幸运检定', 60);
             }
             
             updateStatus();
@@ -1327,400 +1594,9 @@ function checkAllPlayersConfirmed() {
             addLog('游戏已加载，准备开始...', 'info');
         });
 
-// ==================== 新增：剧情事件系统 ====================
-const roomEvents = {
-    '客厅': {
-        '侦查成功': '你在沙发下发现一把小巧的铜钥匙，上面刻着奇怪的花纹。',
-        '侦查大成功': '🎉 大成功！你在沙发下不仅找到了钥匙，还发现了一本笔记，上面写着"地下室法阵..."',
-        '侦查失败': '房间里似乎没什么特别的东西，只有圣诞装饰在闪烁。',
-        '侦查大失败': '💥 大失败！你不小心碰倒了圣诞树装饰，巨大的装饰球滚向你！',
-        '检查窗户': '落地窗外有爪印...昨晚有东西来过。必须关好窗户！',
-        '幸运成功': '刚好在野猫出现前关上了窗户！',
-        '幸运失败': '窗户没关严，听到外面有猫叫声...'
-    },
-    '餐厅': {
-        '侦查成功': '魔法书上记载着灵魂出窍的仪式："在平安夜，以姜饼为媒介..."',
-        '侦查大成功': '🎉 大成功！你发现书页间夹着一张地下室的地图！',
-        '侦查失败': '餐盘上的食物对现在的你们来说太大了，无法调查。',
-        '检查窗户': '这里的窗户是封闭的，打不开。'
-    },
-    '主卧室': {
-        '侦查成功': '你认出了床上的身体！那就是你们自己！呼吸平稳，但怎么也叫不醒。',
-        '侦查大成功': '🎉 大成功！你在床头柜发现了法阵的草图，和地下室的一模一样！',
-        '侦查失败': '床太高了，姜饼人的身体爬不上去。',
-        '看到身体': '😱 SAN检定：看到自己的身体躺在床上，意识到灵魂出窍了！',
-        '特殊': '床头柜的符号在发光，似乎在呼唤什么...'
-    },
-    '法阵房间': {
-        '侦查成功': '门上的符号和你们身上的姜饼装饰一模一样！',
-        '侦查大成功': '🎉 大成功！你认出门上的符号是"灵魂链接"的古代符文！',
-        '侦查失败': '门锁得很紧，姜饼人的力量打不开。',
-        '有钥匙': '用客厅找到的钥匙打开了门！里面是...发光的法阵！'
-    },
-    '书房': {
-        '侦查成功': '书桌上的图纸详细画着法阵的结构，还有...平安夜的日期。',
-        '侦查大成功': '🎉 大成功！你找到了仪式笔记："需要两名参与者的同意..."',
-        '侦查失败': '书桌上的图纸对姜饼人来说像壁画，看不懂。'
-    },
-    '废弃储藏室': {
-        '侦查成功': '在旧箱子后发现一个发光的符文石。',
-        '侦查失败': '满是灰尘，看不清什么东西。'
-    },
-    '厨房': {
-        '侦查成功': '注意避开危险区域！',
-        '侦查失败': '太危险了，赶紧离开厨房！'
-    }
-};
-
-// 线索系统
-const gameClues = {
-    '客厅钥匙': { 
-        id: 'key', 
-        found: false, 
-        description: '一把小巧的铜钥匙，刻着螺旋花纹',
-        location: '客厅',
-        use: '可以打开地下室法阵房间的门'
-    },
-    '魔法书': { 
-        id: 'spellbook', 
-        found: false, 
-        description: '《灵魂超脱仪式指南》，翻到关于姜饼媒介的章节',
-        location: '餐厅',
-        use: '解释了灵魂出窍的原理'
-    },
-    '身体发现': { 
-        id: 'bodies', 
-        found: false, 
-        description: '确认你们的身体在主卧室，处于昏迷状态',
-        location: '主卧室',
-        use: '知道目标地点了'
-    },
-    '法阵草图': { 
-        id: 'blueprint', 
-        found: false, 
-        description: '地下室法阵的详细结构图',
-        location: '书房',
-        use: '了解法阵的运作方式'
-    },
-    '仪式笔记': { 
-        id: 'ritual_note', 
-        found: false, 
-        description: '手写笔记："平安夜，两名参与者，姜饼媒介，灵魂暂离"',
-        location: '书房',
-        use: '知道仪式的基本要求'
-    }
-};
-
-// 新的检定函数，带剧情
-function performCheckWithStory(checkType, skillValue) {
-    const resultsDiv = document.getElementById('check-results');
-    resultsDiv.classList.remove('hidden');
-    
-    // 清除之前的结果
-    document.querySelectorAll('.dice-roll').forEach(el => {
-        el.textContent = '-';
-        el.className = 'dice-roll';
-    });
-    document.querySelectorAll('.check-details').forEach(el => {
-        el.textContent = '等待检定...';
-    });
-    
-    // 为两个玩家分别检定
-    let playerResults = [];
-    let completedCount = 0;
-    
-    gameData.players.forEach((player, index) => {
-        setTimeout(() => {
-            rollDiceForPlayerWithStory(player, index, checkType, skillValue).then(result => {
-                playerResults[index] = result;
-                completedCount++;
-                
-                // 两个玩家都检定完后，触发剧情
-                if (completedCount === 2) {
-                    handleCheckResults(playerResults, checkType);
-                }
-            });
-        }, index * 800);
-    });
-}
-
-function rollDiceForPlayerWithStory(player, playerIndex, checkType, skillValue) {
-    return new Promise((resolve) => {
-        const diceElement = document.querySelectorAll('.dice-roll')[playerIndex];
-        const detailsElement = document.querySelectorAll('.check-details')[playerIndex];
+            });  // document.addEventListener 的闭合括号
         
-        // 动画
-        diceElement.textContent = '🎲';
-        diceElement.classList.add('rolling');
-        
-        setTimeout(() => {
-            diceElement.classList.remove('rolling');
-            const roll = Math.floor(Math.random() * 100) + 1;
-            diceElement.textContent = roll;
-            
-            let resultClass = '';
-            let resultText = '';
-            let successLevel = '';
-            
-            if (roll <= 5) {
-                resultClass = 'critical';
-                resultText = '💥 大成功！';
-                successLevel = 'critical_success';
-            } else if (roll <= skillValue) {
-                resultClass = 'success';
-                resultText = '✅ 成功';
-                successLevel = 'success';
-            } else if (roll >= 96) {
-                resultClass = 'critical';
-                resultText = '💀 大失败！';
-                successLevel = 'critical_failure';
-            } else {
-                resultClass = 'failure';
-                resultText = '❌ 失败';
-                successLevel = 'failure';
-            }
-            
-            diceElement.className = `dice-roll ${resultClass}`;
-            detailsElement.textContent = `掷出: ${roll}，技能值: ${skillValue} - ${resultText}`;
-            detailsElement.className = `check-details ${resultClass}`;
-            
-            addLog(`${player.name} ${checkType}: ${roll}/${skillValue} - ${resultText}`, 'dice', player.name);
-            
-            // 返回结果
-            const result = {
-                player: player.name,
-                roll: roll,
-                skill: skillValue,
-                success: roll <= skillValue,
-                criticalSuccess: roll <= 5,
-                criticalFailure: roll >= 96,
-                successLevel: successLevel
-            };
-            
-            // SAN Check
-            if (checkType === '侦查检定' && roll > skillValue && roll >= 96) {
-                setTimeout(() => {
-                    const sanLoss = Math.floor(Math.random() * 10) + 1;
-                    gameData.gameState.san -= sanLoss;
-                    updateStatus();
-                    addLog(`${player.name} SAN损失: ${sanLoss}点`, 'san', player.name);
-                }, 500);
-            }
-            
-            resolve(result);
-        }, 600);
-    });
-}
-
-function handleCheckResults(results, checkType) {
-    const room = gameData.currentRoom;
-    const currentTime = gameData.gameState.time;
-    
-    addLog(`=== ${room} 调查结果 ===`, 'title');
-    
-    // 检查是否有玩家成功
-    const anySuccess = results.some(r => r.success);
-    const anyCriticalSuccess = results.some(r => r.criticalSuccess);
-    const allFailed = results.every(r => !r.success);
-    
-    // 根据结果触发剧情
-    if (roomEvents[room]) {
-        let eventKey = '';
-        
-        if (anyCriticalSuccess) {
-            eventKey = '侦查大成功';
-        } else if (anySuccess) {
-            eventKey = '侦查成功';
-        } else if (allFailed) {
-            // 检查是否有大失败
-            const anyCriticalFailure = results.some(r => r.criticalFailure);
-            eventKey = anyCriticalFailure ? '侦查大失败' : '侦查失败';
-        }
-        
-        if (roomEvents[room][eventKey]) {
-            // 显示剧情
-            setTimeout(() => {
-                addLog(roomEvents[room][eventKey], 'event');
-                
-                // 触发线索发现
-                triggerClueDiscovery(room, eventKey);
-                
-                // 特殊事件
-                triggerSpecialEvent(room, eventKey);
-            }, 1000);
-        }
-    }
-    
-    // 记录到游戏状态
-    if (anySuccess) {
-        if (!gameData.gameState.clues.includes(`${room}_investigated`)) {
-            gameData.gameState.clues.push(`${room}_investigated`);
-        }
-    }
-}
-
-function triggerClueDiscovery(room, result) {
-    // 客厅钥匙
-    if (room === '客厅' && (result === '侦查成功' || result === '侦查大成功')) {
-        if (!gameClues['客厅钥匙'].found) {
-            gameClues['客厅钥匙'].found = true;
-            gameData.gameState.items.push('铜钥匙');
-            addLog('🎯 获得线索：铜钥匙', 'success');
-            addLog('物品栏：铜钥匙（可以打开地下室的门）', 'info');
-        }
-    }
-    
-    // 魔法书
-    if (room === '餐厅' && (result === '侦查成功' || result === '侦查大成功')) {
-        if (!gameClues['魔法书'].found) {
-            gameClues['魔法书'].found = true;
-            addLog('🎯 获得线索：灵魂出窍的魔法书', 'success');
-            addLog('书中记载：以姜饼为媒介，灵魂可暂离身体', 'info');
-        }
-    }
-    
-    // 身体发现
-    if (room === '主卧室' && (result === '侦查成功' || result === '侦查大成功')) {
-        if (!gameClues['身体发现'].found) {
-            gameClues['身体发现'].found = true;
-            addLog('🎯 重要发现：找到你们的身体了！', 'event');
-            addLog('身体在床上，但灵魂被困在姜饼人中', 'info');
-            
-            // SAN Check
-            setTimeout(() => {
-                addLog('😱 看到自己的身体，进行SAN检定...', 'san');
-                performSanCheck(5, '看到自己的身体');
-            }, 1500);
-        }
-    }
-    
-    // 法阵草图
-    if (room === '书房' && (result === '侦查成功' || result === '侦查大成功')) {
-        if (!gameClues['法阵草图'].found) {
-            gameClues['法阵草图'].found = true;
-            addLog('🎯 获得线索：法阵结构图', 'success');
-            addLog('图纸显示法阵需要两具身体作为锚点', 'info');
-        }
-    }
-    
-    // 仪式笔记
-    if (room === '书房' && result === '侦查大成功') {
-        if (!gameClues['仪式笔记'].found) {
-            gameClues['仪式笔记'].found = true;
-            addLog('🎯 获得线索：仪式手写笔记', 'success');
-            addLog('笔记："必须双方都同意，才能让灵魂回归"', 'info');
-        }
-    }
-}
-
-function triggerSpecialEvent(room, result) {
-    // 法阵房间有钥匙
-    if (room === '法阵房间') {
-        if (gameData.gameState.items.includes('铜钥匙')) {
-            setTimeout(() => {
-                addLog('🗝️ 用铜钥匙打开了法阵房间的门！', 'event');
-                addLog('房间里是发光的法阵，墙上刻着你们的名字...', 'description');
-                
-                // 结局触发条件
-                gameData.gameState.clues.push('法阵房间打开');
-            }, 2000);
-        }
-    }
-}
-
-function performSanCheck(loss, reason) {
-    const sanLoss = loss === 5 ? Math.floor(Math.random() * 5) + 1 : loss;
-    gameData.gameState.san -= sanLoss;
-    updateStatus();
-    
-    addLog(`SAN损失: ${sanLoss}点，原因: ${reason}`, 'san');
-    addLog(`当前SAN: ${gameData.gameState.san}`, 'info');
-    
-    if (gameData.gameState.san <= 0) {
-        addLog('💀 理智归零，陷入永久疯狂！', 'critical');
-        // 触发坏结局
-        setTimeout(() => triggerEnding('BE', '理智崩溃'), 2000);
-    } else if (gameData.gameState.san < 50) {
-        addLog('⚠️ 理智低落，可能陷入临时疯狂', 'warning');
-    }
-}
-
-// 新增结局函数
-function triggerEnding(type, title) {
-    addLog(`=== 游戏结束：${title} ===`, 'ending');
-    addLog('请GM根据剧情发展讲述结局...', 'info');
-}
-
-// ==================== 修改原有函数 ====================
-// 保存原函数引用
-const originalInvestigateCurrentRoom = investigateCurrentRoom;
-const originalCheckWindows = checkWindows;
-const originalRollSpotCheck = rollSpotCheck;
-const originalRollLuckCheck = rollLuckCheck;
-
-// 重写为带剧情的版本
-window.investigateCurrentRoom = function() {
-    addLog(`调查${gameData.currentRoom}...`, 'info');
-    performCheckWithStory('侦查检定', 50);
-};
-
-window.checkWindows = function() {
-    if (gameData.currentRoom === '客厅') {
-        if (!gameData.gameState.windowClosed) {
-            addLog('检查落地窗...', 'info');
-            
-            // 先显示剧情
-            setTimeout(() => {
-                addLog(roomEvents['客厅']['检查窗户'], 'event');
-            }, 500);
-            
-            // 幸运检定避免野猫
-            setTimeout(() => {
-                addLog('需要进行幸运检定避免野生动物...', 'warning');
-                performCheckWithStory('幸运检定', 60);
-            }, 1500);
-            
-            // 无论检定结果如何，都尝试关闭
-            setTimeout(() => {
-                const success = Math.random() > 0.3; // 70%成功率
-                if (success) {
-                    addLog('成功关上了落地窗！', 'success');
-                    gameData.gameState.windowClosed = true;
-                } else {
-                    addLog('窗户卡住了，没关严！', 'warning');
-                    addLog('听到外面有猫叫声越来越近...', 'critical');
-                }
-            }, 3000);
-        } else {
-            addLog('窗户已关好。', 'info');
-        }
-    } else {
-        addLog('这里没有窗户。', 'info');
-    }
-};
-
-window.rollSpotCheck = function() {
-    addLog(`侦查检定...`, 'info');
-    performCheckWithStory('侦查检定', 60);
-};
-
-window.rollLuckCheck = function() {
-    addLog(`幸运检定...`, 'info');
-    performCheckWithStory('幸运检定', 50);
-};
-
-<!-- 在弹出窗口中，按钮应该调用这些函数： -->
-<div class="action-buttons">
-    <button class="action-btn primary" onclick="investigateCurrentRoom()">调查房间</button>
-    <button class="action-btn" onclick="checkWindows()">检查窗户</button>
-    <button class="action-btn" onclick="useGingerbreadAbility()">姜饼人能力</button>
-    <button class="action-btn" onclick="rollLuckCheck()">幸运检定</button>
-    <button class="action-btn danger" onclick="rollSpotCheck()">侦查检定</button>
-    <button class="action-btn" onclick="endTurnFromModal()">结束回合</button>
-    <button class="action-btn" onclick="closeModal()">离开房间</button>
-</div>
-
-    </script>
+    </script>  <!-- 这个必须有！ -->
 </body>
 </html>
 
