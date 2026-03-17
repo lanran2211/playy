@@ -3,2795 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍪 姜饼人圣诞夜 🎄</title>
+    <title>🍪 姜饼人圣诞夜：完备版 🎄</title>
     <style>
-        /* ==================== 圣诞童话配色 ==================== */
         :root {
-            --gingerbread: #8B4513;      /* 姜饼人色 */
-            --icing-red: #FF6B6B;        /* 糖霜红 */
-            --icing-green: #51A3A3;      /* 糖霜绿 */
-            --icing-white: #FFF8E7;      /* 糖霜白 */
-            --bg-dark: #1A0F0F;          /* 深背景 */
-            --bg-card: #2D1B1B;          /* 卡片背景 */
-            --text-light: #FFF8E7;       /* 浅文字 */
-            --star-gold: #FFD700;        /* 星星金 */
-            --cat-orange: #FFA500;       /* 猫咪橙 */
-            --bird-blue: #87CEEB;        /* 小鸟蓝 */
+            --gingerbread: #8B4513; --icing-red: #FF6B6B; --icing-green: #51A3A3;
+            --icing-white: #FFF8E7; --bg-dark: #1A0F0F; --bg-card: #2D1B1B;
+            --text-light: #FFF8E7; --star-gold: #FFD700;
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Comic Sans MS', '楷体', sans-serif;
             background: linear-gradient(135deg, var(--bg-dark) 0%, #2D1B1B 100%);
-            color: var(--text-light);
-            min-height: 100vh;
-            padding: 10px;
-            overflow-x: hidden;
-        }
-        
-        /* 雪花背景 */
-        .snowflakes {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        .snowflake {
-            position: absolute;
-            color: var(--icing-white);
-            font-size: 1.5rem;
-            animation: fall linear infinite;
-        }
-        
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(360deg); }
-        }
-        
-        /* 游戏阶段控制 */
-        .game-phase {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .game-phase.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-        
-        /* ==================== 标题样式 ==================== */
-        .title-section {
-            text-align: center;
-            padding: 20px 0;
-            margin-bottom: 20px;
-        }
-        
-        .main-title {
-            font-size: 2.5rem;
-            color: var(--icing-red);
-            margin-bottom: 10px;
-            text-shadow: 3px 3px 0 var(--gingerbread);
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .subtitle {
-            color: var(--icing-green);
-            font-size: 1.2rem;
-        }
-        
-        /* ==================== 卡片样式 ==================== */
-        .game-card {
-            background: var(--bg-card);
-            border: 3px solid var(--icing-red);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .game-card::before {
-            content: '❄️';
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            font-size: 1.5rem;
-            opacity: 0.5;
-        }
-        
-        /* 状态卡片 */
-        .status-card {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .status-item {
-            text-align: center;
-            padding: 10px;
-            background: linear-gradient(135deg, var(--gingerbread), #6B3E13);
-            border-radius: 15px;
-            border: 2px solid var(--icing-red);
-        }
-        
-        .status-label {
-            font-size: 0.8rem;
-            color: var(--icing-white);
-            margin-bottom: 5px;
-        }
-        
-        .status-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--star-gold);
-        }
-        
-        /* 物品栏 */
-        .inventory-card {
-            margin-bottom: 15px;
-        }
-        
-        .inventory-title {
-            color: var(--icing-green);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .inventory-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .item {
-            padding: 8px 12px;
-            background: linear-gradient(135deg, var(--icing-red), var(--icing-green));
-            border-radius: 10px;
-            font-size: 0.9rem;
-            border: 2px solid var(--star-gold);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        /* 地图网格 */
-        .map-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .floor-section {
-            background: linear-gradient(135deg, var(--gingerbread), #6B3E13);
-            border: 2px solid var(--icing-red);
-            border-radius: 15px;
-            padding: 15px;
-        }
-        
-        .floor-title {
-            color: var(--icing-white);
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 2px dotted var(--icing-red);
-        }
-        
-        .room-btn {
-            width: 100%;
-            padding: 10px 12px;
-            margin: 5px 0;
-            background: linear-gradient(135deg, var(--icing-red), #FF8E8E);
-            border: 2px solid var(--star-gold);
-            border-radius: 10px;
-            color: white;
-            text-align: left;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-        
-        .room-btn:hover:not(.disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 10px rgba(255, 107, 107, 0.3);
-        }
-        
-        .room-btn.current-room {
-            background: linear-gradient(135deg, var(--icing-green), #6BC4C4);
-            border-color: var(--star-gold);
-        }
-        
-        .room-btn.disabled {
-            background: #666;
-            border-color: #999;
-            color: #999;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* 角色状态 */
-        .player-status {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .player-card {
-            background: linear-gradient(135deg, var(--gingerbread), #6B3E13);
-            border-radius: 10px;
-            padding: 10px;
-            border: 2px solid;
-        }
-        
-        .player-card.player-a {
-            border-color: var(--icing-red);
-        }
-        
-        .player-card.player-b {
-            border-color: var(--icing-green);
-        }
-        
-        .player-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .player-stats {
-            font-size: 0.9rem;
-        }
-        
-        /* 日志区域 */
-        .log-container {
-            background: var(--bg-card);
-            border: 2px solid var(--icing-green);
-            border-radius: 15px;
-            padding: 15px;
-            height: 200px;
-            overflow-y: auto;
-            margin-top: 15px;
-        }
-        
-        .log-entry {
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.9rem;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
-        .log-time {
-            color: var(--star-gold);
-            font-size: 0.8rem;
-            margin-right: 10px;
-        }
-        
-        /* 按钮样式 */
-        .btn {
-            padding: 12px 20px;
-            background: linear-gradient(135deg, var(--icing-red), #FF8E8E);
-            border: 3px solid var(--star-gold);
-            border-radius: 15px;
-            color: white;
-            font-size: 1.1rem;
-            cursor: pointer;
-            width: 100%;
-            margin: 5px 0;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-        
-        .btn:hover:not(.disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-        
-        .btn:active:not(.disabled) {
-            transform: translateY(1px);
-        }
-        
-        .btn.disabled {
-            background: #666;
-            border-color: #999;
-            color: #999;
-            cursor: not-allowed;
-        }
-        
-        .btn-green {
-            background: linear-gradient(135deg, var(--icing-green), #6BC4C4);
-        }
-        
-        .btn-green:hover:not(.disabled) {
-            box-shadow: 0 5px 15px rgba(81, 163, 163, 0.4);
-        }
-        
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 0.9rem;
-        }
-        
-        /* 模态框 */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(26, 15, 15, 0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .modal-overlay.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: var(--bg-card);
-            border: 4px solid var(--icing-red);
-            border-radius: 20px;
-            padding: 25px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .modal-title {
-            color: var(--icing-red);
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-            text-align: center;
-        }
-        
-        .modal-description {
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-        
-        /* 行动选项 */
-        .action-options {
-            margin: 20px 0;
-        }
-        
-        .action-option {
-            padding: 12px 15px;
-            margin: 8px 0;
-            background: linear-gradient(135deg, var(--gingerbread), #6B3E13);
-            border: 2px solid var(--icing-red);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .action-option:hover:not(.used) {
-            transform: translateX(5px);
-            border-color: var(--star-gold);
-        }
-        
-        .action-option.used {
-            background: #666;
-            border-color: #999;
-            color: #999;
-            cursor: not-allowed;
-        }
-        
-        .option-title {
-            color: var(--icing-white);
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .option-desc {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        /* 剧情文本 */
-        .story-text {
-            margin: 15px 0;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            line-height: 1.6;
-            border-left: 4px solid var(--icing-red);
-        }
-        
-        .player-text {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 8px;
-            padding-left: 15px;
-        }
-        
-        .player-a-text {
-            border-left: 4px solid var(--icing-red);
-            background: rgba(255, 107, 107, 0.1);
-        }
-        
-        .player-b-text {
-            border-left: 4px solid var(--icing-green);
-            background: rgba(81, 163, 163, 0.1);
-        }
-        
-        /* 骰子结果 */
-        .dice-result {
-            text-align: center;
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-        }
-        
-        .dice-number {
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 5px 0;
-        }
-        
-        .critical-success { color: #4CAF50; animation: glow 1s infinite; }
-        .success { color: #8BC34A; }
-        .failure { color: #FF9800; }
-        .critical-failure { color: #FF4444; animation: shake 0.5s; }
-        
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px #4CAF50; }
-            50% { text-shadow: 0 0 20px #4CAF50; }
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        
-        /* 后果框 */
-        .consequence-box {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 8px;
-            border-left: 4px solid;
-        }
-        
-        .consequence-good {
-            background: rgba(76, 175, 80, 0.1);
-            border-color: #4CAF50;
-        }
-        
-        .consequence-bad {
-            background: rgba(255, 68, 68, 0.1);
-            border-color: #FF4444;
-        }
-        
-        /* 结局界面 */
-        .ending-card {
-            text-align: center;
-            padding: 30px;
-        }
-        
-        .ending-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            animation: bounce 2s infinite;
-        }
-        
-        .ending-title {
-            color: var(--icing-red);
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-        
-        .ending-text {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        
-        /* 响应式 */
-        @media (max-width: 480px) {
-            .map-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .status-card {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .main-title {
-                font-size: 2rem;
-            }
-        }
-        
-        /* 加载动画 */
-        .loading {
-            display: inline-block;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+            color: var(--text-light); min-height: 100vh; padding: 10px; overflow-x: hidden;
+        }
+        .snowflakes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .snowflake { position: absolute; color: var(--icing-white); font-size: 1.5rem; animation: fall linear infinite; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
+        .game-phase { display: none; animation: fadeIn 0.3s ease; }
+        .game-phase.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .container { max-width: 600px; margin: 0 auto; position: relative; z-index: 2; }
+        .title-section { text-align: center; padding: 20px 0; }
+        .main-title { font-size: 2.5rem; color: var(--icing-red); text-shadow: 3px 3px 0 var(--gingerbread); animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .game-card { background: var(--bg-card); border: 3px solid var(--icing-red); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; }
+        .status-card { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 15px; }
+        .status-item { text-align: center; padding: 5px; background: var(--gingerbread); border-radius: 10px; border: 2px solid var(--icing-red); }
+        .status-label { font-size: 0.7rem; }
+        .status-value { font-size: 1.1rem; font-weight: bold; color: var(--star-gold); }
+        .inventory-items { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .item { padding: 5px 10px; background: linear-gradient(135deg, var(--icing-red), var(--icing-green)); border-radius: 8px; font-size: 0.8rem; border: 1px solid var(--star-gold); }
+        .map-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        .floor-section { background: rgba(139, 69, 19, 0.3); border: 2px solid var(--icing-red); border-radius: 15px; padding: 10px; }
+        .room-btn { width: 100%; padding: 10px; margin: 5px 0; background: var(--icing-red); border: 2px solid var(--star-gold); border-radius: 10px; color: white; cursor: pointer; transition: 0.2s; }
+        .room-btn.current-room { background: var(--icing-green); }
+        .room-btn.disabled { background: #666; cursor: not-allowed; opacity: 0.6; }
+        .log-container { background: #000; border-radius: 10px; padding: 10px; height: 150px; overflow-y: auto; font-size: 0.85rem; }
+        .btn { padding: 12px; background: var(--icing-red); border: 3px solid var(--star-gold); border-radius: 15px; color: white; cursor: pointer; width: 100%; font-family: inherit; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--bg-card); border: 4px solid var(--icing-red); border-radius: 20px; padding: 20px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .action-option { padding: 12px; margin: 8px 0; background: var(--gingerbread); border: 2px solid var(--icing-red); border-radius: 10px; cursor: pointer; }
+        .action-option.used { opacity: 0.5; cursor: not-allowed; }
+        .dice-result { text-align: center; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; margin: 5px; }
+        .critical-success { color: #4CAF50; font-weight: bold; }
+        .critical-failure { color: #FF4444; font-weight: bold; }
+        .consequence-box { padding: 8px; border-radius: 5px; margin: 5px 0; border-left: 4px solid; }
+        .consequence-good { background: rgba(76, 175, 80, 0.2); border-color: #4CAF50; }
+        .consequence-bad { background: rgba(244, 67, 54, 0.2); border-color: #F44336; }
     </style>
 </head>
 <body>
-    <!-- 雪花背景 -->
     <div class="snowflakes" id="snowflakes"></div>
-    
     <div class="container">
-        <!-- 开场剧情 -->
         <div id="phase-intro" class="game-phase active">
-            <div class="title-section">
-                <h1 class="main-title">🍪 姜饼人圣诞夜 🎄</h1>
-                <p class="subtitle">平安夜的魔法冒险，开始了！</p>
-            </div>
-            
+            <div class="title-section"><h1 class="main-title">🍪 姜饼人圣诞夜 🎄</h1></div>
             <div class="game-card">
-                <div style="padding: 20px; text-align: center;">
-                    <h2 style="color: var(--icing-red); margin-bottom: 20px;">欢迎来到姜饼人世界！</h2>
-                    
-                    <div style="margin-bottom: 20px; text-align: left; line-height: 1.6;">
-                        <p>🎁 平安夜的神奇魔法让你们变成了姜饼人！</p>
-                        <p>🏠 在这栋三层别墅中探险，寻找变回人类的方法吧！</p>
-                        <p>⏰ 记得要在3小时内找到解除魔法的方法哦～</p>
-                        <p>🐱 小心外面的野猫糖霜和松鸦松果！</p>
-                        
-                        <div style="background: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 6px; border-left: 3px solid var(--icing-red); margin: 15px 0;">
-                            <strong>🎮 游戏提示：</strong><br>
-                            • 每个房间为一个回合<br>
-                            • 每个行动只能使用一次<br>
-                            • 收集星星⭐推进剧情<br>
-                            • 3小时倒计时开始！
-                        </div>
-                    </div>
-                    
-                    <button class="btn" onclick="startCharacterCreation()">开始创建人物 ✨</button>
-                </div>
+                <p>🎁 魔法让你们变成了姜饼人！你们只有3小时的时间（12回合）。</p><br>
+                <p>探索别墅，收集7颗星星，或者寻找解除魔法的仪式。小心饥饿的野猫！</p><br>
+                <button class="btn" onclick="startCharacterCreation()">开始冒险 ✨</button>
             </div>
         </div>
-        
-        <!-- 人物创建 -->
+
         <div id="phase-creation" class="game-phase">
-            <div class="title-section">
-                <h1 class="main-title">创建你的姜饼人</h1>
-                <p class="subtitle">总点数450点，单项上限100点</p>
-            </div>
-            
-            <div id="character-creation" class="game-card">
-                <!-- 动态生成 -->
-            </div>
+            <div class="title-section"><h1 class="main-title">塑造姜饼人</h1></div>
+            <div id="character-creation" class="game-card"></div>
         </div>
-        
-        <!-- 主游戏界面 -->
+
         <div id="phase-game" class="game-phase">
-            <!-- 状态显示 -->
             <div class="status-card">
-                <div class="status-item">
-                    <div class="status-label">游戏时间</div>
-                    <div id="game-time" class="status-value">06:00</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">当前位置</div>
-                    <div id="current-location" class="status-value">客厅</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">星星收集</div>
-                    <div id="star-count" class="status-value">0/7</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">回合数</div>
-                    <div id="current-turn" class="status-value">1</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">剩余时间</div>
-                    <div id="time-left" class="status-value">3:00</div>
-                </div>
+                <div class="status-item"><div class="status-label">时间</div><div id="game-time" class="status-value">06:00</div></div>
+                <div class="status-item"><div class="status-label">位置</div><div id="current-location" class="status-value">客厅</div></div>
+                <div class="status-item"><div class="status-label">星星</div><div id="star-count" class="status-value">0/7</div></div>
+                <div class="status-item"><div class="status-label">回合</div><div id="current-turn" class="status-value">1</div></div>
+                <div class="status-item"><div class="status-label">剩余</div><div id="time-left" class="status-value">180m</div></div>
             </div>
-            
-            <!-- 物品栏 -->
-            <div class="game-card inventory-card">
-                <h3 class="inventory-title">📦 物品栏 <span id="item-count">0</span>个</h3>
-                <div class="inventory-items" id="inventory-items">
-                    <div class="item">空的</div>
-                </div>
-            </div>
-            
-            <!-- 角色状态 -->
             <div class="game-card">
-                <h3 style="color: var(--icing-green); margin-bottom: 10px;">👥 角色状态</h3>
-                <div class="player-status" id="player-status">
-                    <!-- 动态生成 -->
+                <h4 style="color:var(--icing-green)">📦 物品栏 (<span id="item-count">0</span>)</h4>
+                <div class="inventory-items" id="inventory-items"></div>
+            </div>
+            <div class="game-card" id="player-status"></div>
+            <div class="map-grid" id="map-btns">
+                <div class="floor-section">
+                    <h5>一楼</h5>
+                    <button class="room-btn" onclick="tryEnterRoom('客厅')">客厅 🛋️</button>
+                    <button class="room-btn" onclick="tryEnterRoom('餐厅')">餐厅 🍽️</button>
+                    <button class="room-btn" onclick="tryEnterRoom('厨房')">厨房 🔪</button>
+                </div>
+                <div class="floor-section">
+                    <h5>二楼</h5>
+                    <button class="room-btn" onclick="tryEnterRoom('主卧室')">主卧室 🛏️</button>
+                    <button class="room-btn" onclick="tryEnterRoom('书房')">书房 📚</button>
+                </div>
+                <div class="floor-section">
+                    <h5>三楼/户外</h5>
+                    <button class="room-btn" onclick="tryEnterRoom('阳台')">阳台 🌟</button>
+                    <button class="room-btn" onclick="tryEnterRoom('花园')">花园 🌷</button>
                 </div>
             </div>
-            
-            <!-- 地图区域 -->
-            <div class="map-grid">
-                <div class="floor-section">
-                    <h3 class="floor-title">一楼</h3>
-                    <button class="room-btn" onclick="enterRoom('客厅')">客厅 🛋️</button>
-                    <button class="room-btn" onclick="enterRoom('餐厅')">餐厅 🍽️</button>
-                    <button class="room-btn" onclick="enterRoom('厨房')">厨房 🔪</button>
-                    <button class="room-btn" onclick="enterRoom('玄关')">玄关 🚪</button>
-                </div>
-                
-                <div class="floor-section">
-                    <h3 class="floor-title">二楼</h3>
-                    <button class="room-btn" onclick="enterRoom('主卧室')">主卧室 🛏️</button>
-                    <button class="room-btn" onclick="enterRoom('次卧室')">次卧室 🌙</button>
-                    <button class="room-btn" onclick="enterRoom('书房')">书房 📚</button>
-                    <button class="room-btn" onclick="enterRoom('浴室')">浴室 🛁</button>
-                </div>
-                
-                <div class="floor-section">
-                    <h3 class="floor-title">三楼</h3>
-                    <button class="room-btn" onclick="enterRoom('阁楼')">阁楼 📦</button>
-                    <button class="room-btn" onclick="enterRoom('儿童房')">儿童房 🧸</button>
-                    <button class="room-btn" onclick="enterRoom('阳台')">阳台 🌟</button>
-                </div>
-                
-                <div class="floor-section">
-                    <h3 class="floor-title">户外</h3>
-                    <button class="room-btn" onclick="enterRoom('花园')">花园 🌷</button>
-                    <button class="room-btn disabled">后院 🌲</button>
-                    <button class="room-btn disabled">前院 🏡</button>
-                </div>
-            </div>
-            
-            <!-- 游戏日志 -->
-            <div class="game-card">
-                <h3 style="color: var(--icing-green); margin-bottom: 10px;">📜 游戏日志</h3>
-                <div class="log-container" id="game-log">
-                    <div class="log-entry">游戏准备就绪！🎮</div>
-                </div>
-            </div>
+            <div class="log-container" id="game-log"></div>
         </div>
-        
-        <!-- 游戏结束界面 -->
+
         <div id="phase-ending" class="game-phase">
-            <div class="title-section">
-                <h1 class="main-title" id="ending-title">游戏结束</h1>
-            </div>
-            <div class="game-card ending-card">
-                <div id="ending-icon" class="ending-icon">🎄</div>
-                <div id="ending-content" class="ending-text">
-                    <!-- 结局内容 -->
-                </div>
-                <button class="btn" onclick="restartGame()">重新开始 🔄</button>
+            <div class="game-card" style="text-align:center">
+                <h1 id="ending-title" class="main-title"></h1>
+                <div id="ending-icon" style="font-size:4rem"></div>
+                <div id="ending-content" style="margin:20px 0; line-height:1.6"></div>
+                <button class="btn" onclick="location.reload()">重新开始 🔄</button>
             </div>
         </div>
     </div>
-    
-    <!-- 房间行动窗口 -->
+
     <div id="room-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 id="modal-room-title" class="modal-title">房间名称</h3>
-            <div id="modal-room-time" style="color: var(--star-gold); margin-bottom: 10px; text-align: center;">
-                时间：<span id="modal-time-display">06:00</span> | 回合：<span id="modal-turn-display">1</span>
-            </div>
-            <div id="modal-room-description" class="modal-description">
-                <!-- 动态填充 -->
-            </div>
-            
-            <div class="action-options" id="room-actions">
-                <!-- 行动选项动态生成 -->
-            </div>
-            
-            <button class="btn btn-green" onclick="endTurn()">结束回合（离开房间）🚪</button>
+            <h3 id="modal-room-title" style="color:var(--icing-red)"></h3>
+            <p id="modal-room-description" style="margin:10px 0; font-size:0.9rem"></p>
+            <div id="room-actions"></div>
+            <button class="btn" style="background:var(--icing-green)" onclick="endTurn()">结束回合离开 🚪</button>
         </div>
     </div>
-    
-    <!-- 检定结果窗口 -->
+
     <div id="check-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 id="check-title" class="modal-title">检定结果</h3>
-            <div id="check-story" class="story-text">
-                <!-- 剧情发展 -->
-            </div>
-            <div id="dice-results" style="margin: 20px 0;">
-                <!-- 骰子结果 -->
-            </div>
-            <div id="consequences" style="margin: 20px 0;">
-                <!-- 后果 -->
-            </div>
-            <button class="btn" onclick="closeCheckModal()" id="check-confirm-btn">继续 ➡️</button>
+            <h3 id="check-title"></h3>
+            <div id="check-story"></div>
+            <div id="dice-results"></div>
+            <div id="consequences"></div>
+            <button class="btn" onclick="closeCheckModal()">继续 ➡️</button>
         </div>
     </div>
-
     <script>
-        // ==================== 游戏数据 ====================
+        // --- 核心数据修复 ---
         const gameData = {
-            phase: 'intro',
             players: [
-                { 
-                    name: '', 
-                    stats: { str: 0, dex: 0, int: 0, pow: 0, edu: 0, luc: 0 },
-                    san: 100, 
-                    hp: 10, 
-                    playerLetter: 'A',
-                    color: 'var(--icing-red)',
-                    cluesFound: 0,
-                    starsCollected: 0
-                },
-                { 
-                    name: '', 
-                    stats: { str: 0, dex: 0, int: 0, pow: 0, edu: 0, luc: 0 },
-                    san: 100, 
-                    hp: 10, 
-                    playerLetter: 'B',
-                    color: 'var(--icing-green)',
-                    cluesFound: 0,
-                    starsCollected: 0
-                }
+                { name: '', stats: {str:50, dex:50, int:50, pow:50, edu:50, luc:50}, hp:10, san:100, starsCollected:0, playerLetter:'A', color:'var(--icing-red)' },
+                { name: '', stats: {str:50, dex:50, int:50, pow:50, edu:50, luc:50}, hp:10, san:100, starsCollected:0, playerLetter:'B', color:'var(--icing-green)' }
             ],
-            currentRoom: '',
-            currentTurn: {
-                actionsUsed: [],
-                starsFound: 0,
-                catEncounter: false,
-                birdEncounter: false
-            },
+            currentRoom: '客厅',
             gameState: {
-                time: '06:00',
-                turn: 1,
-                stars: 0,
-                totalStars: 7,
-                windowClosed: false,
-                items: [],
-                catActive: false,
-                birdActive: false,
-                gameStartTime: null,
-                timeWarningShown: false,
-                timeCriticalShown: false,
-                foundSilverKey: false,
-                foundSpellbook: false,
-                foundBodies: false,
-                foundDiary: false,
-                ritualUnderstood: false,
-                starsAligned: 0,
-                timeLeft: 180,
-                clueProgress: 0,
-                // 结局条件
-                endingConditions: {
-                    hasAllStars: false,
-                    understandsRitual: false,
-                    bodiesFound: false,
-                    inStudyRoom: false,
-                    timeElapsed: false
-                }
+                time: '06:00', turn: 1, stars: 0, totalStars: 7, timeLeft: 180,
+                items: [], windowClosed: false, ritualRoomOpen: false, foundBodies: false,
+                spellbookRead: false, silverKeyFound: false
             },
-            // 房间描述（童话风格）
-            roomDescriptions: {
-                '客厅': '温暖的客厅，壁炉里的火苗在跳舞🎆。落地窗开着一条缝，雪花❄️飘进来。电视📺在播放新闻："今夜有七星连珠奇观！"沙发像柔软的面包🍞。',
-                '餐厅': '长餐桌上摆着圣诞大餐的残骸🍗。一本厚厚的魔法书📖摊在桌上，书页在发光✨。酒杯🍷像水晶城堡。',
-                '厨房': '危险的糖果王国！刀具🔪像冰柱，炉灶🔥在唱歌。糖罐🍯在招手，烤箱在打呼噜💤。',
-                '玄关': '大门🚪紧闭，门把手像月亮🌙一样高。大衣👔在衣帽架上打盹，鞋子👞在说悄悄话。',
-                '主卧室': '大床上躺着两个人...是你们的身体！😴 在安静地睡觉。枕头在邀请你们来玩🛌。',
-                '次卧室': '整洁的客房，日记本📓在床头柜上招手。被子像云朵☁️一样软。',
-                '书房': '书本📚在书架上排队，书桌在等你们来。有扇门🚪锁着，钥匙孔在眨眼👀。',
-                '浴室': '浴缸🛁里还有泡泡，镜子🪞里的姜饼人在做鬼脸😜。牙膏像小蛇🐍。',
-                '阁楼': '满是灰尘的宝藏屋！木箱🗃️在发光，蜘蛛网🕸️在织梦。',
-                '儿童房': '玩具🧸的天堂！娃娃屋🏠正好适合姜饼人大小。玩具士兵在站岗🎖️。',
-                '阳台': '星星⭐在眨眼睛！可以看到七颗特别亮的星星在排队。冷风🍃在跳舞。',
-                '花园': '雪人☃️弗洛斯蒂在挥手！野猫糖霜🐱在打盹，松鸦松果🐦在唱歌。'
-            },
-            // 野生动物
-            wildlife: {
-                cat: {
-                    name: '糖霜',
-                    description: '胖胖的虎斑猫，眼睛像绿宝石🐱',
-                    active: false,
-                    location: '花园',
-                    hunger: 5
-                },
-                bird: {
-                    name: '松果',
-                    description: '蓝色羽毛的松鸦，喜欢亮晶晶的东西🐦',
-                    active: false,
-                    location: '阳台',
-                    attractedTo: ['银钥匙', '星星', '亮片']
-                }
-            }
+            currentTurnActions: []
         };
 
-        // ==================== 初始化函数 ====================
-        function initSnowflakes() {
-            const snowflakes = document.getElementById('snowflakes');
-            const flakes = ['❄️', '❅', '❆', '✦', '✧'];
-            
-            for (let i = 0; i < 50; i++) {
-                const flake = document.createElement('div');
-                flake.className = 'snowflake';
-                flake.textContent = flakes[Math.floor(Math.random() * flakes.length)];
-                flake.style.left = `${Math.random() * 100}%`;
-                flake.style.top = `${Math.random() * -100}%`;
-                flake.style.animationDuration = `${Math.random() * 5 + 5}s`;
-                flake.style.animationDelay = `${Math.random() * 5}s`;
-                flake.style.opacity = Math.random() * 0.5 + 0.3;
-                snowflakes.appendChild(flake);
+        const roomDescriptions = {
+            '客厅': '落地窗开着一条缝，寒风夹杂雪花飘入。壁炉已熄灭，沙发缝里似乎有东西。',
+            '餐厅': '桌上摆着精美但冰冷的圣诞大餐。一本地卷边缘发黄的《幻梦境考据》放在主位。',
+            '厨房': '锋利的刀具和沉重的锅碗瓢盆对姜饼人来说像巨人的武器。',
+            '主卧室': '两个熟悉的人影（你们的身体）躺在床上沉睡，枕头下露出一角金属光泽。',
+            '书房': '房门紧锁，需要特定的钥匙。如果你进去了，那里有解除魔法的最后线索。',
+            '阳台': '从这里可以俯瞰花园。今晚的七颗星正连成一条诡异的直线。',
+            '花园': '雪地里有一串猫爪印。雪人弗洛斯蒂似乎在注视着你们。'
+        };
+
+        // --- 初始化雪花 ---
+        function initSnow() {
+            const container = document.getElementById('snowflakes');
+            for(let i=0; i<30; i++) {
+                const s = document.createElement('div');
+                s.className = 'snowflake';
+                s.innerHTML = '❄️';
+                s.style.left = Math.random()*100+'%';
+                s.style.animationDuration = (Math.random()*5+5)+'s';
+                s.style.opacity = Math.random();
+                container.appendChild(s);
             }
         }
 
-        // ==================== 流畅的操作函数 ====================
-        function addLog(message, type = 'info') {
-            const log = document.getElementById('game-log');
-            const entry = document.createElement('div');
-            entry.className = `log-entry`;
-            
-            const time = new Date().toLocaleTimeString('zh-CN', { 
-                hour: '2-digit', 
-                minute: '2-digit'
-            });
-            
-            let icon = '📝';
-            switch(type) {
-                case 'success': icon = '✅'; break;
-                case 'failure': icon = '❌'; break;
-                case 'critical': icon = '💀'; break;
-                case 'warning': icon = '⚠️'; break;
-                case 'dice': icon = '🎲'; break;
-                case 'san': icon = '😱'; break;
-                case 'event': icon = '✨'; break;
-                case 'clue': icon = '🔍'; break;
-                case 'item': icon = '🗝️'; break;
-                case 'hp': icon = '💔'; break;
-                case 'star': icon = '⭐'; break;
-                case 'cat': icon = '🐱'; break;
-                case 'bird': icon = '🐦'; break;
-            }
-            
-            entry.innerHTML = `<span class="log-time">${time}</span> ${icon} ${message}`;
-            log.appendChild(entry);
-            
-            // 自动滚动到底部
-            setTimeout(() => {
-                log.scrollTop = log.scrollHeight;
-            }, 10);
-            
-            return entry;
-        }
-
-        function updateStatus() {
-            // 更新状态栏
+        // --- 状态更新 ---
+        function updateUI() {
             document.getElementById('game-time').textContent = gameData.gameState.time;
             document.getElementById('current-location').textContent = gameData.currentRoom;
-            document.getElementById('star-count').textContent = `${gameData.gameState.stars}/${gameData.gameState.totalStars}`;
+            document.getElementById('star-count').textContent = `${gameData.gameState.stars}/7`;
             document.getElementById('current-turn').textContent = gameData.gameState.turn;
+            document.getElementById('time-left').textContent = (180 - (gameData.gameState.turn-1)*15) + 'm';
             
-            // 更新剩余时间
-            const hours = Math.floor(gameData.gameState.timeLeft / 60);
-            const minutes = gameData.gameState.timeLeft % 60;
-            document.getElementById('time-left').textContent = `${hours}:${minutes.toString().padStart(2, '0')}`;
-            
-            // 更新物品栏
-            updateInventory();
-            
-            // 更新角色状态
-            updatePlayerStatus();
-            
-            // 检查时间限制
-            checkTimeLimit();
-            
-            // 检查野生动物活动
-            checkWildlife();
-        }
-
-        function updateInventory() {
-            const inventory = document.getElementById('inventory-items');
-            const itemCount = document.getElementById('item-count');
-            
-            if (gameData.gameState.items.length === 0) {
-                inventory.innerHTML = '<div class="item">空的</div>';
-                itemCount.textContent = '0';
-                return;
-            }
-            
-            inventory.innerHTML = '';
-            itemCount.textContent = gameData.gameState.items.length;
-            
-            gameData.gameState.items.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'item';
-                
-                switch(item) {
-                    case '银钥匙':
-                        itemDiv.innerHTML = '🗝️ 银钥匙';
-                        break;
-                    case '魔法书':
-                        itemDiv.innerHTML = '📖 魔法书';
-                        break;
-                    case '日记碎片':
-                        itemDiv.innerHTML = '📄 日记碎片';
-                        break;
-                    case '毛线球':
-                        itemDiv.innerHTML = '🧶 毛线球';
-                        break;
-                    case '闪亮纽扣':
-                        itemDiv.innerHTML = '✨ 闪亮纽扣';
-                        break;
-                    case '小鱼干':
-                        itemDiv.innerHTML = '🐟 小鱼干';
-                        break;
-                    case '小星星':
-                        itemDiv.innerHTML = '⭐ 小星星';
-                        break;
-                    default:
-                        itemDiv.textContent = item;
-                }
-                
-                inventory.appendChild(itemDiv);
+            const inv = document.getElementById('inventory-items');
+            inv.innerHTML = gameData.gameState.items.length ? '' : '<div class="item">空</div>';
+            gameData.gameState.items.forEach(it => {
+                inv.innerHTML += `<div class="item">${it}</div>`;
             });
-        }
+            document.getElementById('item-count').textContent = gameData.gameState.items.length;
 
-        function updatePlayerStatus() {
-            const statusDiv = document.getElementById('player-status');
-            statusDiv.innerHTML = '';
-            
-            gameData.players.forEach(player => {
-                const playerDiv = document.createElement('div');
-                playerDiv.className = `player-card player-${player.playerLetter.toLowerCase()}`;
-                
-                playerDiv.innerHTML = `
-                    <div class="player-name" style="color: ${player.color}">${player.name || '未命名'}</div>
-                    <div class="player-stats">
-                        <div>❤️ HP: ${player.hp}</div>
-                        <div>😊 SAN: ${player.san}</div>
-                        <div>⭐ 星星: ${player.starsCollected}</div>
-                    </div>
-                `;
-                
-                statusDiv.appendChild(playerDiv);
+            const ps = document.getElementById('player-status');
+            ps.innerHTML = '<h4 style="color:var(--icing-green)">👥 角色状态</h4><div style="display:flex;gap:10px">';
+            gameData.players.forEach(p => {
+                ps.innerHTML += `<div style="flex:1;border:1px solid ${p.color};padding:5px;border-radius:10px">
+                    <b style="color:${p.color}">${p.name}</b><br>❤️ HP: ${p.hp} | 😊 SAN: ${p.san}</div>`;
             });
+            ps.innerHTML += '</div>';
+            
+            checkEndings();
         }
 
-        // ==================== 时间与野生动物系统 ====================
-        function checkTimeLimit() {
-            if (!gameData.gameState.gameStartTime) return;
-            
-            const now = Date.now();
-            const elapsedMinutes = (now - gameData.gameState.gameStartTime) / (1000 * 60);
-            gameData.gameState.timeLeft = Math.max(0, 180 - elapsedMinutes);
-            
-            // 更新星星连珠进度
-            const newStars = Math.min(7, Math.floor(elapsedMinutes / 25.7));
-            if (newStars > gameData.gameState.starsAligned) {
-                gameData.gameState.starsAligned = newStars;
-                if (newStars > 0) {
-                    addLog(`⭐ 第${newStars}颗星星连上了！`, 'star');
+        function addLog(msg) {
+            const log = document.getElementById('game-log');
+            log.innerHTML += `<div>[${gameData.gameState.time}] ${msg}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // --- 核心逻辑：房间进入 ---
+        function tryEnterRoom(room) {
+            if (room === '书房' && !gameData.gameState.ritualRoomOpen) {
+                if (gameData.gameState.items.includes('银钥匙')) {
+                    addLog("你使用银钥匙打开了书房！");
+                    gameData.gameState.ritualRoomOpen = true;
+                } else {
+                    addLog("书房门锁着，你需要找到钥匙。");
+                    return;
                 }
             }
-            
-            if (elapsedMinutes >= 60 && !gameData.gameState.timeWarningShown) {
-                gameData.gameState.timeWarningShown = true;
-                addLog('⏰ 已经过去1小时了！要抓紧时间哦～', 'warning');
-                showStory('时间提醒', '已经1小时了！魔法解除要趁早哦～✨');
-            }
-            
-            if (elapsedMinutes >= 120 && !gameData.gameState.timeCriticalShown) {
-                gameData.gameState.timeCriticalShown = true;
-                addLog('😱 2小时了！星星们越来越近了！', 'event');
-                showStory('星星靠近', '看！天上的星星在排排队！越来越近了！⭐');
-            }
-            
-            if (gameData.gameState.timeLeft <= 0) {
-                endGame('timeout', '3小时到了！魔法时间结束～');
-            }
-        }
-
-        function checkWildlife() {
-            // 每小时检定野生动物活动
-            if (gameData.gameState.turn % 4 === 0 && !gameData.currentTurn.catEncounter) {
-                const catRoll = Math.random() * 100;
-                if (catRoll < 30) { // 30%几率猫活动
-                    gameData.wildlife.cat.active = true;
-                    if (!gameData.gameState.windowClosed && gameData.currentRoom === '客厅') {
-                        encounterCat();
-                    }
-                }
-            }
-            
-            if (gameData.gameState.turn % 3 === 0 && !gameData.currentTurn.birdEncounter) {
-                const birdRoll = Math.random() * 100;
-                if (birdRoll < 25) { // 25%几率鸟活动
-                    gameData.wildlife.bird.active = true;
-                    const hasShiny = gameData.gameState.items.some(item => 
-                        ['银钥匙', '闪亮纽扣', '小星星'].includes(item)
-                    );
-                    if (hasShiny && (gameData.currentRoom === '阳台' || gameData.currentRoom === '花园')) {
-                        encounterBird();
-                    }
-                }
-            }
-        }
-
-        function encounterCat() {
-            gameData.currentTurn.catEncounter = true;
-            addLog('🐱 糖霜从窗户缝挤进来了！', 'cat');
-            
-            showStory('糖霜来了！', 
-                '胖胖的虎斑猫糖霜从窗户缝挤进来了！🐱<br>' +
-                '它鼻子一动一动："姜饼人！甜甜的！我要吃！"<br><br>' +
-                '快逃跑！'
-            );
-            
-            // 敏捷检定逃跑
-            setTimeout(() => {
-                performEscapeCheck('cat');
-            }, 2000);
-        }
-
-        function encounterBird() {
-            gameData.currentTurn.birdEncounter = true;
-            addLog('🐦 松果俯冲下来了！', 'bird');
-            
-            showStory('松果来了！', 
-                '蓝色的松鸦松果俯冲下来！🐦<br>' +
-                '它眼睛闪闪发亮："亮晶晶！我要带回家！"<br><br>' +
-                '小心被叼走！'
-            );
-            
-            // 敏捷检定躲避
-            setTimeout(() => {
-                performEscapeCheck('bird');
-            }, 2000);
-        }
-
-        function performEscapeCheck(type) {
-            const storyDiv = document.getElementById('check-story');
-            const diceDiv = document.getElementById('dice-results');
-            const consequencesDiv = document.getElementById('consequences');
-            
-            storyDiv.innerHTML = `
-                <div class="story-text">
-                    ${type === 'cat' ? 
-                        '糖霜扑过来了！快躲开！🐱' : 
-                        '松果俯冲下来了！快躲开！🐦'
-                    }
-                </div>
-            `;
-            
-            diceDiv.innerHTML = '';
-            consequencesDiv.innerHTML = '';
-            
-            let allEscaped = true;
-            let consequences = [];
-            
-            gameData.players.forEach((player, index) => {
-                setTimeout(() => {
-                    const skillValue = player.stats.dex || 50;
-                    const roll = Math.floor(Math.random() * 100) + 1;
-                    
-                    let resultClass, resultText, success;
-                    
-                    if (roll <= 5) {
-                        resultClass = 'critical-success';
-                        resultText = '💥 完美闪避！';
-                        success = true;
-                    } else if (roll <= skillValue) {
-                        resultClass = 'success';
-                        resultText = '✅ 成功躲开';
-                        success = true;
-                    } else if (roll >= 96) {
-                        resultClass = 'critical-failure';
-                        resultText = '💀 被抓住了！';
-                        success = false;
-                    } else {
-                        resultClass = 'failure';
-                        resultText = '❌ 没躲开';
-                        success = false;
-                    }
-                    
-                    if (!success) allEscaped = false;
-                    
-                    const playerDice = document.createElement('div');
-                    playerDice.className = 'dice-result';
-                    playerDice.innerHTML = `
-                        <div style="color: ${player.color}">${player.name || '玩家' + player.playerLetter}</div>
-                        <div>敏捷检定: ${roll}/${skillValue}</div>
-                        <div class="dice-number ${resultClass}">${roll}</div>
-                        <div>${resultText}</div>
-                    `;
-                    
-                    diceDiv.appendChild(playerDice);
-                    
-                    addLog(`${player.name || '玩家' + player.playerLetter} 躲避${type === 'cat' ? '糖霜' : '松果'}: ${roll}/${skillValue} ${resultText}`, 'dice');
-                    
-                    // 处理结果
-                    if (!success) {
-                        if (type === 'cat') {
-                            const damage = roll >= 96 ? 3 : 2;
-                            player.hp -= damage;
-                            consequences.push({
-                                type: 'bad',
-                                text: `${player.name || '玩家' + player.playerLetter} 被糖霜抓到，HP-${damage}！`
-                            });
-                            addLog(`${player.name || '玩家' + player.playerLetter} 被糖霜抓到，HP-${damage}！`, 'hp');
-                            
-                            if (player.hp <= 0) {
-                                setTimeout(() => {
-                                    endGame('cat', `${player.name || '玩家' + player.playerLetter} 被糖霜吃掉了！🐱`);
-                                }, 2000);
-                            }
-                        } else {
-                            // 被鸟叼走
-                            setTimeout(() => {
-                                endGame('bird', `${player.name || '玩家' + player.playerLetter} 被松果叼走了！🐦`);
-                            }, 2000);
-                        }
-                    }
-                    
-                    // 如果是最后一个玩家
-                    if (index === 1) {
-                        setTimeout(() => {
-                            if (allEscaped) {
-                                consequences.push({
-                                    type: 'good',
-                                    text: type === 'cat' ? '成功赶走了糖霜！' : '成功吓跑了松果！'
-                                });
-                                addLog(type === 'cat' ? '成功赶走了糖霜！' : '成功吓跑了松果！', 'success');
-                            }
-                            
-                            // 显示后果
-                            if (consequences.length > 0) {
-                                let consequenceHTML = '<div style="margin-top: 15px;">';
-                                consequences.forEach(cons => {
-                                    consequenceHTML += `
-                                        <div class="consequence-box ${cons.type === 'good' ? 'consequence-good' : 'consequence-bad'}">
-                                            ${cons.text}
-                                        </div>
-                                    `;
-                                });
-                                consequenceHTML += '</div>';
-                                consequencesDiv.innerHTML = consequenceHTML;
-                            }
-                        }, 500);
-                    }
-                }, index * 800);
-            });
-            
-            // 显示检定窗口
-            document.getElementById('check-modal').classList.add('active');
-        }
-
-        // ==================== 游戏流程控制 ====================
-        function setPhase(phase) {
-            document.querySelectorAll('.game-phase').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.getElementById(`phase-${phase}`).classList.add('active');
-            gameData.phase = phase;
-            
-            if (phase === 'game') {
-                gameData.gameState.gameStartTime = Date.now();
-                addLog('=== 游戏开始！圣诞节 06:00 ===', 'event');
-                addLog('你们变成了姜饼人！要在3小时内找到解除魔法的方法哦～', 'warning');
-                updateRoomButtons();
-            }
-        }
-
-        function startGame() {
-            setPhase('game');
-            updateStatus();
-            
-            // 显示游戏开始剧情
-            showStory('魔法开始！', 
-                '圣诞节06:00，你们在客厅醒来。<br><br>' +
-                '🎄 平安夜的神奇魔法让你们变成了姜饼人！<br>' +
-                '🍪 甜甜的身体，亮晶晶的糖霜装饰～<br>' +
-                '❄️ 窗外雪花飘落，星星在眨眼睛<br>' +
-                '⏰ 要在3小时内找到解除魔法的方法哦！<br><br>' +
-                '<div class="consequence-box consequence-good">' +
-                '<strong>🎯 小提示：</strong><br>' +
-                '• 关闭窗户防野猫野鸟🐱🐦<br>' +
-                '• 收集星星推进剧情⭐<br>' +
-                '• 注意SAN值和生命值❤️<br>' +
-                '• 每个行动只能做一次哦</div>'
-            );
-        }
-
-        function updateRoomButtons() {
-            // 更新当前房间按钮样式
-            document.querySelectorAll('.room-btn').forEach(btn => {
-                btn.classList.remove('current-room');
-                if (btn.textContent.includes(gameData.currentRoom)) {
-                    btn.classList.add('current-room');
-                }
-            });
+            enterRoom(room);
         }
 
         function enterRoom(room) {
             gameData.currentRoom = room;
-            updateStatus();
-            updateRoomButtons();
-            
-            let description = gameData.roomDescriptions[room] || '一个神秘的房间...';
-            
+            gameData.currentTurnActions = [];
+            const modal = document.getElementById('room-modal');
             document.getElementById('modal-room-title').textContent = room;
-            document.getElementById('modal-time-display').textContent = gameData.gameState.time;
-            document.getElementById('modal-turn-display').textContent = gameData.gameState.turn;
-            document.getElementById('modal-room-description').textContent = description;
-            
-            // 生成行动选项
-            generateRoomActions(room);
-            
-            // 显示房间窗口
-            document.getElementById('room-modal').classList.add('active');
-            
-            addLog(`进入: ${room}`, 'info');
+            document.getElementById('modal-room-description').textContent = roomDescriptions[room];
+            renderActions(room);
+            modal.classList.add('active');
+            updateUI();
         }
 
-        // ==================== 人物创建系统 ====================
-        const statsConfig = [
-            { id: 'str', name: '力量(STR)', value: 0 },
-            { id: 'dex', name: '敏捷(DEX)', value: 0 },
-            { id: 'int', name: '智力(INT)', value: 0 },
-            { id: 'pow', name: '意志(POW)', value: 0 },
-            { id: 'edu', name: '知识(EDU)', value: 0 },
-            { id: 'luc', name: '幸运(LUC)', value: 0 }
-        ];
-
-        const TOTAL_POINTS = 450;
-        let confirmedPlayers = [false, false];
-
-        function startCharacterCreation() {
-            setPhase('creation');
-            initCharacterCreation();
-        }
-
-        function initCharacterCreation() {
-            const container = document.getElementById('character-creation');
+        function renderActions(room) {
+            const container = document.getElementById('room-actions');
             container.innerHTML = '';
-            
-            confirmedPlayers = [false, false];
-            
-            for (let i = 0; i < 2; i++) {
-                const playerDiv = document.createElement('div');
-                playerDiv.className = 'player-form';
-                playerDiv.innerHTML = `
-                    <h3 style="color: ${gameData.players[i].color}; margin-bottom: 15px;">
-                        玩家 ${gameData.players[i].playerLetter}
-                    </h3>
-                    <div class="form-group">
-                        <label class="form-label">姜饼人名字</label>
-                        <input type="text" class="form-input" id="player${i}-name" 
-                               placeholder="输入可爱的名字" 
-                               oninput="updatePlayerPoints(${i})"
-                               style="background: rgba(255,255,255,0.1); border: 2px solid var(--icing-red); border-radius: 10px; padding: 8px; color: white; width: 100%;">
-                    </div>
-                    <div class="stats-grid" id="player${i}-stats"></div>
-                    <div style="text-align: center; margin-top: 15px;">
-                        <div style="margin-bottom: 5px; color: var(--star-gold); font-size: 1.1rem;">
-                            已用点数: <span id="player${i}-points" style="font-weight: bold;">0</span>/450
-                        </div>
-                        <button class="btn btn-small" onclick="rollPlayerStats(${i})" style="margin-right: 10px; margin-bottom: 5px;">
-                            随机生成 🎲
-                        </button>
-                        <button class="btn btn-small btn-green" onclick="confirmPlayer(${i})" 
-                                id="confirm-btn-${i}" disabled style="margin-bottom: 5px;">
-                            确认创建 ✅
-                        </button>
-                    </div>
-                `;
-                
-                container.appendChild(playerDiv);
-                initPlayerStats(i);
-            }
-        }
-
-        function initPlayerStats(playerIndex) {
-            const container = document.getElementById(`player${playerIndex}-stats`);
-            container.innerHTML = '';
-            
-            statsConfig.forEach(stat => {
-                const statDiv = document.createElement('div');
-                statDiv.className = 'stat-item';
-                statDiv.style.background = 'rgba(139, 69, 19, 0.3)';
-                statDiv.style.borderRadius = '10px';
-                statDiv.style.padding = '10px';
-                statDiv.style.margin = '5px 0';
-                
-                statDiv.innerHTML = `
-                    <div class="stat-name" style="color: var(--icing-white); margin-bottom: 5px;">${stat.name}</div>
-                    <div class="stat-value" id="player${playerIndex}-${stat.id}" style="color: var(--star-gold); font-size: 1.4rem; margin: 5px 0;">
-                        ${stat.value}
-                    </div>
-                    <div class="stat-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 5px;">
-                        <button class="stat-btn" onclick="adjustStat(${playerIndex}, '${stat.id}', -10)" 
-                                style="background: var(--icing-red); border: none; border-radius: 5px; color: white; width: 30px; height: 30px; cursor: pointer;">
-                            -10
-                        </button>
-                        <button class="stat-btn" onclick="adjustStat(${playerIndex}, '${stat.id}', -1)" 
-                                style="background: var(--icing-red); border: none; border-radius: 5px; color: white; width: 30px; height: 30px; cursor: pointer;">
-                            -1
-                        </button>
-                        <button class="stat-btn" onclick="adjustStat(${playerIndex}, '${stat.id}', 1)" 
-                                style="background: var(--icing-green); border: none; border-radius: 5px; color: white; width: 30px; height: 30px; cursor: pointer;">
-                            +1
-                        </button>
-                        <button class="stat-btn" onclick="adjustStat(${playerIndex}, '${stat.id}', 10)" 
-                                style="background: var(--icing-green); border: none; border-radius: 5px; color: white; width: 30px; height: 30px; cursor: pointer;">
-                            +10
-                        </button>
-                    </div>
-                `;
-                container.appendChild(statDiv);
-            });
-            
-            updatePlayerPoints(playerIndex);
-        }
-
-        function adjustStat(playerIndex, statId, delta) {
-            const element = document.getElementById(`player${playerIndex}-${statId}`);
-            if (!element) return;
-            
-            const currentValue = parseInt(element.textContent) || 0;
-            let newValue = currentValue + delta;
-            
-            // 限制范围 0-100
-            newValue = Math.max(0, Math.min(100, newValue));
-            
-            const usedPoints = calculateUsedPoints(playerIndex);
-            const pointsAfterChange = usedPoints - currentValue + newValue;
-            
-            if (pointsAfterChange > TOTAL_POINTS) {
-                return;
-            }
-            
-            element.textContent = newValue;
-            updatePlayerPoints(playerIndex);
-        }
-
-        function calculateUsedPoints(playerIndex) {
-            let total = 0;
-            statsConfig.forEach(stat => {
-                const element = document.getElementById(`player${playerIndex}-${stat.id}`);
-                if (element) {
-                    total += parseInt(element.textContent) || 0;
+            const actions = getActionsForRoom(room);
+            actions.forEach(act => {
+                const div = document.createElement('div');
+                div.className = 'action-option' + (gameData.currentTurnActions.includes(act.id) ? ' used' : '');
+                div.innerHTML = `<b>${act.title}</b><br><small>${act.desc}</small>`;
+                if(!gameData.currentTurnActions.includes(act.id)) {
+                    div.onclick = () => performAction(act);
                 }
-            });
-            return total;
-        }
-
-        function updatePlayerPoints(playerIndex) {
-            const usedPoints = calculateUsedPoints(playerIndex);
-            const pointsElement = document.getElementById(`player${playerIndex}-points`);
-            const confirmBtn = document.getElementById(`confirm-btn-${playerIndex}`);
-            
-            if (pointsElement) {
-                pointsElement.textContent = usedPoints;
-                pointsElement.style.color = usedPoints === TOTAL_POINTS ? 'var(--icing-green)' : 
-                                         usedPoints > TOTAL_POINTS ? 'var(--icing-red)' : 'var(--star-gold)';
-            }
-            
-            if (confirmBtn) {
-                const name = document.getElementById(`player${playerIndex}-name`).value.trim();
-                confirmBtn.disabled = usedPoints !== TOTAL_POINTS || !name;
-            }
-        }
-
-        function rollPlayerStats(playerIndex) {
-            let remainingPoints = TOTAL_POINTS;
-            const pointPool = [];
-            
-            // 先给每个属性分配基础值
-            statsConfig.forEach(stat => {
-                const base = Math.floor(Math.random() * 20) + 30; // 30-50
-                pointPool.push({ id: stat.id, value: base });
-                remainingPoints -= base;
-            });
-            
-            // 随机分配剩余点数
-            while (remainingPoints > 0) {
-                const randomIndex = Math.floor(Math.random() * pointPool.length);
-                if (pointPool[randomIndex].value < 100) {
-                    const add = Math.min(10, remainingPoints, 100 - pointPool[randomIndex].value);
-                    pointPool[randomIndex].value += add;
-                    remainingPoints -= add;
-                }
-            }
-            
-            // 应用结果
-            pointPool.forEach(poolStat => {
-                const element = document.getElementById(`player${playerIndex}-${poolStat.id}`);
-                if (element) {
-                    element.textContent = Math.min(poolStat.value, 100);
-                }
-            });
-            
-            updatePlayerPoints(playerIndex);
-        }
-
-        function confirmPlayer(playerIndex) {
-            const nameInput = document.getElementById(`player${playerIndex}-name`);
-            const name = nameInput.value.trim() || `姜饼${gameData.players[playerIndex].playerLetter}`;
-            
-            const usedPoints = calculateUsedPoints(playerIndex);
-            if (usedPoints !== TOTAL_POINTS) {
-                return;
-            }
-            
-            const stats = {};
-            statsConfig.forEach(stat => {
-                const element = document.getElementById(`player${playerIndex}-${stat.id}`);
-                if (element) {
-                    stats[stat.id] = parseInt(element.textContent) || 0;
-                }
-            });
-            
-            gameData.players[playerIndex] = {
-                ...gameData.players[playerIndex],
-                name,
-                stats,
-                san: 100,
-                hp: 10
-            };
-            
-            confirmedPlayers[playerIndex] = true;
-            
-            const confirmBtn = document.getElementById(`confirm-btn-${playerIndex}`);
-            confirmBtn.textContent = '✓ 已确认';
-            confirmBtn.disabled = true;
-            
-            addLog(`玩家${playerIndex+1}创建完成: ${name}`, 'success');
-            
-            if (confirmedPlayers[0] && confirmedPlayers[1]) {
-                setTimeout(() => startGame(), 1000);
-            }
-        }
-
-        // ==================== 房间行动系统 ====================
-        function generateRoomActions(room) {
-            const actionsDiv = document.getElementById('room-actions');
-            actionsDiv.innerHTML = '';
-            
-            const actions = getRoomActions(room);
-            
-            if (actions.length === 0) {
-                actionsDiv.innerHTML = '<div class="action-option used"><div class="option-title">暂时没有可做的事</div></div>';
-                return;
-            }
-            
-            actions.forEach(action => {
-                const actionDiv = document.createElement('div');
-                actionDiv.className = 'action-option';
-                
-                // 检查是否已使用
-                if (gameData.currentTurn.actionsUsed.includes(action.id)) {
-                    actionDiv.classList.add('used');
-                }
-                
-                // 检查条件
-                let canUse = true;
-                let reason = '';
-                
-                if (action.requiresItem && !gameData.gameState.items.includes(action.requiresItem)) {
-                    canUse = false;
-                    reason = `需要: ${action.requiresItem}`;
-                }
-                
-                if (action.requiresWindowClosed && !gameData.gameState.windowClosed) {
-                    canUse = false;
-                    reason = '需要关上窗户';
-                }
-                
-                if (!canUse) {
-                    actionDiv.classList.add('used');
-                }
-                
-                let skillText = '';
-                if (action.skill) {
-                    skillText = ` 🎲`;
-                }
-                
-                actionDiv.innerHTML = `
-                    <div class="option-title">${action.title}${skillText}</div>
-                    <div class="option-desc">${action.description}${reason ? `<br><small>${reason}</small>` : ''}</div>
-                `;
-                
-                if (!actionDiv.classList.contains('used')) {
-                    actionDiv.onclick = () => {
-                        actionDiv.classList.add('used');
-                        performAction(action);
-                    };
-                }
-                
-                actionsDiv.appendChild(actionDiv);
+                container.appendChild(div);
             });
         }
 
-        function getRoomActions(room) {
-            const actions = {
-                '客厅': [
-                    { 
-                        id: 'close_window', 
-                        title: '关闭落地窗', 
-                        description: '关上窗户防野猫野鸟',
-                        skill: 'str',
-                        difficulty: 40
-                    },
-                    { 
-                        id: 'check_tv', 
-                        title: '看电视新闻', 
-                        description: '看看有什么新闻',
-                        skill: null
-                    },
-                    { 
-                        id: 'search_sofa', 
-                        title: '搜查沙发', 
-                        description: '在沙发缝里找找',
-                        skill: 'int',
-                        difficulty: 50
-                    },
-                    { 
-                        id: 'look_window', 
-                        title: '查看窗外', 
-                        description: '看看外面的情况',
-                        skill: 'dex',
-                        difficulty: 30
-                    }
-                ],
-                '餐厅': [
-                    { 
-                        id: 'read_spellbook', 
-                        title: '阅读魔法书', 
-                        description: '看看书上说什么',
-                        skill: 'edu',
-                        difficulty: 60
-                    },
-                    { 
-                        id: 'check_table', 
-                        title: '检查餐桌', 
-                        description: '在餐桌上找找',
-                        skill: 'int',
-                        difficulty: 45
-                    },
-                    { 
-                        id: 'find_snack', 
-                        title: '找点零食', 
-                        description: '姜饼人饿了～',
-                        skill: 'luc',
-                        difficulty: 50
-                    }
-                ],
-                '主卧室': [
-                    { 
-                        id: 'check_bodies', 
-                        title: '查看床上的身体', 
-                        description: '看看是不是你们的身体',
-                        skill: 'pow',
-                        difficulty: 50
-                    },
-                    { 
-                        id: 'search_pillow', 
-                        title: '搜查枕头下', 
-                        description: '枕头鼓鼓的',
-                        skill: 'int',
-                        difficulty: 55
-                    },
-                    { 
-                        id: 'look_dresser', 
-                        title: '检查梳妆台', 
-                        description: '亮晶晶的东西',
-                        skill: 'int',
-                        difficulty: 40
-                    }
-                ],
-                '书房': [
-                    { 
-                        id: 'unlock_door', 
-                        title: '用银钥匙开门', 
-                        description: '打开锁着的门',
-                        requiresItem: '银钥匙',
-                        skill: null
-                    },
-                    { 
-                        id: 'study_books', 
-                        title: '研究书籍', 
-                        description: '找找有用的书',
-                        skill: 'edu',
-                        difficulty: 65
-                    },
-                    { 
-                        id: 'check_desk', 
-                        title: '检查书桌', 
-                        description: '书桌上有东西',
-                        skill: 'int',
-                        difficulty: 50
-                    }
-                ],
-                '厨房': [
-                    { 
-                        id: 'find_food', 
-                        title: '找食物', 
-                        description: '姜饼人需要能量',
-                        skill: 'luc',
-                        difficulty: 40
-                    },
-                    { 
-                        id: 'avoid_danger', 
-                        title: '避开危险', 
-                        description: '厨房好危险！',
-                        skill: 'dex',
-                        difficulty: 60
-                    },
-                    { 
-                        id: 'check_cabinet', 
-                        title: '检查橱柜', 
-                        description: '橱柜里有什么',
-                        skill: 'int',
-                        difficulty: 45
-                    }
-                ],
-                '花园': [
-                    { 
-                        id: 'talk_snowman', 
-                        title: '和雪人说话', 
-                        description: '雪人弗洛斯蒂在挥手',
-                        skill: null
-                    },
-                    { 
-                        id: 'watch_stars', 
-                        title: '观察星星', 
-                        description: '星星在排队',
-                        skill: 'int',
-                        difficulty: 30
-                    },
-                    { 
-                        id: 'find_cat', 
-                        title: '找野猫', 
-                        description: '糖霜在哪里？',
-                        skill: 'dex',
-                        difficulty: 40
-                    },
-                    { 
-                        id: 'quick_return', 
-                        title: '快速回屋', 
-                        description: '外面好冷',
-                        skill: 'dex',
-                        difficulty: 35
-                    }
-                ],
-                '阳台': [
-                    { 
-                        id: 'watch_stars_up', 
-                        title: '观察星星', 
-                        description: '这里看星星更清楚',
-                        skill: 'int',
-                        difficulty: 25
-                    },
-                    { 
-                        id: 'find_bird', 
-                        title: '找野鸟', 
-                        description: '松果在哪里？',
-                        skill: 'dex',
-                        difficulty: 45
-                    },
-                    { 
-                        id: 'check_flower', 
-                        title: '检查花盆', 
-                        description: '花盆里有东西',
-                        skill: 'int',
-                        difficulty: 50
-                    }
-                ],
-                '儿童房': [
-                    { 
-                        id: 'play_dollhouse', 
-                        title: '玩娃娃屋', 
-                        description: '正好适合姜饼人',
-                        skill: null
-                    },
-                    { 
-                        id: 'find_toy', 
-                        title: '找玩具', 
-                        description: '玩具有用吗',
-                        skill: 'luc',
-                        difficulty: 40
-                    }
-                ]
-            };
-            
-            // 通用调查行动
-            const baseActions = [
-                { 
-                    id: 'investigate', 
-                    title: '调查房间', 
-                    description: '仔细搜索房间',
-                    skill: 'int',
-                    difficulty: 50
-                }
-            ];
-            
-            return [...baseActions, ...(actions[room] || [])];
-        }
+        function performAction(act) {
+            gameData.currentTurnActions.push(act.id);
+            document.getElementById('check-title').textContent = act.title;
+            const storyDiv = document.getElementById('check-story');
+            const diceDiv = document.getElementById('dice-results');
+            const consDiv = document.getElementById('consequences');
+            storyDiv.innerHTML = ''; diceDiv.innerHTML = ''; consDiv.innerHTML = '';
 
-        // 房间剧情数据库
-        const roomStories = {
-            '客厅': {
-                'close_window': {
-                    'critical_success': {
-                        story: '用力一推！窗户"砰"地关上，锁得牢牢的！<br>还在窗台上发现了一些奇怪的爪印...',
-                        consequence: { type: 'good', text: '窗户关好了，安全了！' },
-                        getItem: '小星星'
-                    },
-                    'success': {
-                        story: '嘿咻！成功关上了窗户～<br>外面的冷风进不来了！',
-                        consequence: { type: 'good', text: '窗户关上了' }
-                    },
-                    'failure': {
-                        story: '哎呀，窗户卡住了！<br>只关上了一半，还有条缝...',
-                        consequence: { type: 'bad', text: '窗户没关严' }
-                    },
-                    'critical_failure': {
-                        story: '用力过猛！窗户发出巨响！<br>外面传来"喵呜～"的叫声...',
-                        consequence: { type: 'bad', text: '惊动了野猫！' },
-                        trigger: 'cat_encounter'
-                    }
-                },
-                'check_tv': {
-                    'default': {
-                        story: '电视📺在播放新闻："今夜将有百年一遇的七星连珠天文奇观！<br>七颗星星将连成一线，据说会有神奇的事情发生！"<br><br>天气预报："今夜降雪，气温零下，请关好门窗。"',
-                        consequence: { type: 'good', text: '知道了星星的消息' }
-                    }
-                },
-                'search_sofa': {
-                    'critical_success': {
-                        story: '在沙发缝里找到了一本日记📓！<br>还有一颗闪亮的小星星⭐！',
-                        consequence: { type: 'good', text: '找到日记和星星！' },
-                        getItem: ['日记碎片', '小星星']
-                    },
-                    'success': {
-                        story: '找到了B的日记碎片！上面写着：<br>"...我想去一个永远冒险的地方..."',
-                        consequence: { type: 'good', text: '找到日记碎片' },
-                        getItem: '日记碎片'
-                    },
-                    'failure': {
-                        story: '只有饼干屑和灰尘...<br>姜饼小手都弄脏了！',
-                        consequence: { type: 'bad', text: '没找到东西' }
-                    },
-                    'critical_failure': {
-                        story: '碰倒了旁边的台灯！<br>巨大的响声在屋里回荡...',
-                        consequence: { type: 'bad', text: '发出巨响！' },
-                        sanLoss: 5
-                    }
-                },
-                'look_window': {
-                    'critical_success': {
-                        story: '看到野猫糖霜在花园里打盹🐱<br>还看到松鸦松果在树上筑巢🐦<br>星星们开始排队了！',
-                        consequence: { type: 'good', text: '观察仔细！' }
-                    },
-                    'success': {
-                        story: '看到胖胖的虎斑猫在花园里，<br>还有蓝色的小鸟在飞～',
-                        consequence: { type: 'good', text: '看到野生动物' }
-                    },
-                    'failure': {
-                        story: '窗户反光，看不清楚...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '和窗外的糖霜对上了眼！<br>它"喵"了一声扑过来！',
-                        consequence: { type: 'bad', text: '被糖霜发现了！' },
-                        trigger: 'cat_encounter'
-                    }
-                },
-                'investigate': {
-                    'critical_success': {
-                        story: '发现了重要的线索！<br>壁炉上有奇怪的符号，<br>沙发下有闪亮的东西✨',
-                        consequence: { type: 'good', text: '找到多条线索' },
-                        star: true
-                    },
-                    'success': {
-                        story: '找到了一些有用的东西～<br>继续努力！',
-                        consequence: null
-                    },
-                    'failure': {
-                        story: '没发现什么特别的东西...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '撞到了圣诞树！<br>装饰球滚得到处都是！',
-                        consequence: { type: 'bad', text: '搞砸了！' },
-                        sanLoss: 3
-                    }
-                }
-            },
-            '餐厅': {
-                'read_spellbook': {
-                    'critical_success': {
-                        story: '完全读懂了魔法书！<br>"在七星连珠之夜，姜饼人形态可通往幻梦境——永恒的童话世界！"<br>还找到了解除方法！',
-                        consequence: { type: 'good', text: '完全理解魔法' },
-                        getItem: '魔法书',
-                        star: true
-                    },
-                    'success': {
-                        story: '书上说："姜饼人是通往梦幻世界的门票..."<br>需要在书房解除魔法。',
-                        consequence: { type: 'good', text: '理解了部分内容' },
-                        getItem: '魔法书'
-                    },
-                    'failure': {
-                        story: '古文字好难懂...<br>只看懂几个字："星星...姜饼..."',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '被书中的恐怖插图吓到了！<br>诡异的画面在脑中挥之不去...',
-                        consequence: { type: 'bad', text: '被吓到了！' },
-                        sanLoss: 10
-                    }
-                },
-                'check_table': {
-                    'critical_success': {
-                        story: '在餐盘下找到了有用的工具！<br>一把小银勺，还有小鱼干🐟！',
-                        consequence: { type: 'good', text: '找到工具和食物' },
-                        getItem: ['小鱼干', '小银勺']
-                    },
-                    'success': {
-                        story: '找到了一些剩下的糖果🍬<br>可以当零食吃！',
-                        consequence: { type: 'good', text: '找到糖果' }
-                    },
-                    'failure': {
-                        story: '只有脏盘子，<br>没什么有用的...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '打翻了红酒瓶！<br>红色的酒像血一样流出来...',
-                        consequence: { type: 'bad', text: '弄脏了！' },
-                        sanLoss: 5
-                    }
-                },
-                'find_snack': {
-                    'critical_success': {
-                        story: '找到了姜饼人最爱吃的糖霜！<br>还有蜂蜜饼干🍯！<br>恢复能量啦～',
-                        consequence: { type: 'good', text: '找到美食！HP+2' },
-                        hpGain: 2
-                    },
-                    'success': {
-                        story: '找到了一些小饼干🍪<br>甜甜的，好吃！',
-                        consequence: { type: 'good', text: '找到零食 HP+1' },
-                        hpGain: 1
-                    },
-                    'failure': {
-                        story: '只有吃剩的骨头，<br>姜饼人不能吃...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '吃到了辣酱！<br>姜饼人喷火了！🔥',
-                        consequence: { type: 'bad', text: '辣到了！HP-1' },
-                        hpLoss: 1
-                    }
-                }
-            },
-            '主卧室': {
-                'check_bodies': {
-                    'critical_success': {
-                        story: '确认是你们的身体！<br>胸口有发光的星星图案⭐<br>看起来睡得很安详...',
-                        consequence: { type: 'good', text: '发现身体和星星' },
-                        star: true
-                    },
-                    'success': {
-                        story: '是你们的身体没错！<br>在安静地睡觉，<br>但怎么也叫不醒...',
-                        consequence: { type: 'good', text: '找到身体' },
-                        sanLoss: 5
-                    },
-                    'failure': {
-                        story: '床太高了看不清楚，<br>只看到两个人在睡觉...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '看到了！但...那真的是你们吗？<br>面孔好陌生，好可怕！',
-                        consequence: { type: 'bad', text: '受到惊吓！SAN-10' },
-                        sanLoss: 10
-                    }
-                },
-                'search_pillow': {
-                    'critical_success': {
-                        story: '找到了银钥匙🗝️！<br>还有B的另一页日记："
+            gameData.players.forEach(p => {
+                const roll = Math.floor(Math.random()*100)+1;
+                const target = p.stats[act.skill] || 50;
+                let res = roll <= target ? 'success' : 'failure';
+                if(roll <= 5) res = 'crit_success';
+                if(roll >= 96) res = 'crit_fail';
 
-        // 房间剧情数据库
-        const roomStories = {
-            '客厅': {
-                'close_window': {
-                    'critical_success': {
-                        story: '用力一推！窗户"砰"地关上，锁得牢牢的！<br>还在窗台上发现了一些奇怪的爪印...',
-                        consequence: { type: 'good', text: '窗户关好了，安全了！' },
-                        getItem: '小星星'
-                    },
-                    'success': {
-                        story: '嘿咻！成功关上了窗户～<br>外面的冷风进不来了！',
-                        consequence: { type: 'good', text: '窗户关上了' }
-                    },
-                    'failure': {
-                        story: '哎呀，窗户卡住了！<br>只关上了一半，还有条缝...',
-                        consequence: { type: 'bad', text: '窗户没关严' }
-                    },
-                    'critical_failure': {
-                        story: '用力过猛！窗户发出巨响！<br>外面传来"喵呜～"的叫声...',
-                        consequence: { type: 'bad', text: '惊动了野猫！' },
-                        trigger: 'cat_encounter'
-                    }
-                },
-                'check_tv': {
-                    'default': {
-                        story: '电视📺在播放新闻："今夜将有百年一遇的七星连珠天文奇观！<br>七颗星星将连成一线，据说会有神奇的事情发生！"<br><br>天气预报："今夜降雪，气温零下，请关好门窗。"',
-                        consequence: { type: 'good', text: '知道了星星的消息' }
-                    }
-                },
-                'search_sofa': {
-                    'critical_success': {
-                        story: '在沙发缝里找到了一本日记📓！<br>还有一颗闪亮的小星星⭐！',
-                        consequence: { type: 'good', text: '找到日记和星星！' },
-                        getItem: ['日记碎片', '小星星']
-                    },
-                    'success': {
-                        story: '找到了B的日记碎片！上面写着：<br>"...我想去一个永远冒险的地方..."',
-                        consequence: { type: 'good', text: '找到日记碎片' },
-                        getItem: '日记碎片'
-                    },
-                    'failure': {
-                        story: '只有饼干屑和灰尘...<br>姜饼小手都弄脏了！',
-                        consequence: { type: 'bad', text: '没找到东西' }
-                    },
-                    'critical_failure': {
-                        story: '碰倒了旁边的台灯！<br>巨大的响声在屋里回荡...',
-                        consequence: { type: 'bad', text: '发出巨响！' },
-                        sanLoss: 5
-                    }
-                },
-                'look_window': {
-                    'critical_success': {
-                        story: '看到野猫糖霜在花园里打盹🐱<br>还看到松鸦松果在树上筑巢🐦<br>星星们开始排队了！',
-                        consequence: { type: 'good', text: '观察仔细！' }
-                    },
-                    'success': {
-                        story: '看到胖胖的虎斑猫在花园里，<br>还有蓝色的小鸟在飞～',
-                        consequence: { type: 'good', text: '看到野生动物' }
-                    },
-                    'failure': {
-                        story: '窗户反光，看不清楚...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '和窗外的糖霜对上了眼！<br>它"喵"了一声扑过来！',
-                        consequence: { type: 'bad', text: '被糖霜发现了！' },
-                        trigger: 'cat_encounter'
-                    }
-                },
-                'investigate': {
-                    'critical_success': {
-                        story: '发现了重要的线索！<br>壁炉上有奇怪的符号，<br>沙发下有闪亮的东西✨',
-                        consequence: { type: 'good', text: '找到多条线索' },
-                        star: true
-                    },
-                    'success': {
-                        story: '找到了一些有用的东西～<br>继续努力！',
-                        consequence: null
-                    },
-                    'failure': {
-                        story: '没发现什么特别的东西...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '撞到了圣诞树！<br>装饰球滚得到处都是！',
-                        consequence: { type: 'bad', text: '搞砸了！' },
-                        sanLoss: 3
-                    }
-                }
-            },
-            '餐厅': {
-                'read_spellbook': {
-                    'critical_success': {
-                        story: '完全读懂了魔法书！<br>"在七星连珠之夜，姜饼人形态可通往幻梦境——永恒的童话世界！"<br>还找到了解除方法！',
-                        consequence: { type: 'good', text: '完全理解魔法' },
-                        getItem: '魔法书',
-                        star: true
-                    },
-                    'success': {
-                        story: '书上说："姜饼人是通往梦幻世界的门票..."<br>需要在书房解除魔法。',
-                        consequence: { type: 'good', text: '理解了部分内容' },
-                        getItem: '魔法书'
-                    },
-                    'failure': {
-                        story: '古文字好难懂...<br>只看懂几个字："星星...姜饼..."',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '被书中的恐怖插图吓到了！<br>诡异的画面在脑中挥之不去...',
-                        consequence: { type: 'bad', text: '被吓到了！' },
-                        sanLoss: 10
-                    }
-                },
-                'check_table': {
-                    'critical_success': {
-                        story: '在餐盘下找到了有用的工具！<br>一把小银勺，还有小鱼干🐟！',
-                        consequence: { type: 'good', text: '找到工具和食物' },
-                        getItem: ['小鱼干', '小银勺']
-                    },
-                    'success': {
-                        story: '找到了一些剩下的糖果🍬<br>可以当零食吃！',
-                        consequence: { type: 'good', text: '找到糖果' }
-                    },
-                    'failure': {
-                        story: '只有脏盘子，<br>没什么有用的...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '打翻了红酒瓶！<br>红色的酒像血一样流出来...',
-                        consequence: { type: 'bad', text: '弄脏了！' },
-                        sanLoss: 5
-                    }
-                },
-                'find_snack': {
-                    'critical_success': {
-                        story: '找到了姜饼人最爱吃的糖霜！<br>还有蜂蜜饼干🍯！<br>恢复能量啦～',
-                        consequence: { type: 'good', text: '找到美食！HP+2' },
-                        hpGain: 2
-                    },
-                    'success': {
-                        story: '找到了一些小饼干🍪<br>甜甜的，好吃！',
-                        consequence: { type: 'good', text: '找到零食 HP+1' },
-                        hpGain: 1
-                    },
-                    'failure': {
-                        story: '只有吃剩的骨头，<br>姜饼人不能吃...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '吃到了辣酱！<br>姜饼人喷火了！🔥',
-                        consequence: { type: 'bad', text: '辣到了！HP-1' },
-                        hpLoss: 1
-                    }
-                }
-            },
-            '主卧室': {
-                'check_bodies': {
-                    'critical_success': {
-                        story: '确认是你们的身体！<br>胸口有发光的星星图案⭐<br>看起来睡得很安详...',
-                        consequence: { type: 'good', text: '发现身体和星星' },
-                        star: true
-                    },
-                    'success': {
-                        story: '是你们的身体没错！<br>在安静地睡觉，<br>但怎么也叫不醒...',
-                        consequence: { type: 'good', text: '找到身体' },
-                        sanLoss: 5
-                    },
-                    'failure': {
-                        story: '床太高了看不清楚，<br>只看到两个人在睡觉...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '看到了！但...那真的是你们吗？<br>面孔好陌生，好可怕！',
-                        consequence: { type: 'bad', text: '受到惊吓！SAN-10' },
-                        sanLoss: 10
-                    }
-                },
-                'search_pillow': {
-                    'critical_success': {
-                        story: '找到了银钥匙🗝️！<br>还有B的另一页日记："...对不起A，但幻梦境在召唤..."<br>和一颗小星星⭐！',
-                        consequence: { type: 'good', text: '找到钥匙、日记和星星' },
-                        getItem: ['银钥匙', '日记碎片', '小星星']
-                    },
-                    'success': {
-                        story: '找到了开门的银钥匙！<br>闪闪发光的～',
-                        consequence: { type: 'good', text: '找到银钥匙' },
-                        getItem: '银钥匙'
-                    },
-                    'failure': {
-                        story: '枕头下只有头发，<br>没有钥匙...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '惊醒了身体！<br>它突然睁开眼睛！',
-                        consequence: { type: 'bad', text: '惊醒身体！SAN-8' },
-                        sanLoss: 8
-                    }
-                },
-                'look_dresser': {
-                    'critical_success': {
-                        story: '找到闪亮纽扣✨！<br>可以当镜子用，<br>还有香水可以掩盖气味～',
-                        consequence: { type: 'good', text: '找到有用的物品' },
-                        getItem: '闪亮纽扣'
-                    },
-                    'success': {
-                        story: '找到了一些小饰品，<br>亮晶晶的～',
-                        consequence: null
-                    },
-                    'failure': {
-                        story: '都是大大的化妆品，<br>姜饼人用不了...',
-                        consequence: null
-                    },
-                    'critical_failure': {
-                        story: '打碎了香水瓶！<br>浓烈的气味让姜饼人头晕...',
-                        consequence: { type: 'bad', text: '被熏晕了！SAN-3' },
-                        sanLoss: 3
-                    }
-                }
-            }
-        };
-
-        // 通用的调查行动剧情
-        const investigateStories = {
-            'critical_success': {
-                story: '惊人的发现！找到了重要的线索✨',
-                consequence: { type: 'good', text: '调查成功！' },
-                star: true
-            },
-            'success': {
-                story: '找到了一些有用的东西～',
-                consequence: null
-            },
-            'failure': {
-                story: '没发现什么特别的东西...',
-                consequence: null
-            },
-            'critical_failure': {
-                story: '调查时出了意外！',
-                consequence: { type: 'bad', text: '调查失败' },
-                sanLoss: 3
-            }
-        };
-
-        // 无检定行动的剧情
-        const simpleActionStories = {
-            '书房_unlock_door': {
-                success: {
-                    story: '银钥匙🗝️完美插入！<br>门"咔哒"一声打开了...<br>里面是发光的魔法阵！✨',
-                    consequence: { type: 'good', text: '打开了书房' },
-                    setFlag: 'ritualRoomOpen'
-                },
-                failure: {
-                    story: '钥匙不对...<br>打不开这扇门。',
-                    consequence: { type: 'bad', text: '打不开门' }
-                }
-            },
-            '花园_talk_snowman': {
-                success: {
-                    story: '雪人☃️弗洛斯蒂说："嗨！姜饼人朋友们！<br>变成姜饼人多好啊，永远甜蜜，永远不用长大！<br>看，星星们在排队，要去幻梦境玩吗？"',
-                    consequence: { type: 'good', text: '和雪人成了朋友' },
-                    star: true
-                }
-            },
-            '儿童房_play_dollhouse': {
-                success: {
-                    story: '娃娃屋🏠正好适合姜饼人！<br>玩具们在欢迎你们："留下来玩吧！永远做姜饼人！"<br>找到了玩具小星星⭐',
-                    consequence: { type: 'good', text: '在娃娃屋玩耍' },
-                    getItem: '小星星'
-                }
-            }
-        };
-
-        // 继续performAction函数
-        function performAction(action) {
-            // 标记行动已使用
-            gameData.currentTurn.actionsUsed.push(action.id);
-            
-            addLog(`${action.title}...`, 'info');
-            
-            if (action.skill) {
-                // 需要检定的行动
-                performSkillCheck(action);
-            } else {
-                // 无需检定的行动
-                performSimpleAction(action);
-            }
-            
-            // 更新行动列表
-            setTimeout(() => {
-                generateRoomActions(gameData.currentRoom);
-            }, 300);
-        }
-
-        function performSkillCheck(action) {
-            const room = gameData.currentRoom;
-            const actionKey = action.id;
-            
-            // 准备显示
-            document.getElementById('check-title').textContent = action.title;
-            document.getElementById('check-story').innerHTML = `<div class="story-text">正在${action.title}...</div>`;
-            document.getElementById('dice-results').innerHTML = '';
-            document.getElementById('consequences').innerHTML = '';
-            
-            // 显示检定窗口
-            const checkModal = document.getElementById('check-modal');
-            checkModal.classList.add('active');
-            const confirmBtn = document.getElementById('check-confirm-btn');
-            confirmBtn.style.display = 'none';
-            
-            let allResults = [];
-            let completed = 0;
-            let totalStory = '';
-            let allConsequences = [];
-            let starsFound = 0;
-            
-            gameData.players.forEach((player, index) => {
-                setTimeout(() => {
-                    const skillValue = player.stats[action.skill.toLowerCase()] || 50;
-                    const roll = Math.floor(Math.random() * 100) + 1;
-                    
-                    let resultType, resultClass, resultText, success, isCritical;
-                    
-                    if (roll <= 5) {
-                        resultType = 'critical_success';
-                        resultClass = 'critical-success';
-                        resultText = '💥 大成功！';
-                        success = true;
-                        isCritical = true;
-                    } else if (roll <= skillValue) {
-                        resultType = 'success';
-                        resultClass = 'success';
-                        resultText = '✅ 成功';
-                        success = true;
-                        isCritical = false;
-                    } else if (roll >= 96) {
-                        resultType = 'critical_failure';
-                        resultClass = 'critical-failure';
-                        resultText = '💀 大失败！';
-                        success = false;
-                        isCritical = true;
-                    } else {
-                        resultType = 'failure';
-                        resultClass = 'failure';
-                        resultText = '❌ 失败';
-                        success = false;
-                        isCritical = false;
-                    }
-                    
-                    // 获取剧情
-                    const roomStory = roomStories[room];
-                    let storyData;
-                    
-                    if (roomStory && roomStory[actionKey]) {
-                        storyData = roomStory[actionKey][resultType] || roomStory[actionKey].default;
-                    } else if (actionKey === 'investigate') {
-                        storyData = investigateStories[resultType];
-                    } else {
-                        storyData = {
-                            story: `${action.title}${success ? '成功' : '失败'}了`,
-                            consequence: null
-                        };
-                    }
-                    
-                    if (!storyData) {
-                        storyData = {
-                            story: `${action.title}完成`,
-                            consequence: null
-                        };
-                    }
-                    
-                    // 玩家个性化剧情
-                    const playerStory = `
-                        <div class="player-text ${index === 0 ? 'player-a-text' : 'player-b-text'}">
-                            <strong>${player.name}</strong> ${storyData.story}
-                        </div>
-                    `;
-                    
-                    // 骰子显示
-                    const diceHTML = `
-                        <div class="dice-result">
-                            <div style="color: ${player.color}">${player.name}</div>
-                            <div>${action.skill}检定: ${roll}/${skillValue}</div>
-                            <div class="dice-number ${resultClass}">${roll}</div>
-                            <div>${resultText}</div>
-                        </div>
-                    `;
-                    
-                    // 添加到总结果
-                    const resultDiv = document.getElementById('dice-results');
-                    const storyDiv = document.getElementById('check-story');
-                    
-                    setTimeout(() => {
-                        storyDiv.innerHTML += playerStory;
-                        resultDiv.innerHTML += diceHTML;
-                        
-                        addLog(`${player.name} ${action.skill}: ${roll}/${skillValue} ${resultText}`, 'dice');
-                        
-                        // 处理结果
-                        const consequences = processCheckResult(player, room, action, storyData, resultType);
-                        allConsequences.push(...consequences);
-                        
-                        if (storyData.star) {
-                            starsFound++;
-                        }
-                        
-                        completed++;
-                        
-                        // 所有人完成
-                        if (completed === 2) {
-                            // 显示所有后果
-                            if (allConsequences.length > 0) {
-                                let consequenceHTML = '<div style="margin-top: 15px;">';
-                                allConsequences.forEach(cons => {
-                                    if (cons.text) {
-                                        consequenceHTML += `
-                                            <div class="consequence-box ${cons.type === 'good' ? 'consequence-good' : 'consequence-bad'}">
-                                                ${cons.text}
-                                            </div>
-                                        `;
-                                    }
-                                });
-                                consequenceHTML += '</div>';
-                                document.getElementById('consequences').innerHTML = consequenceHTML;
-                            }
-                            
-                            // 显示确认按钮
-                            confirmBtn.style.display = 'block';
-                            
-                            // 更新星星计数
-                            if (starsFound > 0) {
-                                gameData.gameState.stars += starsFound;
-                                gameData.players.forEach(p => p.starsCollected += starsFound);
-                                updateStatus();
-                            }
-                        }
-                    }, 100);
-                    
-                    allResults.push({
-                        player,
-                        roll,
-                        skillValue,
-                        resultType,
-                        storyData
-                    });
-                    
-                }, index * 800); // 错开显示
-            });
-        }
-
-        function processCheckResult(player, room, action, storyData, resultType) {
-            const consequences = [];
-            
-            // SAN损失
-            if (storyData.sanLoss) {
-                player.san -= storyData.sanLoss;
-                consequences.push({
-                    type: 'bad',
-                    text: `${player.name} SAN-${storyData.sanLoss}`
-                });
-                addLog(`${player.name} SAN-${storyData.sanLoss}`, 'san');
-            }
-            
-            // HP损失
-            if (storyData.hpLoss) {
-                player.hp -= storyData.hpLoss;
-                consequences.push({
-                    type: 'bad',
-                    text: `${player.name} HP-${storyData.hpLoss}`
-                });
-                addLog(`${player.name} HP-${storyData.hpLoss}`, 'hp');
+                const outcome = act.outcomes[res];
+                diceDiv.innerHTML += `<div class="dice-result"><span style="color:${p.color}">${p.name}</span> 掷骰: ${roll}/${target} -> <span class="${res.includes('crit')?res.replace('_','-'):''}">${res}</span></div>`;
+                storyDiv.innerHTML += `<p style="margin:5px 0;border-left:3px solid ${p.color};padding-left:5px">${p.name}: ${outcome.text}</p>`;
                 
-                if (player.hp <= 0) {
-                    setTimeout(() => {
-                        endGame('hp', `${player.name}的姜饼身体坏掉了...`);
-                    }, 2000);
-                }
-            }
-            
-            // HP恢复
-            if (storyData.hpGain) {
-                player.hp = Math.min(10, player.hp + storyData.hpGain);
-                consequences.push({
-                    type: 'good',
-                    text: `${player.name} HP+${storyData.hpGain}`
-                });
-            }
-            
-            // 获得物品
-            if (storyData.getItem) {
-                const items = Array.isArray(storyData.getItem) ? storyData.getItem : [storyData.getItem];
-                items.forEach(item => {
-                    if (!gameData.gameState.items.includes(item)) {
-                        gameData.gameState.items.push(item);
-                        consequences.push({
-                            type: 'good',
-                            text: `获得: ${item}`
-                        });
-                        addLog(`获得: ${item}`, 'item');
-                        
-                        // 特殊物品处理
-                        if (item === '银钥匙') {
-                            gameData.gameState.foundSilverKey = true;
-                        } else if (item === '魔法书') {
-                            gameData.gameState.foundSpellbook = true;
-                        } else if (item === '日记碎片') {
-                            gameData.gameState.foundDiary = true;
-                        }
-                    }
-                });
-            }
-            
-            // 触发事件
-            if (storyData.trigger === 'cat_encounter') {
-                setTimeout(() => {
-                    encounterCat();
-                }, 2000);
-            }
-            
-            // 设置标志
-            if (storyData.setFlag) {
-                gameData.gameState[storyData.setFlag] = true;
-            }
-            
-            // 星星
-            if (storyData.star) {
-                consequences.push({
-                    type: 'good',
-                    text: '⭐ 找到星星线索！'
-                });
-            }
-            
-            // 后果文本
-            if (storyData.consequence) {
-                consequences.push(storyData.consequence);
-            }
-            
-            // 房间特殊处理
-            switch(room) {
-                case '主卧室':
-                    if (action.id === 'check_bodies') {
-                        gameData.gameState.foundBodies = true;
-                    }
-                    break;
-                case '客厅':
-                    if (action.id === 'close_window' && resultType === 'success') {
-                        gameData.gameState.windowClosed = true;
-                    }
-                    break;
-            }
-            
-            return consequences;
-        }
+                if(outcome.hp) p.hp += outcome.hp;
+                if(outcome.san) p.san += outcome.san;
+                if(outcome.star) { gameData.gameState.stars++; p.starsCollected++; }
+                if(outcome.item && !gameData.gameState.items.includes(outcome.item)) gameData.gameState.items.push(outcome.item);
+                if(outcome.flag) gameData.gameState[outcome.flag] = true;
+            });
 
-        function performSimpleAction(action) {
-            const room = gameData.currentRoom;
-            const actionKey = `${room}_${action.id}`;
-            
-            // 获取剧情
-            let storyData = simpleActionStories[actionKey];
-            
-            if (!storyData) {
-                storyData = {
-                    success: {
-                        story: `${action.title}完成～`,
-                        consequence: null
-                    }
-                };
-            }
-            
-            const result = storyData.success || storyData.default || { story: '完成', consequence: null };
-            
-            // 显示剧情
-            document.getElementById('check-title').textContent = action.title;
-            document.getElementById('check-story').innerHTML = `
-                <div class="story-text">
-                    ${result.story}
-                </div>
-            `;
-            
-            document.getElementById('dice-results').innerHTML = '';
-            const consequencesDiv = document.getElementById('consequences');
-            consequencesDiv.innerHTML = '';
-            
-            // 处理结果
-            const consequences = [];
-            
-            if (result.consequence) {
-                consequences.push(result.consequence);
-            }
-            
-            if (result.getItem) {
-                const items = Array.isArray(result.getItem) ? result.getItem : [result.getItem];
-                items.forEach(item => {
-                    if (!gameData.gameState.items.includes(item)) {
-                        gameData.gameState.items.push(item);
-                        consequences.push({
-                            type: 'good',
-                            text: `获得: ${item}`
-                        });
-                        addLog(`获得: ${item}`, 'item');
-                    }
-                });
-            }
-            
-            if (result.star) {
-                gameData.gameState.stars++;
-                gameData.players.forEach(p => p.starsCollected++);
-                consequences.push({
-                    type: 'good',
-                    text: '⭐ 找到星星！'
-                });
-            }
-            
-            if (result.setFlag) {
-                gameData.gameState[result.setFlag] = true;
-            }
-            
-            // 特殊行动处理
-            switch(action.id) {
-                case 'unlock_door':
-                    if (gameData.gameState.items.includes('银钥匙')) {
-                        gameData.gameState.ritualRoomOpen = true;
-                    } else {
-                        result.story = '没有开门的钥匙...';
-                        consequences.push({
-                            type: 'bad',
-                            text: '需要银钥匙'
-                        });
-                    }
-                    break;
-            }
-            
-            // 显示后果
-            if (consequences.length > 0) {
-                let consequenceHTML = '<div style="margin-top: 15px;">';
-                consequences.forEach(cons => {
-                    consequenceHTML += `
-                        <div class="consequence-box ${cons.type === 'good' ? 'consequence-good' : 'consequence-bad'}">
-                            ${cons.text}
-                        </div>
-                    `;
-                });
-                consequenceHTML += '</div>';
-                consequencesDiv.innerHTML = consequenceHTML;
-            }
-            
-            // 更新状态
-            updateStatus();
-            updateInventory();
-            
-            // 显示窗口
             document.getElementById('check-modal').classList.add('active');
-            
-            // 检查结局
-            checkEndingConditions();
+            renderActions(gameData.currentRoom);
+            updateUI();
         }
 
-        function showStory(title, content) {
-            document.getElementById('check-title').textContent = title;
-            document.getElementById('check-story').innerHTML = `
-                <div class="story-text">${content}</div>
-            `;
-            document.getElementById('dice-results').innerHTML = '';
-            document.getElementById('consequences').innerHTML = '';
-            document.getElementById('check-modal').classList.add('active');
+        function endTurn() {
+            document.getElementById('room-modal').classList.remove('active');
+            gameData.gameState.turn++;
+            let [h, m] = gameData.gameState.time.split(':').map(Number);
+            m += 15; if(m>=60){ h++; m=0; }
+            gameData.gameState.time = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+            
+            // 随机猫袭击判定
+            if(!gameData.gameState.windowClosed && Math.random() < 0.2) {
+                addLog("🐱 野猫糖霜从窗户潜入了！姜饼人们受到了惊吓！");
+                gameData.players.forEach(p => p.san -= 5);
+            }
+            updateUI();
         }
 
         function closeCheckModal() {
             document.getElementById('check-modal').classList.remove('active');
-            
-            // 检查是否需要触发野生动物
-            if (gameData.wildlife.cat.active && !gameData.gameState.windowClosed && gameData.currentRoom === '客厅') {
-                setTimeout(() => {
-                    if (!gameData.currentTurn.catEncounter) {
-                        encounterCat();
-                    }
-                }, 1000);
-            }
-            
-            // 更新状态
-            updateStatus();
+            checkEndings();
         }
 
-        function endTurn() {
-            // 关闭房间窗口
-            document.getElementById('room-modal').classList.remove('active');
-            
-            // 时间推进
-            let [hours, minutes] = gameData.gameState.time.split(':').map(Number);
-            minutes += 15;
-            if (minutes >= 60) {
-                hours += 1;
-                minutes = 0;
-            }
-            gameData.gameState.time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-            gameData.gameState.turn += 1;
-            
-            // 重置回合行动
-            gameData.currentTurn = {
-                actionsUsed: [],
-                starsFound: 0,
-                catEncounter: false,
-                birdEncounter: false
+        // --- 剧情库修复与扩充 ---
+        function getActionsForRoom(room) {
+            const base = {
+                '客厅': [
+                    { id:'l1', title:'关窗', skill:'str', desc:'用力推上沉重的落地窗', outcomes: {
+                        crit_success: { text:'不仅关上了窗，还在窗缝里捡到一颗星星！', star:1, flag:'windowClosed' },
+                        success: { text:'窗户关紧了，现在很安全。', flag:'windowClosed' },
+                        failure: { text:'窗户纹丝不动，你太弱小了。' },
+                        crit_fail: { text:'窗户反弹撞到了你！', hp:-1 }
+                    }},
+                    { id:'l2', title:'搜查沙发', skill:'int', desc:'在坐垫下寻找线索', outcomes: {
+                        success: { text:'你找到了一张日记碎片，记录着仪式的方法。', flag:'foundDiary' },
+                        failure: { text:'除了陈年灰尘一无所获。' },
+                        crit_success: { text:'你找到了日记，还有一颗掉落的星星！', star:1, flag:'foundDiary' },
+                        crit_fail: { text:'你掉进了沙发缝里，费了好大劲才爬出来。', san:-5 }
+                    }}
+                ],
+                '餐厅': [
+                    { id:'d1', title:'阅读魔法书', skill:'edu', desc:'解析晦涩难懂的古文字', outcomes: {
+                        success: { text:'你理解了咒语：必须集齐星星才能回归。', flag:'spellbookRead' },
+                        failure: { text:'这些字像是在扭动，让你头晕目眩。', san:-2 },
+                        crit_success: { text:'书中掉出了一颗星星！', star:1, flag:'spellbookRead' },
+                        crit_fail: { text:'不可名状的恐怖内容冲击了你的大脑！', san:-10 }
+                    }}
+                ],
+                '主卧室': [
+                    { id:'m1', title:'搜查枕头', skill:'dex', desc:'轻手轻脚地翻找', outcomes: {
+                        success: { text:'你找到了闪烁着寒光的银钥匙！', item:'银钥匙' },
+                        failure: { text:'枕头下只有一团乱糟糟的棉花。' },
+                        crit_success: { text:'你拿到了钥匙，还顺带发现了一颗星！', item:'银钥匙', star:1 },
+                        crit_fail: { text:'你惊醒了沉睡的身体，san值狂掉！', san:-15 }
+                    }}
+                ],
+                '书房': [
+                    { id:'s1', title:'启动仪式', skill:'pow', desc:'利用收集的星星引导灵魂回归', outcomes: {
+                        success: { text:'仪式发出了光芒！回归进度增加了。', flag:'ritualProgress' },
+                        failure: { text:'魔力不足，星星没有反应。' },
+                        crit_success: { text:'强烈的圣光笼罩了你们！', star:1, flag:'ritualProgress' },
+                        crit_fail: { text:'仪式反噬！你的姜饼身体几乎碎裂。', hp:-3 }
+                    }}
+                ],
+                '花园': [
+                    { id:'g1', title:'与雪人对话', skill:'luc', desc:'它似乎想告诉你什么', outcomes: {
+                        success: { text:'雪人吐出一颗星星，并祝你好运。', star:1 },
+                        failure: { text:'它只是个普通的雪堆。' },
+                        crit_success: { text:'雪人把隐藏的星星全给了你！', star:2 },
+                        crit_fail: { text:'雪人倒塌压住了你，极其倒霉。', hp:-1 }
+                    }}
+                ],
+                '阳台': [
+                    { id:'y1', title:'观测星空', skill:'int', desc:'寻找星星的规律', outcomes: {
+                        success: { text:'你捕捉到了一颗正在坠落的微型星！', star:1 },
+                        failure: { text:'天太冷了，你只想回屋。' },
+                        crit_success: { text:'七星连珠的能量汇聚在你们身上！', star:2 },
+                        crit_fail: { text:'你在边缘滑了一跤，差点掉下去！', san:-5 }
+                    }}
+                ]
             };
-            
-            addLog(`=== 回合 ${gameData.gameState.turn} 结束 ===`, 'event');
-            addLog(`时间推进到: ${gameData.gameState.time}`, 'info');
-            
-            // 每2回合检查危险
-            if (gameData.gameState.turn % 2 === 0 && !gameData.gameState.windowClosed) {
-                addLog('⚠️ 时间流逝，注意周围环境...', 'warning');
-                
-                // 暗骰幸运检定
-                const luckRoll = Math.floor(Math.random() * 100) + 1;
-                if (luckRoll <= 20) {
-                    addLog('😨 不祥的预感...SAN值下降2点', 'san');
-                    gameData.players.forEach(player => {
-                        player.san -= 2;
-                    });
-                }
-            }
-            
-            // 检查野猫遭遇
-            if (gameData.gameState.catEncounter && !gameData.gameState.windowClosed) {
-                const catRoll = Math.floor(Math.random() * 100) + 1;
-                if (catRoll <= 30) {
-                    addLog('🐱 野猫试图从窗户进来！', 'critical');
-                    // 敏捷检定躲避
-                    gameData.players.forEach(player => {
-                        const dex = player.stats.dex;
-                        const escapeRoll = Math.floor(Math.random() * 100) + 1;
-                        if (escapeRoll > dex) {
-                            const damage = Math.floor(Math.random() * 3) + 2;
-                            player.hp -= damage;
-                            addLog(`${player.name}被猫抓伤，HP-${damage}！`, 'hp');
-                        }
-                    });
-                }
-            }
-            
-            updateStatus();
+            return base[room] || [{id:'none', title:'调查', skill:'luc', outcomes:{success:{text:'没什么发现。'},failure:{text:'没什么发现。'}}}];
         }
 
-        // ==================== 结局系统 ====================
-        function endGame(type, message) {
-            let title, content, icon;
-            
-            switch(type) {
-                case 'timeout':
-                    title = '⏰ 时间耗尽';
-                    content = '3小时到了！魔法时间结束～<br><br>' +
-                             '看！七星连珠完成了！<br>' +
-                             '你们的姜饼身体开始发光✨<br>' +
-                             '房子消失了，眼前是彩虹桥🌈<br>' +
-                             '会说话的驯鹿来接你们了！<br><br>' +
-                             '雪人弗洛斯蒂挥手："去幻梦境冒险吧！"<br><br>' +
-                             '🎄 姜饼人形态永久生效了！<br>' +
-                             '⭐ 前往永恒的童话世界！';
-                    icon = '⌛';
-                    break;
-                case 'cat':
-                    title = '🐱 被糖霜吃掉了';
-                    content = '胖胖的糖霜把你们当成了圣诞零食！<br><br>' +
-                             '喵呜～真好吃！<br>' +
-                             '甜甜的姜饼人，脆脆的～<br>' +
-                             '糖霜满意地舔着爪子😋<br><br>' +
-                             '至少...很美味？';
-                    icon = '🐱';
-                    break;
-                case 'bird':
-                    title = '🐦 被松果叼走了';
-                    content = '松果把闪亮的你们带回了鸟巢！<br><br>' +
-                             '亮晶晶！亮晶晶！<br>' +
-                             '鸟巢里又多了一件"宝物"✨<br>' +
-                             '从此在树顶上闪闪发光🌳';
-                    icon = '🐦';
-                    break;
-                case 'hp':
-                    title = '💀 身体崩坏';
-                    content = '姜饼身体彻底坏掉了...<br><br>' +
-                             '脆弱的姜饼承受不住冒险<br>' +
-                             '糖霜装饰脱落，身体碎裂<br>' +
-                             '灵魂无处可去...<br><br>' +
-                             '至少留下了甜蜜的回忆？';
-                    icon = '💔';
-                    break;
-                case 'success':
-                    title = '🎉 成功解除魔法！';
-                    content = '你们在书房找到了解除方法！<br><br>' +
-                             '魔法阵的光芒渐渐消失<br>' +
-                             '姜饼身体开始变回人类<br>' +
-                             '灵魂回到了温暖的身体中❤️<br><br>' +
-                             '圣诞节清晨，你们在床上醒来<br>' +
-                             '相视一笑："真是神奇的平安夜！"<br><br>' +
-                             '🎄 圣诞快乐！🎁';
-                    icon = '🎄';
-                    break;
-                case 'true_ending':
-                    title = '🌌 真结局：幻梦境';
-                    content = '七星连珠完成！天空打开彩虹门！<br><br>' +
-                             'B终于坦白："对不起A，是我做的...<br>' +
-                             '但你看！永恒的冒险在等着我们！"<br><br>' +
-                             '姜饼身体变成永恒形态✨<br>' +
-                             '会说话的驯鹿🦌来接你们<br>' +
-                             '雪人☃️、玩具🧸都在挥手<br><br>' +
-                             '你们骑着驯鹿飞向星空⭐<br>' +
-                             '前往只有童话存在的幻梦境<br><br>' +
-                             '永远的姜饼人，永远的冒险！';
-                    icon = '✨';
-                    break;
-                default:
-                    title = '游戏结束';
-                    content = message;
-                    icon = '🎮';
+        // --- 结局判定 ---
+        function checkEndings() {
+            if (gameData.gameState.stars >= 7) {
+                showEnding("完美回归！", "🎄", "你们收集了所有的星星，在平安夜的最后一秒，姜饼身体融化，你们在温暖的床上醒来。");
+            } else if (gameData.gameState.turn > 12) {
+                showEnding("永恒的姜饼", "🍪", "时间到了。你们没能变回人类，从此成为了圣诞树上最精致的装饰品。");
+            } else if (gameData.players.some(p => p.hp <= 0)) {
+                showEnding("支离破碎", "💔", "姜饼身体太脆弱了，你们最终碎成了甜美的残渣。");
+            } else if (gameData.players.some(p => p.san <= 0)) {
+                showEnding("疯狂的饼干", "😱", "无法理解的魔法让你们的精神彻底崩溃，你们现在认为自己真的只是一块饼干。");
             }
-            
+        }
+
+        function showEnding(title, icon, text) {
+            document.getElementById('phase-game').classList.remove('active');
+            document.getElementById('phase-ending').classList.add('active');
             document.getElementById('ending-title').textContent = title;
             document.getElementById('ending-icon').textContent = icon;
-            document.getElementById('ending-content').innerHTML = `
-                <p style="font-size: 1.2rem; margin-bottom: 20px;">${content}</p>
-                <p>游戏时间：${gameData.gameState.time}</p>
-                <p>总回合数：${gameData.gameState.turn}</p>
-                <p>收集星星：${gameData.gameState.stars}/${gameData.gameState.totalStars}</p>
-            `;
-            
-            setPhase('ending');
+            document.getElementById('ending-content').textContent = text;
         }
 
-        function checkEndingConditions() {
-            // 检查是否达成好结局条件
-            const hasSilverKey = gameData.gameState.items.includes('银钥匙');
-            const hasSpellbook = gameData.gameState.items.includes('魔法书');
-            const foundBodies = gameData.gameState.foundBodies;
-            const inStudyRoom = gameData.currentRoom === '书房';
-            const ritualOpen = gameData.gameState.ritualRoomOpen;
-            
-            // HE条件：在书房，有钥匙和魔法书，找到了身体
-            if (hasSilverKey && hasSpellbook && foundBodies && inStudyRoom && ritualOpen) {
-                setTimeout(() => {
-                    endGame('success', '成功解除魔法！');
-                }, 3000);
-            }
-            
-            // TE条件：时间耗尽，在书房，收集了7颗星星
-            if (gameData.gameState.timeLeft <= 0 && inStudyRoom && gameData.gameState.stars >= 7) {
-                setTimeout(() => {
-                    endGame('true_ending', '前往幻梦境！');
-                }, 3000);
-            }
+        // --- 人物创建流程 ---
+        function startCharacterCreation() {
+            const container = document.getElementById('character-creation');
+            container.innerHTML = '<h3>分配属性点 (每人固定属性)</h3>';
+            gameData.players.forEach((p, i) => {
+                container.innerHTML += `
+                    <div style="margin:10px 0; border:1px solid ${p.color}; padding:10px; border-radius:10px">
+                        玩家 ${p.playerLetter} 名字: <input type="text" id="p${i}-name" value="姜饼人${p.playerLetter}"><br>
+                        力量(STR): <input type="number" id="p${i}-str" value="50" style="width:50px"> 
+                        敏捷(DEX): <input type="number" id="p${i}-dex" value="50" style="width:50px"><br>
+                        智力(INT): <input type="number" id="p${i}-int" value="50" style="width:50px"> 
+                        意志(POW): <input type="number" id="p${i}-pow" value="50" style="width:50px">
+                    </div>`;
+            });
+            container.innerHTML += `<button class="btn" onclick="confirmCharacters()">完成并进入客厅</button>`;
+            document.getElementById('phase-intro').classList.remove('active');
+            document.getElementById('phase-creation').classList.add('active');
         }
 
-        function restartGame() {
-            location.reload();
+        function confirmCharacters() {
+            gameData.players.forEach((p, i) => {
+                p.name = document.getElementById(`p${i}-name`).value;
+                p.stats.str = parseInt(document.getElementById(`p${i}-str`).value);
+                p.stats.dex = parseInt(document.getElementById(`p${i}-dex`).value);
+                p.stats.int = parseInt(document.getElementById(`p${i}-int`).value);
+                p.stats.pow = parseInt(document.getElementById(`p${i}-pow`).value);
+            });
+            document.getElementById('phase-creation').classList.remove('active');
+            document.getElementById('phase-game').classList.add('active');
+            addLog("游戏开始！你们在客厅的壁炉旁醒来...");
+            updateUI();
         }
 
-        // ==================== 初始化启动 ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            initSnowflakes();
-            addLog('游戏加载完成！🎮', 'info');
-        });
+        window.onload = () => { initSnow(); };
     </script>
 </body>
 </html>
