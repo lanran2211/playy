@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>姜饼人之夜 - 平安夜跑团</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        /* ==================== 基础重置 ==================== */
+        /* ==================== 圣诞配色 ==================== */
+        :root {
+            --christmas-red: #c41e3a;
+            --christmas-green: #228b22;
+            --christmas-gold: #daa520;
+            --dark-bg: #0d1b0d;
+            --light-text: #f5f5dc;
+            --card-bg: rgba(20, 40, 20, 0.7);
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -14,132 +22,149 @@
         }
         
         body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(220, 53, 69, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.1) 0%, transparent 40%),
-                linear-gradient(135deg, #0c1a2d 0%, #1a1f2c 100%);
-            color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0d0d 100%);
+            color: var(--light-text);
             min-height: 100vh;
-            overflow-x: hidden;
+            padding: 10px;
         }
         
-        /* ==================== 磨砂玻璃效果 ==================== */
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(8px) saturate(160%);
-            -webkit-backdrop-filter: blur(8px) saturate(160%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            box-shadow: 
-                0 4px 20px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        }
-        
-        /* ==================== 布局容器 ==================== */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        /* ==================== 游戏阶段 ==================== */
         .game-phase {
             display: none;
-            animation: fadeIn 0.6s ease;
         }
         
         .game-phase.active {
             display: block;
         }
         
-        /* ==================== 标题区域 ==================== */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* ==================== 标题样式 ==================== */
         .title-section {
             text-align: center;
-            padding: 30px 20px;
-            margin-bottom: 30px;
+            padding: 20px 0;
+            margin-bottom: 20px;
         }
         
         .main-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 3.2rem;
-            font-weight: 500;
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 50%, #20c997 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 2.2rem;
+            color: var(--christmas-red);
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         
         .subtitle {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 300;
-            letter-spacing: 0.5px;
+            color: var(--christmas-gold);
+            font-size: 1.1rem;
         }
         
-        /* ==================== 地图区域 ==================== */
-        .map-section {
-            margin-bottom: 30px;
+        /* ==================== 卡片样式 ==================== */
+        .game-card {
+            background: var(--card-bg);
+            border: 2px solid var(--christmas-red);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(5px);
         }
         
+        .status-card {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(34, 139, 34, 0.2);
+            border-radius: 8px;
+        }
+        
+        .status-label {
+            font-size: 0.8rem;
+            color: var(--christmas-gold);
+        }
+        
+        .status-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        /* ==================== 地图样式 ==================== */
         .map-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
         }
         
         .floor-section {
-            padding: 20px;
+            background: rgba(34, 139, 34, 0.3);
+            border: 1px solid var(--christmas-red);
+            border-radius: 8px;
+            padding: 15px;
         }
         
         .floor-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.8rem;
-            color: #fd7e14;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid rgba(253, 126, 20, 0.3);
+            color: var(--christmas-gold);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--christmas-red);
         }
         
         .room-btn {
             width: 100%;
-            padding: 12px 16px;
-            margin: 6px 0;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
+            padding: 8px 12px;
+            margin: 4px 0;
+            background: rgba(196, 30, 58, 0.3);
+            border: 1px solid var(--christmas-red);
+            border-radius: 6px;
+            color: white;
             text-align: left;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
         
         .room-btn:hover {
-            background: rgba(220, 53, 69, 0.2);
-            border-color: rgba(220, 53, 69, 0.3);
-            transform: translateX(5px);
+            background: rgba(196, 30, 58, 0.5);
         }
         
-        .room-btn.current {
-            background: rgba(32, 201, 151, 0.15);
-            border-color: rgba(32, 201, 151, 0.3);
-            box-shadow: 0 0 15px rgba(32, 201, 151, 0.2);
+        /* ==================== 按钮样式 ==================== */
+        .btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--christmas-red), #9a1c2e);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
         }
         
-        /* ==================== 剧情弹出窗口 ==================== */
+        .btn:hover {
+            background: linear-gradient(135deg, #d32f2f, var(--christmas-red));
+        }
+        
+        .btn-green {
+            background: linear-gradient(135deg, var(--christmas-green), #1a6b1a);
+        }
+        
+        .btn-green:hover {
+            background: linear-gradient(135deg, #2a9d2a, var(--christmas-green));
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        
+        /* ==================== 模态框样式 ==================== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -147,12 +172,11 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            animation: fadeIn 0.3s ease;
+            padding: 20px;
         }
         
         .modal-overlay.active {
@@ -160,406 +184,156 @@
         }
         
         .modal-content {
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
+            background: var(--dark-bg);
+            border: 3px solid var(--christmas-red);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
             overflow-y: auto;
-            padding: 30px;
-        }
-        
-        .modal-header {
-            margin-bottom: 20px;
         }
         
         .modal-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.2rem;
-            color: #fd7e14;
-            margin-bottom: 5px;
-        }
-        
-        .modal-time {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.9rem;
+            color: var(--christmas-gold);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
         }
         
         .modal-description {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 25px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            border-left: 3px solid #dc3545;
+            margin-bottom: 20px;
+            line-height: 1.6;
         }
         
-        /* ==================== 检定结果区域 ==================== */
-        .check-section {
-            margin: 25px 0;
-        }
-        
-        .check-title {
-            font-size: 1.3rem;
-            color: #20c997;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
+        .modal-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
         }
         
-        .player-checks {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        /* ==================== 日志样式 ==================== */
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--christmas-green);
+            border-radius: 8px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
             margin-top: 15px;
         }
         
-        .player-check {
-            padding: 20px;
-            border-radius: 12px;
-        }
-        
-        .player-a {
-            background: rgba(220, 53, 69, 0.1);
-            border: 1px solid rgba(220, 53, 69, 0.3);
-        }
-        
-        .player-b {
-            background: rgba(13, 110, 253, 0.1);
-            border: 1px solid rgba(13, 110, 253, 0.3);
-        }
-        
-        .player-name {
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 10px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .check-result {
-            text-align: center;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.3);
-        }
-        
-        .dice-roll {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 10px 0;
-        }
-        
-        .success {
-            color: #20c997;
-        }
-        
-        .failure {
-            color: #dc3545;
-        }
-        
-        .critical {
-            color: #ffc107;
-        }
-        
-        .check-details {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: 5px;
-        }
-        
-        /* ==================== 行动按钮 ==================== */
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 25px;
-        }
-        
-        .action-btn {
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .action-btn:hover {
-            background: rgba(220, 53, 69, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2);
-        }
-        
-        .action-btn:active {
-            transform: translateY(0);
-        }
-        
-        .action-btn.primary {
-            background: rgba(32, 201, 151, 0.3);
-            border-color: rgba(32, 201, 151, 0.5);
-        }
-        
-        .action-btn.danger {
-            background: rgba(220, 53, 69, 0.3);
-            border-color: rgba(220, 53, 69, 0.5);
-        }
-        
-        /* ==================== 状态显示 ==================== */
-        .status-display {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .status-item {
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .status-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 5px;
-        }
-        
-        .status-value {
-            font-size: 1.8rem;
-            font-weight: 500;
-            color: #fd7e14;
-        }
-        
-        .status-value.san {
-            color: #20c997;
-        }
-        
-        .status-value.hp {
-            color: #dc3545;
-        }
-        
-        /* ==================== 游戏日志 ==================== */
-        .log-section {
-            margin-top: 30px;
-        }
-        
-        .log-container {
-            height: 300px;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        
         .log-entry {
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            border-left: 3px solid;
-            animation: slideIn 0.3s ease;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
         }
         
         .log-time {
+            color: var(--christmas-gold);
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-right: 10px;
         }
         
-        /* ==================== 人物创建 ==================== */
-        .creation-section {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        .log-success { color: #4CAF50; }
+        .log-failure { color: #f44336; }
+        .log-critical { color: var(--christmas-gold); }
+        .log-warning { color: #ff9800; }
+        .log-secret { color: #9c27b0; font-style: italic; }
         
+        /* ==================== 人物创建样式 ==================== */
         .player-form {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .form-label {
             display: block;
-            margin-bottom: 8px;
-            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+            color: var(--christmas-gold);
         }
         
         .form-input {
             width: 100%;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--christmas-red);
+            border-radius: 6px;
             color: white;
-            font-size: 1rem;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #fd7e14;
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
         
         .stat-item {
-            padding: 15px;
+            background: rgba(34, 139, 34, 0.2);
+            border-radius: 6px;
+            padding: 10px;
         }
         
         .stat-name {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--christmas-gold);
         }
         
         .stat-value {
-            font-size: 1.8rem;
-            font-weight: 500;
-            color: #20c997;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 5px 0;
         }
         
         .stat-controls {
             display: flex;
-            align-items: center;
+            justify-content: center;
             gap: 10px;
-            margin-top: 10px;
         }
         
         .stat-btn {
             width: 30px;
             height: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
+            background: var(--christmas-red);
+            border: none;
+            border-radius: 4px;
             color: white;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
         
-        .stat-btn:hover {
-            background: rgba(32, 201, 151, 0.3);
+        /* ==================== 秘密样式 ==================== */
+        .secret-message {
+            background: rgba(156, 39, 176, 0.2);
+            border: 1px solid #9c27b0;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            font-style: italic;
         }
         
-        /* ==================== 秘密选择 ==================== */
-        .secret-section {
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .player-cards {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin: 30px 0;
-        }
-        
-        .player-card {
-            padding: 20px;
-            width: 200px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .player-card:hover {
-            transform: translateY(-5px);
-            border-color: #fd7e14;
-        }
-        
-        .player-card.selected {
-            border-color: #dc3545;
-            box-shadow: 0 0 20px rgba(220, 53, 69, 0.3);
-        }
-        
-        /* ==================== 动画效果 ==================== */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes slideIn {
-            from { 
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes diceRoll {
-            0% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(90deg) scale(1.2); }
-            50% { transform: rotate(180deg) scale(1.4); }
-            75% { transform: rotate(270deg) scale(1.2); }
-            100% { transform: rotate(360deg) scale(1); }
-        }
-        
-        .rolling {
-            animation: diceRoll 0.6s ease-in-out;
-        }
-        
-        /* ==================== 响应式设计 ==================== */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .main-title {
-                font-size: 2.5rem;
-            }
-            
-            .player-checks {
-                grid-template-columns: 1fr;
-            }
-            
+        /* ==================== 响应式 ==================== */
+        @media (max-width: 480px) {
             .map-grid {
                 grid-template-columns: 1fr;
             }
             
-            .status-display {
+            .status-card {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .action-buttons {
-                justify-content: center;
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
             
-            .action-btn {
-                flex: 1;
-                min-width: 120px;
+            .modal-actions {
+                grid-template-columns: 1fr;
             }
-        }
-        
-        /* ==================== 工具类 ==================== */
-        .hidden {
-            display: none !important;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .mt-20 {
-            margin-top: 20px;
-        }
-        
-        .mb-20 {
-            margin-bottom: 20px;
-        }
-        
-        .pointer {
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <!-- 主游戏容器 -->
     <div class="container">
         <!-- 开场剧情 -->
         <div id="phase-intro" class="game-phase active">
@@ -568,29 +342,25 @@
                 <p class="subtitle">平安夜的放纵，圣诞节的奇迹？</p>
             </div>
             
-            <div class="glass-card creation-section">
-                <div style="padding: 40px; text-align: center;">
-                    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: #fd7e14; margin-bottom: 20px;">
-                        剧情简介
-                    </h2>
+            <div class="game-card">
+                <div style="padding: 20px; text-align: center;">
+                    <h2 style="color: var(--christmas-red); margin-bottom: 20px;">剧情简介</h2>
                     
-                    <div style="font-size: 1.1rem; line-height: 1.8; color: rgba(255, 255, 255, 0.9); margin-bottom: 30px; text-align: left;">
-                        <p style="margin-bottom: 15px;">🎄 平安夜，一场狂欢的派对过后...</p>
-                        <p style="margin-bottom: 15px;">🎁 圣诞节清晨，你们在宿醉中醒来，却发现世界变得异常巨大。</p>
-                        <p style="margin-bottom: 15px;">🍪 不，是世界没有变大——是你们变小了。</p>
-                        <p style="margin-bottom: 15px;">🎭 你们变成了圣诞姜饼人，在一栋陌生的三层别墅中醒来。</p>
-                        <p style="margin-bottom: 15px;">❄️ 落地窗外，雪花飘落。屋内，危险潜伏。</p>
-                        <p style="margin-bottom: 20px;">⏳ 找回你们的身体，在野猫发现你们之前...</p>
+                    <div style="margin-bottom: 20px; text-align: left; line-height: 1.6;">
+                        <p>🎄 平安夜，一场狂欢的派对过后...</p>
+                        <p>🎁 圣诞节清晨，你们在宿醉中醒来，却发现世界变得异常巨大。</p>
+                        <p>🍪 不，是世界没有变大——是你们变小了。</p>
+                        <p>🎭 你们变成了圣诞姜饼人，在一栋陌生的三层别墅中醒来。</p>
+                        <p>❄️ 落地窗外，雪花飘落。屋内，危险潜伏。</p>
+                        <p>⏳ 找回你们的身体，在野猫发现你们之前...</p>
                         
-                        <div style="background: rgba(220, 53, 69, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid #dc3545; margin: 20px 0;">
+                        <div style="background: rgba(196, 30, 58, 0.1); padding: 10px; border-radius: 6px; border-left: 3px solid var(--christmas-red); margin: 15px 0;">
                             <strong>游戏时间：</strong>圣诞节 06:00 AM 开始<br>
                             <strong>提示：</strong>其中一位玩家知道真相，但请保持沉默...
                         </div>
                     </div>
                     
-                    <button class="action-btn primary" style="padding: 15px 40px; font-size: 1.2rem;" onclick="startCharacterCreation()">
-                        开始创建人物
-                    </button>
+                    <button class="btn" onclick="startCharacterCreation()">开始创建人物</button>
                 </div>
             </div>
         </div>
@@ -599,11 +369,11 @@
         <div id="phase-creation" class="game-phase">
             <div class="title-section">
                 <h1 class="main-title">创建你的姜饼人</h1>
-                <p class="subtitle">总点数：70点（可随机生成后调整）</p>
+                <p class="subtitle">总点数：90点（可随机生成后调整）</p>
             </div>
             
-            <div id="character-creation" class="glass-card creation-section">
-                <!-- 内容由JS动态生成 -->
+            <div id="character-creation" class="game-card">
+                <!-- 动态生成 -->
             </div>
         </div>
         
@@ -611,34 +381,29 @@
         <div id="phase-secret" class="game-phase">
             <div class="title-section">
                 <h1 class="main-title">谁知晓真相？</h1>
-                <p class="subtitle">选择哪位玩家持有秘密（内容由GM线下告知）</p>
+                <p class="subtitle">选择知晓真相的玩家（秘密由GM线下告知）</p>
             </div>
             
-            <div class="glass-card secret-section">
-                <div style="padding: 40px;">
-                    <div style="font-size: 1.1rem; line-height: 1.8; color: rgba(255, 255, 255, 0.9); margin-bottom: 30px;">
-                        <p>在平安夜的地下室，其中一人步下了神秘的法阵...</p>
-                        <p>现在，选择哪一位玩家知道这个秘密：</p>
+            <div class="game-card" style="text-align: center;">
+                <div style="margin-bottom: 20px;">
+                    <p>在平安夜的地下室，其中一人步下了神秘的仪式...</p>
+                    <p>现在，选择哪一位玩家知道这个秘密：</p>
+                </div>
+                
+                <div style="display: flex; gap: 20px; justify-content: center; margin: 20px 0;">
+                    <div style="padding: 20px; background: rgba(196, 30, 58, 0.2); border-radius: 8px; width: 150px; cursor: pointer;" onclick="setSecretHolder('A')">
+                        <h3 style="color: var(--christmas-red);">玩家A</h3>
+                        <p id="playerA-name" style="color: var(--christmas-gold);">-</p>
                     </div>
                     
-                    <div class="player-cards">
-                        <div class="glass-card player-card" onclick="setSecretHolder('A')">
-                            <h3 style="color: #dc3545; margin-bottom: 10px;">玩家A</h3>
-                            <p id="playerA-name" style="color: rgba(255, 255, 255, 0.7);">-</p>
-                        </div>
-                        
-                        <div class="glass-card player-card" onclick="setSecretHolder('B')">
-                            <h3 style="color: #0d6efd; margin-bottom: 10px;">玩家B</h3>
-                            <p id="playerB-name" style="color: rgba(255, 255, 255, 0.7);">-</p>
-                        </div>
+                    <div style="padding: 20px; background: rgba(34, 139, 34, 0.2); border-radius: 8px; width: 150px; cursor: pointer;" onclick="setSecretHolder('B')">
+                        <h3 style="color: var(--christmas-green);">玩家B</h3>
+                        <p id="playerB-name" style="color: var(--christmas-gold);">-</p>
                     </div>
-                    
-                    <div class="glass-card" style="margin-top: 30px; padding: 20px; background: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.3);">
-                        <p style="color: rgba(255, 255, 255, 0.8); text-align: center;">
-                            <strong>注意：</strong>只有被选中的玩家会在游戏中看到秘密提示。<br>
-                            秘密内容请GM在线下告知被选中的玩家。
-                        </p>
-                    </div>
+                </div>
+                
+                <div style="background: rgba(196, 30, 58, 0.1); padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <p><strong>注意：</strong>只有被选中的玩家会在游戏中看到秘密提示。</p>
                 </div>
             </div>
         </div>
@@ -646,7 +411,7 @@
         <!-- 主游戏界面 -->
         <div id="phase-game" class="game-phase">
             <!-- 状态显示 -->
-            <div class="status-display glass-effect">
+            <div class="status-card">
                 <div class="status-item">
                     <div class="status-label">游戏时间</div>
                     <div id="game-time" class="status-value">06:00</div>
@@ -657,11 +422,7 @@
                 </div>
                 <div class="status-item">
                     <div class="status-label">SAN值</div>
-                    <div id="current-san" class="status-value san">75</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">生命值</div>
-                    <div id="current-hp" class="status-value hp">10</div>
+                    <div id="current-san" class="status-value">75</div>
                 </div>
                 <div class="status-item">
                     <div class="status-label">回合数</div>
@@ -670,53 +431,54 @@
             </div>
             
             <!-- 地图区域 -->
-            <div class="map-section">
-                <div class="map-grid">
-                    <!-- 地下室 -->
-                    <div class="glass-card floor-section">
-                        <h3 class="floor-title">地下室</h3>
-                        <button class="room-btn" onclick="enterRoom('废弃储藏室')">废弃储藏室</button>
-                        <button class="room-btn" onclick="enterRoom('法阵房间')">法阵房间（锁）</button>
-                        <button class="room-btn" onclick="enterRoom('锅炉房')">锅炉房</button>
-                        <button class="room-btn" onclick="enterRoom('酒窖')">酒窖</button>
-                    </div>
-                    
-                    <!-- 一楼 -->
-                    <div class="glass-card floor-section">
-                        <h3 class="floor-title">一楼</h3>
-                        <button class="room-btn" onclick="enterRoom('客厅')">客厅</button>
-                        <button class="room-btn" onclick="enterRoom('餐厅')">餐厅</button>
-                        <button class="room-btn" onclick="enterRoom('厨房')">厨房</button>
-                        <button class="room-btn" onclick="enterRoom('玄关')">玄关</button>
-                        <button class="room-btn" onclick="enterRoom('卫生间')">卫生间</button>
-                    </div>
-                    
-                    <!-- 二楼 -->
-                    <div class="glass-card floor-section">
-                        <h3 class="floor-title">二楼</h3>
-                        <button class="room-btn" onclick="enterRoom('主卧室')">主卧室</button>
-                        <button class="room-btn" onclick="enterRoom('次卧室')">次卧室</button>
-                        <button class="room-btn" onclick="enterRoom('书房')">书房</button>
-                        <button class="room-btn" onclick="enterRoom('浴室')">浴室</button>
-                    </div>
-                    
-                    <!-- 三楼 -->
-                    <div class="glass-card floor-section">
-                        <h3 class="floor-title">三楼</h3>
-                        <button class="room-btn" onclick="enterRoom('阁楼')">阁楼</button>
-                        <button class="room-btn" onclick="enterRoom('儿童房')">儿童房</button>
-                        <button class="room-btn" onclick="enterRoom('阳台')">阳台</button>
-                    </div>
+            <div class="map-grid">
+                <div class="floor-section">
+                    <h3 class="floor-title">一楼</h3>
+                    <button class="room-btn" onclick="enterRoom('客厅')">客厅</button>
+                    <button class="room-btn" onclick="enterRoom('餐厅')">餐厅</button>
+                    <button class="room-btn" onclick="enterRoom('厨房')">厨房</button>
+                    <button class="room-btn" onclick="enterRoom('玄关')">玄关</button>
+                </div>
+                
+                <div class="floor-section">
+                    <h3 class="floor-title">二楼</h3>
+                    <button class="room-btn" onclick="enterRoom('主卧室')">主卧室</button>
+                    <button class="room-btn" onclick="enterRoom('次卧室')">次卧室</button>
+                    <button class="room-btn" onclick="enterRoom('书房')">书房</button>
+                    <button class="room-btn" onclick="enterRoom('浴室')">浴室</button>
+                </div>
+                
+                <div class="floor-section">
+                    <h3 class="floor-title">三楼</h3>
+                    <button class="room-btn" onclick="enterRoom('阁楼')">阁楼</button>
+                    <button class="room-btn" onclick="enterRoom('儿童房')">儿童房</button>
+                    <button class="room-btn" onclick="enterRoom('阳台')">阳台</button>
+                </div>
+                
+                <div class="floor-section">
+                    <h3 class="floor-title">地下室</h3>
+                    <button class="room-btn" onclick="enterRoom('储藏室')">储藏室</button>
+                    <button class="room-btn" onclick="enterRoom('锁着的房间')">锁着的房间</button>
+                    <button class="room-btn" onclick="enterRoom('锅炉房')">锅炉房</button>
+                    <button class="room-btn" onclick="enterRoom('酒窖')">酒窖</button>
                 </div>
             </div>
             
+            <!-- 行动按钮 -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+                <button class="btn" onclick="investigateCurrentRoom()">调查房间</button>
+                <button class="btn" onclick="checkWindows()">检查窗户</button>
+                <button class="btn" onclick="useGingerbreadAbility()">姜饼人能力</button>
+                <button class="btn" onclick="rollLuckCheck()">幸运检定</button>
+                <button class="btn" onclick="rollSpotCheck()">侦查检定</button>
+                <button class="btn btn-green" onclick="endTurn()">结束回合</button>
+            </div>
+            
             <!-- 游戏日志 -->
-            <div class="log-section glass-card">
-                <h3 style="color: #fd7e14; padding: 20px 20px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-                    游戏日志
-                </h3>
+            <div class="game-card">
+                <h3 style="color: var(--christmas-gold); margin-bottom: 10px;">游戏日志</h3>
                 <div class="log-container" id="game-log">
-                    <!-- 日志条目会在这里添加 -->
+                    <!-- 日志由JS动态添加 -->
                 </div>
             </div>
         </div>
@@ -724,49 +486,26 @@
     
     <!-- 剧情弹出窗口 -->
     <div id="room-modal" class="modal-overlay">
-        <div class="glass-card modal-content">
-            <div class="modal-header">
-                <h2 id="modal-room-name" class="modal-title">房间名称</h2>
-                <div id="modal-room-time" class="modal-time">时间：06:00</div>
-            </div>
-            
+        <div class="modal-content">
+            <h3 id="modal-room-title" class="modal-title">房间名称</h3>
             <div id="modal-room-description" class="modal-description">
-                <!-- 房间描述会动态填充 -->
+                <!-- 动态填充 -->
             </div>
-            
-            <!-- 检定结果区域 -->
-            <div id="check-results" class="hidden">
-                <div class="check-title">
-                    <span>检定结果</span>
-                </div>
-                <div class="player-checks">
-                    <div id="player-a-check" class="player-check player-a">
-                        <div class="player-name">玩家A</div>
-                        <div class="check-result">
-                            <div class="dice-roll">-</div>
-                            <div class="check-details">等待检定...</div>
-                        </div>
-                    </div>
-                    <div id="player-b-check" class="player-check player-b">
-                        <div class="player-name">玩家B</div>
-                        <div class="check-result">
-                            <div class="dice-roll">-</div>
-                            <div class="check-details">等待检定...</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-actions">
+                <button class="btn btn-small" onclick="closeModal()">离开</button>
+                <button class="btn btn-small btn-green" onclick="closeModalAndEndTurn()">离开并结束回合</button>
             </div>
-            
-            <!-- 行动按钮 -->
-            <div class="action-buttons">
-                <button class="action-btn primary" onclick="investigateCurrentRoom()">调查房间</button>
-                <button class="action-btn" onclick="checkWindows()">检查窗户</button>
-                <button class="action-btn" onclick="useGingerbreadAbility()">姜饼人能力</button>
-                <button class="action-btn" onclick="rollLuckCheck()">幸运检定</button>
-                <button class="action-btn danger" onclick="rollSpotCheck()">侦查检定</button>
-                <button class="action-btn" onclick="endTurnFromModal()">结束回合</button>
-                <button class="action-btn" onclick="closeModal()">离开房间</button>
+        </div>
+    </div>
+    
+    <!-- 检定结果窗口 -->
+    <div id="check-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="check-title" class="modal-title">检定结果</h3>
+            <div id="check-description" class="modal-description">
+                <!-- 动态填充 -->
             </div>
+            <button class="btn" onclick="closeCheckModal()">确认</button>
         </div>
     </div>
 
@@ -778,9 +517,8 @@
                 { name: '玩家A', stats: null, san: 75, hp: 10, mp: 10 },
                 { name: '玩家B', stats: null, san: 75, hp: 10, mp: 10 }
             ],
-            secretHolder: null,
+            secretHolder: null,  // 'A' 或 'B' 或 null
             currentRoom: '客厅',
-            currentFloor: 1,
             gameState: {
                 time: '06:00',
                 turn: 1,
@@ -789,102 +527,91 @@
                 windowClosed: false,
                 clues: [],
                 items: [],
-                catEncounter: false
+                catEncounter: false,
+                gameStartTime: null,  // 游戏开始时间戳
+                timeWarningShown: false
             },
-            roomDescriptions: {
-                '客厅': '宽敞的客厅，壁炉已经熄灭。巨大的沙发像山一样耸立。落地窗没有关严，寒风吹动窗帘。房间里的圣诞树装饰闪闪发光，但对姜饼人来说，每颗装饰球都像巨石。',
-                '餐厅': '长餐桌上摆着圣诞大宴的残骸。酒杯倾倒，蜡烛燃尽。盘子上的食物对现在的你们来说如同小山。一本翻开的魔法书摊在桌上，页面停在关于灵魂的章节。',
-                '厨房': '危险的领域！锋利的刀具对姜饼人来说如同断头台，滚烫的炉灶如同火山。水槽里还有未清洗的餐具，水珠对饼干身体是致命的。',
-                '玄关': '前门紧闭，门把手对现在的你们来说高不可及。衣帽架上挂着大衣，口袋深不见底。地垫上的花纹复杂得像迷宫。',
-                '卫生间': '瓷制洗手池像悬崖，马桶如深潭。镜子里映出两个姜饼人——红白条纹的围巾，纽扣眼睛，糖霜装饰。这真的是你们吗？',
-                '主卧室': '宽敞的卧室，king size床上躺着两个人。等等，那是你们的身体！呼吸平稳，但怎么也叫不醒。床头柜上有奇怪的符号，似乎在发光。',
-                '次卧室': '整洁的客房，床头柜上有本日记。书页间夹着干枯的槲寄生。床单的花纹在你们眼中如同巨大的迷宫。',
-                '书房': '书架林立，书桌上有台老式电脑。书本对现在的你们来说如同城墙。书桌上散落着一些奇怪的图纸，画着法阵的草图。',
-                '浴室': '浴缸里还有昨晚的泡泡浴残迹，对姜饼人来说如同沸腾的沼泽。洗漱台上的物品都巨大无比。',
-                '阁楼': '满是灰尘和旧物。蜘蛛网在角落里闪烁。一个奇怪的箱子吸引了你的注意，上面刻着无法识别的符号。',
-                '儿童房': '玩具散落一地。一个娃娃屋的比例刚好适合姜饼人大小。玩具士兵列队站在架子上，仿佛在守卫什么。',
-                '阳台': '寒风刺骨，但视野开阔。可以看到整个街区的圣诞装饰。铁栏杆的缝隙对现在的你们来说足够宽敞。',
-                '废弃储藏室': '蜘蛛网遍布，旧家具堆积如山。灰尘在空气中飘浮。角落里有个发光的物体，但看不清楚是什么。',
-                '法阵房间': '门被锁住了。但门缝下透出奇异的光芒，是蓝色的，有节奏地脉动。门上刻着复杂的符号，有些眼熟。',
-                '锅炉房': '温暖但危险的机器轰鸣。管道纵横交错，热气从缝隙中漏出。对姜饼人来说，这里既诱人又致命。',
-                '酒窖': '成排的酒架，空气中弥漫着醇香。酒瓶像纪念碑一样耸立。有些瓶子的标签上有奇怪的标记。'
+            // 公共房间描述（对无秘密玩家）
+            publicRoomDescriptions: {
+                '客厅': '宽敞的客厅，壁炉已经熄灭。巨大的沙发像山一样耸立。落地窗没有关严，寒风吹动窗帘。房间里的圣诞树装饰闪闪发光。',
+                '餐厅': '长餐桌上摆着圣诞大宴的残骸。酒杯倾倒，蜡烛燃尽。盘子上的食物对现在的你们来说如同小山。',
+                '厨房': '危险的领域！锋利的刀具，滚烫的炉灶。水槽里还有未清洗的餐具。',
+                '玄关': '前门紧闭，门把手高不可及。衣帽架上挂着大衣，口袋深不见底。',
+                '主卧室': '宽敞的卧室，king size床上有两个人。等等，那是你们自己！呼吸平稳，但怎么也叫不醒。',
+                '次卧室': '整洁的客房，床头柜上有本日记。书页间夹着干枯的植物。',
+                '书房': '书架林立，书桌上有台老式电脑。书桌上散落着一些图纸。',
+                '浴室': '浴缸里还有昨晚的泡泡浴残迹。洗漱台上的物品都巨大无比。',
+                '阁楼': '满是灰尘和旧物。蜘蛛网在角落里闪烁。',
+                '儿童房': '玩具散落一地。一个娃娃屋的比例刚好适合姜饼人大小。',
+                '阳台': '寒风刺骨，但视野开阔。可以看到整个街区的圣诞装饰。',
+                '储藏室': '蜘蛛网遍布，旧家具堆积如山。',
+                '锁着的房间': '门被锁住了。但门缝下透出奇异的光芒。',
+                '锅炉房': '温暖但危险的机器轰鸣。管道纵横交错。',
+                '酒窖': '成排的酒架，空气中弥漫着醇香。'
             },
-            currentCheck: null
+            // 秘密房间描述（只有知晓真相的玩家看到）
+            secretRoomDescriptions: {
+                '客厅': '宽敞的客厅，壁炉已经熄灭。巨大的沙发下似乎有什么东西在发光。',
+                '锁着的房间': '门被锁住了。但门缝下透出法阵的蓝色光芒，是平安夜你亲自布下的...',
+                '主卧室': '你们的身体在床上。床头柜上的符号是法阵的一部分，必须两人都同意仪式才能解除。',
+                '书房': '书桌上的图纸详细画着灵魂交换的法阵，还有你潦草的笔记。'
+            },
+            // 剧情事件
+            roomEvents: {
+                '客厅': {
+                    '侦查成功': '你在沙发下发现一把小巧的铜钥匙，上面刻着螺旋花纹。',
+                    '侦查大成功': '不仅找到钥匙，还发现了一张写着"平安夜仪式"的纸条。',
+                    '侦查失败': '翻找时不小心弄脏了姜饼身体。',
+                    '检查窗户': '窗外有爪印...昨晚有东西来过。必须关好窗户！',
+                    '有钥匙': '这把钥匙能打开地下室的锁。'
+                },
+                '主卧室': {
+                    '侦查成功': '你认出了自己的身体！床头柜上有奇怪的符号在发光。',
+                    '侦查大成功': '符号组成法阵的一部分，需要两人共同解除。',
+                    '看到身体': 'SAN检定：意识到灵魂被困在姜饼人中。'
+                },
+                '锁着的房间': {
+                    '侦查成功': '门上的符号和你们身上的装饰一模一样。',
+                    '有钥匙': '用铜钥匙打开了门！里面是...',
+                    'secret': '发光的法阵，墙上刻着你们的名字。这就是平安夜的仪式现场。'
+                }
+            }
         };
 
-            // ==================== 游戏流程控制 ====================
-    function setPhase(phase) {
-        document.querySelectorAll('.game-phase').forEach(el => {
-            el.classList.remove('active');
-        });
-        document.getElementById(`phase-${phase}`).classList.add('active');
-        gameData.phase = phase;
-    }
-
-    function startCharacterCreation() {
-        console.log('点击了"开始创建人物"按钮');
-        setPhase('creation');
-        
-        // 调用人物创建初始化
-        if (typeof initCharacterCreation === 'function') {
-            initCharacterCreation();
-        } else {
-            alert('人物创建系统加载中...');
-        }
-    }
-    
-    // 确保按钮能调用
-    window.startCharacterCreation = startCharacterCreation;
-    window.setPhase = setPhase;
-
-
         // ==================== 工具函数 ====================
-        function addLog(message, type = 'info', player = null) {
+        function addLog(message, type = 'info', isSecret = false) {
             const log = document.getElementById('game-log');
             const entry = document.createElement('div');
-            entry.className = 'log-entry';
+            entry.className = `log-entry log-${type}`;
+            
+            if (isSecret) {
+                entry.className += ' log-secret';
+            }
             
             const time = new Date().toLocaleTimeString('zh-CN', { 
                 hour: '2-digit', 
                 minute: '2-digit'
             });
             
-            let prefix = '';
-            let borderColor = '#6c757d';
-            
-            switch(type) {
-                case 'dice': prefix = '🎲'; borderColor = '#fd7e14'; break;
-                case 'san': prefix = '😱'; borderColor = '#20c997'; break;
-                case 'event': prefix = '✨'; borderColor = '#0dcaf0'; break;
-                case 'critical': prefix = '💀'; borderColor = '#dc3545'; break;
-                case 'warning': prefix = '⚠️'; borderColor = '#ffc107'; break;
-                case 'success': prefix = '✅'; borderColor = '#198754'; break;
-                case 'move': prefix = '📍'; borderColor = '#6f42c1'; break;
-                case 'ability': prefix = '🌟'; borderColor = '#fd7e14'; break;
-                case 'title': prefix = '📜'; borderColor = '#0d6efd'; break;
-                default: prefix = '📝';
-            }
-            
-            if (player) {
-                prefix += ` ${player}:`;
-            }
-            
-            entry.style.borderLeftColor = borderColor;
-            entry.innerHTML = `
-                <span class="log-time">${time}</span>
-                ${prefix} ${message}
-            `;
-            
+            entry.innerHTML = `<span class="log-time">${time}</span> ${message}`;
             log.appendChild(entry);
             log.scrollTop = log.scrollHeight;
+            
+            // 如果是秘密消息，只有知晓真相的玩家看到
+            if (isSecret && gameData.secretHolder) {
+                const player = gameData.secretHolder === 'A' ? '玩家A' : '玩家B';
+                showCheckModal('秘密提示', `【仅${player}可见】${message}`);
+            }
         }
 
         function updateStatus() {
             document.getElementById('game-time').textContent = gameData.gameState.time;
             document.getElementById('current-location').textContent = gameData.currentRoom;
             document.getElementById('current-san').textContent = gameData.gameState.san;
-            document.getElementById('current-hp').textContent = gameData.gameState.hp;
             document.getElementById('current-turn').textContent = gameData.gameState.turn;
+            
+            // 检查强制时间
+            checkTimeLimit();
         }
 
         // ==================== 游戏流程控制 ====================
@@ -894,669 +621,308 @@
             });
             document.getElementById(`phase-${phase}`).classList.add('active');
             gameData.phase = phase;
+            
+            if (phase === 'game' && !gameData.gameState.gameStartTime) {
+                gameData.gameState.gameStartTime = Date.now();
+            }
         }
+
+        // ==================== 强制时间逻辑 ====================
+        function checkTimeLimit() {
+            if (!gameData.gameState.gameStartTime) return;
+            
+            const now = Date.now();
+            const elapsedHours = (now - gameData.gameState.gameStartTime) / (1000 * 60 * 60);
+            
+            if (elapsedHours >= 1 && !gameData.gameState.timeWarningShown) {
+                gameData.gameState.timeWarningShown = true;
+                addLog('⏰ 已经过去一小时了！时间紧迫！', 'warning');
+                
+                // 触发强制事件
+                if (!gameData.gameState.windowClosed) {
+                    addLog('🐱 野猫从窗户进来了！游戏失败！', 'critical');
+                    showCheckModal('时间到！', '野猫发现了你们，姜饼人被吃掉了。游戏结束。');
+                } else if (!gameData.gameState.clues.includes('找到身体')) {
+                    addLog('😱 时间流逝，SAN值开始下降...', 'critical');
+                    gameData.gameState.san -= 20;
+                    updateStatus();
+                }
+            }
+        }
+
+        // ==================== 人物创建系统 ====================
+        const statsConfig = [
+            { id: 'str', name: '力量(STR)', value: 0 },
+            { id: 'dex', name: '敏捷(DEX)', value: 0 },
+            { id: 'int', name: '智力(INT)', value: 0 },
+            { id: 'app', name: '外貌(APP)', value: 0 },
+            { id: 'pow', name: '意志(POW)', value: 0 },
+            { id: 'siz', name: '体型(SIZ)', value: 5 },
+            { id: 'edu', name: '教育(EDU)', value: 0 },
+            { id: 'luc', name: '幸运(LUC)', value: 0 }
+        ];
+
+        const TOTAL_POINTS = 90;
+        let confirmedPlayers = [false, false];
 
         function startCharacterCreation() {
             setPhase('creation');
             initCharacterCreation();
         }
 
-// ==================== 人物创建系统 ====================
-const statsConfig = [
-    { id: 'str', name: '力量(STR)', value: 0 },
-    { id: 'dex', name: '敏捷(DEX)', value: 0 },
-    { id: 'int', name: '智力(INT)', value: 0 },
-    { id: 'app', name: '外貌(APP)', value: 0 },
-    { id: 'pow', name: '意志(POW)', value: 0 },
-    { id: 'siz', name: '体型(SIZ)', value: 5 },  // 固定5点
-    { id: 'edu', name: '教育(EDU)', value: 0 },
-    { id: 'luc', name: '幸运(LUC)', value: 0 }
-];
-
-// 总点数设置为90
-const TOTAL_POINTS = 90;
-let confirmedPlayers = [false, false];
-
-function initCharacterCreation() {
-    const container = document.getElementById('character-creation');
-    container.innerHTML = '';
-    
-    // 重置确认状态
-    confirmedPlayers = [false, false];
-    
-    for (let i = 0; i < 2; i++) {
-        const playerDiv = document.createElement('div');
-        playerDiv.className = 'player-form glass-card';
-        playerDiv.style.marginBottom = '30px';
-        playerDiv.style.padding = '25px';
-        
-        playerDiv.innerHTML = `
-            <h3 style="color: ${i === 0 ? '#dc3545' : '#0d6efd'}; margin-bottom: 20px;">
-                玩家 ${String.fromCharCode(65 + i)}
-            </h3>
-            <div class="form-group">
-                <label class="form-label">玩家姓名</label>
-                <input type="text" class="form-input player-name-input" id="player${i}-name" placeholder="输入玩家姓名" oninput="updatePlayerDisplay(${i})">
-            </div>
-            <div class="form-group">
-                <label class="form-label">年龄</label>
-                <input type="number" class="form-input" id="player${i}-age" value="25" min="18" max="80">
-            </div>
+        function initCharacterCreation() {
+            const container = document.getElementById('character-creation');
+            container.innerHTML = '';
             
-            <div class="stats-grid" id="player${i}-stats">
-                <!-- 属性会由JS动态生成 -->
-            </div>
+            confirmedPlayers = [false, false];
             
-            <div style="text-align: center; margin-top: 20px;">
-                <div style="margin-bottom: 10px;">
-                    <span style="color: rgba(255, 255, 255, 0.7);">已用点数: </span>
-                    <span id="player${i}-points" style="color: #20c997; font-weight: bold;">0/${TOTAL_POINTS}</span>
-                </div>
-                <button class="action-btn" onclick="rollPlayerStats(${i})" style="margin-right: 10px;">
-                    随机生成
-                </button>
-                <button class="action-btn primary" onclick="confirmPlayer(${i})" id="confirm-btn-${i}" disabled>
-                    确认创建
-                </button>
-            </div>
-        `;
-        
-        container.appendChild(playerDiv);
-        initPlayerStats(i);
-    }
-}
-
-function initPlayerStats(playerIndex) {
-    const container = document.getElementById(`player${playerIndex}-stats`);
-    container.innerHTML = '';
-    
-    statsConfig.forEach(stat => {
-        const statDiv = document.createElement('div');
-        statDiv.className = 'stat-item glass-effect';
-        statDiv.style.padding = '15px';
-        
-        statDiv.innerHTML = `
-            <div class="stat-name">${stat.name}</div>
-            <div class="stat-value" id="player${playerIndex}-${stat.id}">${stat.value}</div>
-            ${stat.id !== 'siz' ? `
-                <div class="stat-controls">
-                    <button class="stat-btn" onclick="adjustStat(${playerIndex}, '${stat.id}', -1)">-</button>
-                    <button class="stat-btn" onclick="adjustStat(${playerIndex}, '${stat.id}', 1)">+</button>
-                </div>
-            ` : ''}
-        `;
-        
-        container.appendChild(statDiv);
-    });
-    
-    updatePlayerPoints(playerIndex);
-}
-
-function adjustStat(playerIndex, statId, delta) {
-    const element = document.getElementById(`player${playerIndex}-${statId}`);
-    if (!element) return;
-    
-    const currentValue = parseInt(element.textContent);
-    const newValue = currentValue + delta;
-    
-    // 检查范围
-    if (newValue < 0 || newValue > 20) return;
-    
-    const usedPoints = calculateUsedPoints(playerIndex);
-    if (delta > 0 && usedPoints >= TOTAL_POINTS) {
-        alert(`已使用所有 ${TOTAL_POINTS} 点！`);
-        return;
-    }
-    
-    element.textContent = newValue;
-    updatePlayerPoints(playerIndex);
-}
-
-function calculateUsedPoints(playerIndex) {
-    let total = 0;
-    statsConfig.forEach(stat => {
-        if (stat.id !== 'siz') {  // 体型不计入总点数
-            const element = document.getElementById(`player${playerIndex}-${stat.id}`);
-            if (element) {
-                total += parseInt(element.textContent) || 0;
+            for (let i = 0; i < 2; i++) {
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player-form';
+                playerDiv.innerHTML = `
+                    <h3 style="color: ${i === 0 ? 'var(--christmas-red)' : 'var(--christmas-green)'};">玩家 ${String.fromCharCode(65 + i)}</h3>
+                    <div class="form-group">
+                        <label class="form-label">玩家姓名</label>
+                        <input type="text" class="form-input" id="player${i}-name" placeholder="输入姓名" oninput="updatePlayerPoints(${i})">
+                    </div>
+                    <div class="stats-grid" id="player${i}-stats"></div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <div style="margin-bottom: 5px; color: var(--christmas-gold);">已用点数: <span id="player${i}-points">0</span>/90</div>
+                        <button class="btn btn-small" onclick="rollPlayerStats(${i})" style="margin-right: 10px;">随机生成</button>
+                        <button class="btn btn-small btn-green" onclick="confirmPlayer(${i})" id="confirm-btn-${i}" disabled>确认创建</button>
+                    </div>
+                `;
+                
+                container.appendChild(playerDiv);
+                initPlayerStats(i);
             }
         }
-    });
-    return total;
-}
 
-function updatePlayerPoints(playerIndex) {
-    const usedPoints = calculateUsedPoints(playerIndex);
-    const pointsElement = document.getElementById(`player${playerIndex}-points`);
-    const confirmBtn = document.getElementById(`confirm-btn-${playerIndex}`);
-    
-    if (pointsElement) {
-        pointsElement.textContent = `${usedPoints}/${TOTAL_POINTS}`;
-        pointsElement.style.color = usedPoints === TOTAL_POINTS ? '#20c997' : 
-                                   usedPoints > TOTAL_POINTS ? '#dc3545' : '#fd7e14';
-    }
-    
-    if (confirmBtn) {
-        const name = document.getElementById(`player${playerIndex}-name`).value.trim();
-        confirmBtn.disabled = usedPoints !== TOTAL_POINTS || !name;
-        
-        if (usedPoints === TOTAL_POINTS && name) {
-            confirmBtn.style.background = 'rgba(32, 201, 151, 0.3)';
-            confirmBtn.style.borderColor = 'rgba(32, 201, 151, 0.5)';
-        } else {
-            confirmBtn.style.background = 'rgba(255, 255, 255, 0.1)';
-            confirmBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        function initPlayerStats(playerIndex) {
+            const container = document.getElementById(`player${playerIndex}-stats`);
+            container.innerHTML = '';
+            
+            statsConfig.forEach(stat => {
+                const statDiv = document.createElement('div');
+                statDiv.className = 'stat-item';
+                statDiv.innerHTML = `
+                    <div class="stat-name">${stat.name}</div>
+                    <div class="stat-value" id="player${playerIndex}-${stat.id}">${stat.value}</div>
+                    ${stat.id !== 'siz' ? `
+                        <div class="stat-controls">
+                            <button class="stat-btn" onclick="adjustStat(${playerIndex}, '${stat.id}', -1)">-</button>
+                            <button class="stat-btn" onclick="adjustStat(${playerIndex}, '${stat.id}', 1)">+</button>
+                        </div>
+                    ` : ''}
+                `;
+                container.appendChild(statDiv);
+            });
+            
+            updatePlayerPoints(playerIndex);
         }
-    }
-}
 
-function updatePlayerDisplay(playerIndex) {
-    updatePlayerPoints(playerIndex);
-}
+        function adjustStat(playerIndex, statId, delta) {
+            const element = document.getElementById(`player${playerIndex}-${statId}`);
+            if (!element) return;
+            
+            const currentValue = parseInt(element.textContent);
+            const newValue = currentValue + delta;
+            
+            if (newValue < 0 || newValue > 20) return;
+            
+            const usedPoints = calculateUsedPoints(playerIndex);
+            if (delta > 0 && usedPoints >= TOTAL_POINTS) {
+                return;
+            }
+            
+            element.textContent = newValue;
+            updatePlayerPoints(playerIndex);
+        }
 
-function rollPlayerStats(playerIndex) {
-    let remainingPoints = TOTAL_POINTS;
-    const pointPool = [];
-    const stats = [];
-    
-    // 初始化点数池
-    statsConfig.forEach(stat => {
-        if (stat.id !== 'siz') {
-            pointPool.push({ id: stat.id, value: 8 });  // 基础8点
-            remainingPoints -= 8;
+        function calculateUsedPoints(playerIndex) {
+            let total = 0;
+            statsConfig.forEach(stat => {
+                if (stat.id !== 'siz') {
+                    const element = document.getElementById(`player${playerIndex}-${stat.id}`);
+                    if (element) {
+                        total += parseInt(element.textContent) || 0;
+                    }
+                }
+            });
+            return total;
         }
-    });
-    
-    // 分配剩余点数
-    while (remainingPoints > 0) {
-        const randomIndex = Math.floor(Math.random() * pointPool.length);
-        if (pointPool[randomIndex].value < 20) {
-            pointPool[randomIndex].value += 1;
-            remainingPoints -= 1;
-        }
-    }
-    
-    // 应用点数
-    pointPool.forEach(poolStat => {
-        const element = document.getElementById(`player${playerIndex}-${poolStat.id}`);
-        if (element) {
-            element.textContent = Math.min(poolStat.value, 20);
-        }
-    });
-    
-    updatePlayerPoints(playerIndex);
-    addLog(`玩家${String.fromCharCode(65 + playerIndex)}属性已随机生成`, 'dice');
-}
 
-function confirmPlayer(playerIndex) {
-    const nameInput = document.getElementById(`player${playerIndex}-name`);
-    const name = nameInput.value.trim() || `玩家${String.fromCharCode(65 + playerIndex)}`;
-    const age = parseInt(document.getElementById(`player${playerIndex}-age`).value) || 25;
-    
-    // 验证点数
-    const usedPoints = calculateUsedPoints(playerIndex);
-    if (usedPoints !== TOTAL_POINTS) {
-        alert(`请使用完所有 ${TOTAL_POINTS} 点！当前：${usedPoints}/${TOTAL_POINTS}`);
-        return;
-    }
-    
-    // 收集属性
-    const stats = {};
-    statsConfig.forEach(stat => {
-        const element = document.getElementById(`player${playerIndex}-${stat.id}`);
-        if (element) {
-            stats[stat.id] = parseInt(element.textContent) || 0;
+        function updatePlayerPoints(playerIndex) {
+            const usedPoints = calculateUsedPoints(playerIndex);
+            const pointsElement = document.getElementById(`player${playerIndex}-points`);
+            const confirmBtn = document.getElementById(`confirm-btn-${playerIndex}`);
+            
+            if (pointsElement) {
+                pointsElement.textContent = usedPoints;
+                pointsElement.style.color = usedPoints === TOTAL_POINTS ? 'var(--christmas-green)' : 
+                                         usedPoints > TOTAL_POINTS ? 'var(--christmas-red)' : 'var(--christmas-gold)';
+            }
+            
+            if (confirmBtn) {
+                const name = document.getElementById(`player${playerIndex}-name`).value.trim();
+                confirmBtn.disabled = usedPoints !== TOTAL_POINTS || !name;
+            }
         }
-    });
-    
-    // 计算衍生属性
-    const san = stats.pow * 5;
-    const hp = Math.floor((stats.siz + 10) / 10);
-    const mp = Math.floor(stats.pow / 5);
-    
-    // 保存玩家数据
-    gameData.players[playerIndex] = {
-        name,
-        age,
-        stats,
-        san,
-        hp,
-        mp
-    };
-    
-    // 标记为已确认
-    confirmedPlayers[playerIndex] = true;
-    
-    // 更新确认按钮
-    const confirmBtn = document.getElementById(`confirm-btn-${playerIndex}`);
-    confirmBtn.textContent = '✓ 已确认';
-    confirmBtn.disabled = true;
-    confirmBtn.style.background = 'rgba(32, 201, 151, 0.5)';
-    confirmBtn.style.borderColor = 'rgba(32, 201, 151, 0.7)';
-    
-    addLog(`角色创建完成: ${name} (SAN: ${san}, HP: ${hp}, MP: ${mp})`, 'success');
-    
-    // 更新秘密选择界面的名字显示
-    if (playerIndex === 0) {
-        document.getElementById('playerA-name').textContent = name;
-    } else {
-        document.getElementById('playerB-name').textContent = name;
-    }
-    
-    // 检查是否两个玩家都确认了
-    checkAllPlayersConfirmed();
-}
 
-function checkAllPlayersConfirmed() {
-    if (confirmedPlayers[0] && confirmedPlayers[1]) {
-        addLog('两个角色都已创建完成，2秒后进入下一步...', 'success');
-        setTimeout(() => {
-            setPhase('secret');
-        }, 2000);
-    }
-}
-        
+        function rollPlayerStats(playerIndex) {
+            let remainingPoints = TOTAL_POINTS;
+            const pointPool = [];
+            
+            statsConfig.forEach(stat => {
+                if (stat.id !== 'siz') {
+                    pointPool.push({ id: stat.id, value: 8 });
+                    remainingPoints -= 8;
+                }
+            });
+            
+            while (remainingPoints > 0) {
+                const randomIndex = Math.floor(Math.random() * pointPool.length);
+                if (pointPool[randomIndex].value < 20) {
+                    pointPool[randomIndex].value += 1;
+                    remainingPoints -= 1;
+                }
+            }
+            
+            pointPool.forEach(poolStat => {
+                const element = document.getElementById(`player${playerIndex}-${poolStat.id}`);
+                if (element) {
+                    element.textContent = Math.min(poolStat.value, 20);
+                }
+            });
+            
+            updatePlayerPoints(playerIndex);
+        }
+
+        function confirmPlayer(playerIndex) {
+            const nameInput = document.getElementById(`player${playerIndex}-name`);
+            const name = nameInput.value.trim() || `玩家${String.fromCharCode(65 + playerIndex)}`;
+            
+            const usedPoints = calculateUsedPoints(playerIndex);
+            if (usedPoints !== TOTAL_POINTS) {
+                return;
+            }
+            
+            const stats = {};
+            statsConfig.forEach(stat => {
+                const element = document.getElementById(`player${playerIndex}-${stat.id}`);
+                if (element) {
+                    stats[stat.id] = parseInt(element.textContent) || 0;
+                }
+            });
+            
+            gameData.players[playerIndex] = {
+                name,
+                stats,
+                san: stats.pow * 5,
+                hp: Math.floor((stats.siz + 10) / 10),
+                mp: Math.floor(stats.pow / 5)
+            };
+            
+            confirmedPlayers[playerIndex] = true;
+            
+            const confirmBtn = document.getElementById(`confirm-btn-${playerIndex}`);
+            confirmBtn.textContent = '✓ 已确认';
+            confirmBtn.disabled = true;
+            
+            // 更新名字显示
+            if (playerIndex === 0) {
+                document.getElementById('playerA-name').textContent = name;
+            } else {
+                document.getElementById('playerB-name').textContent = name;
+            }
+            
+            // 检查是否都确认了
+            if (confirmedPlayers[0] && confirmedPlayers[1]) {
+                setTimeout(() => setPhase('secret'), 1000);
+            }
+        }
+
+        // ==================== 秘密系统 ====================
         function setSecretHolder(player) {
             gameData.secretHolder = player;
-            addLog(`玩家${player}被选为秘密持有者`, 'event');
+            addLog(`玩家${player}知晓真相`, 'secret', true);
             startGame();
+        }
+
+        function getRoomDescription(room) {
+            if (gameData.secretHolder && gameData.secretRoomDescriptions[room]) {
+                return gameData.secretRoomDescriptions[room];
+            }
+            return gameData.publicRoomDescriptions[room] || '一个陌生的房间...';
         }
 
         // ==================== 主游戏系统 ====================
         function startGame() {
             setPhase('game');
             updateStatus();
-            addLog('=== 游戏开始 ===', 'title');
-            addLog('圣诞节 06:00，你们在客厅醒来，发现自己变成了姜饼人！', 'event');
-            addLog('姜饼人特性: 跳跃力×2，力量×2（用于攀爬），但怕水怕热', 'info');
+            addLog('=== 游戏开始 ===', 'info');
+            addLog('圣诞节 06:00，你们在客厅醒来，发现自己变成了姜饼人！', 'info');
         }
 
         function enterRoom(room) {
             gameData.currentRoom = room;
             updateStatus();
             
-            // 更新按钮状态
-            document.querySelectorAll('.room-btn').forEach(btn => {
-                btn.classList.remove('current');
-                if (btn.textContent.includes(room)) {
-                    btn.classList.add('current');
-                }
-            });
+            const description = getRoomDescription(room);
+            document.getElementById('modal-room-title').textContent = room;
+            document.getElementById('modal-room-description').textContent = description;
+            document.getElementById('room-modal').classList.add('active');
             
-            addLog(`进入: ${room}`, 'move');
+            addLog(`进入: ${room}`, 'info');
             
-            // 显示剧情弹窗
-            showRoomModal(room);
-        }
-
-        function showRoomModal(room) {
-            const modal = document.getElementById('room-modal');
-            const title = document.getElementById('modal-room-name');
-            const time = document.getElementById('modal-room-time');
-            const desc = document.getElementById('modal-room-description');
-            
-            title.textContent = room;
-            time.textContent = `时间：${gameData.gameState.time}`;
-            desc.textContent = gameData.roomDescriptions[room] || '一个陌生的房间...';
-            
-            // 隐藏检定结果
-            document.getElementById('check-results').classList.add('hidden');
-            
-            // 显示弹窗
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('room-modal').classList.remove('active');
-        }
-
-        // ==================== 剧情事件系统 ====================
-        const roomEvents = {
-            '客厅': {
-                '侦查成功': '你在沙发下发现一把小巧的铜钥匙，上面刻着奇怪的花纹。',
-                '侦查大成功': '🎉 大成功！你在沙发下不仅找到了钥匙，还发现了一本笔记，上面写着"地下室法阵..."',
-                '侦查失败': '房间里似乎没什么特别的东西，只有圣诞装饰在闪烁。',
-                '侦查大失败': '💥 大失败！你不小心碰倒了圣诞树装饰，巨大的装饰球滚向你！',
-                '检查窗户': '落地窗外有爪印...昨晚有东西来过。必须关好窗户！',
-                '幸运成功': '刚好在野猫出现前关上了窗户！',
-                '幸运失败': '窗户没关严，听到外面有猫叫声...'
-            },
-            '餐厅': {
-                '侦查成功': '魔法书上记载着灵魂出窍的仪式："在平安夜，以姜饼为媒介..."',
-                '侦查大成功': '🎉 大成功！你发现书页间夹着一张地下室的地图！',
-                '侦查失败': '餐盘上的食物对现在的你们来说太大了，无法调查。',
-                '检查窗户': '这里的窗户是封闭的，打不开。'
-            },
-            '主卧室': {
-                '侦查成功': '你认出了床上的身体！那就是你们自己！呼吸平稳，但怎么也叫不醒。',
-                '侦查大成功': '🎉 大成功！你在床头柜发现了法阵的草图，和地下室的一模一样！',
-                '侦查失败': '床太高了，姜饼人的身体爬不上去。',
-                '看到身体': '😱 SAN检定：看到自己的身体躺在床上，意识到灵魂出窍了！'
-            },
-            '法阵房间': {
-                '侦查成功': '门上的符号和你们身上的姜饼装饰一模一样！',
-                '侦查大成功': '🎉 大成功！你认出门上的符号是"灵魂链接"的古代符文！',
-                '侦查失败': '门锁得很紧，姜饼人的力量打不开。',
-                '有钥匙': '用客厅找到的钥匙打开了门！里面是...发光的法阵！'
-            },
-            '书房': {
-                '侦查成功': '书桌上的图纸详细画着法阵的结构，还有...平安夜的日期。',
-                '侦查大成功': '🎉 大成功！你找到了仪式笔记："需要两名参与者的同意..."',
-                '侦查失败': '书桌上的图纸对姜饼人来说像壁画，看不懂。'
-            },
-            '废弃储藏室': {
-                '侦查成功': '在旧箱子后发现一个发光的符文石。',
-                '侦查失败': '满是灰尘，看不清什么东西。'
-            },
-            '厨房': {
-                '侦查成功': '注意避开危险区域！',
-                '侦查失败': '太危险了，赶紧离开厨房！'
-            }
-        };
-
-        // 线索系统
-        const gameClues = {
-            '客厅钥匙': { 
-                id: 'key', 
-                found: false, 
-                description: '一把小巧的铜钥匙，刻着螺旋花纹',
-                location: '客厅',
-                use: '可以打开地下室法阵房间的门'
-            },
-            '魔法书': { 
-                id: 'spellbook', 
-                found: false, 
-                description: '《灵魂超脱仪式指南》，翻到关于姜饼媒介的章节',
-                location: '餐厅',
-                use: '解释了灵魂出窍的原理'
-            },
-            '身体发现': { 
-                id: 'bodies', 
-                found: false, 
-                description: '确认你们的身体在主卧室，处于昏迷状态',
-                location: '主卧室',
-                use: '知道目标地点了'
-            },
-            '法阵草图': { 
-                id: 'blueprint', 
-                found: false, 
-                description: '地下室法阵的详细结构图',
-                location: '书房',
-                use: '了解法阵的运作方式'
-            },
-            '仪式笔记': { 
-                id: 'ritual_note', 
-                found: false, 
-                description: '手写笔记："平安夜，两名参与者，姜饼媒介，灵魂暂离"',
-                location: '书房',
-                use: '知道仪式的基本要求'
-            }
-        };
-
-        // 新的检定函数，带剧情
-        function performCheckWithStory(checkType, skillValue) {
-            const resultsDiv = document.getElementById('check-results');
-            resultsDiv.classList.remove('hidden');
-            
-            // 清除之前的结果
-            document.querySelectorAll('.dice-roll').forEach(el => {
-                el.textContent = '-';
-                el.className = 'dice-roll';
-            });
-            document.querySelectorAll('.check-details').forEach(el => {
-                el.textContent = '等待检定...';
-            });
-            
-            // 为两个玩家分别检定
-            let playerResults = [];
-            let completedCount = 0;
-            
-            gameData.players.forEach((player, index) => {
-                setTimeout(() => {
-                    rollDiceForPlayerWithStory(player, index, checkType, skillValue).then(result => {
-                        playerResults[index] = result;
-                        completedCount++;
-                        
-                        // 两个玩家都检定完后，触发剧情
-                        if (completedCount === 2) {
-                            handleCheckResults(playerResults, checkType);
-                        }
-                    });
-                }, index * 800);
-            });
-        }
-
-        function rollDiceForPlayerWithStory(player, playerIndex, checkType, skillValue) {
-            return new Promise((resolve) => {
-                const diceElement = document.querySelectorAll('.dice-roll')[playerIndex];
-                const detailsElement = document.querySelectorAll('.check-details')[playerIndex];
-                
-                // 动画
-                diceElement.textContent = '🎲';
-                diceElement.classList.add('rolling');
-                
-                setTimeout(() => {
-                    diceElement.classList.remove('rolling');
-                    const roll = Math.floor(Math.random() * 100) + 1;
-                    diceElement.textContent = roll;
-                    
-                    let resultClass = '';
-                    let resultText = '';
-                    let successLevel = '';
-                    
-                    if (roll <= 5) {
-                        resultClass = 'critical';
-                        resultText = '💥 大成功！';
-                        successLevel = 'critical_success';
-                    } else if (roll <= skillValue) {
-                        resultClass = 'success';
-                        resultText = '✅ 成功';
-                        successLevel = 'success';
-                    } else if (roll >= 96) {
-                        resultClass = 'critical';
-                        resultText = '💀 大失败！';
-                        successLevel = 'critical_failure';
-                    } else {
-                        resultClass = 'failure';
-                        resultText = '❌ 失败';
-                        successLevel = 'failure';
-                    }
-                    
-                    diceElement.className = `dice-roll ${resultClass}`;
-                    detailsElement.textContent = `掷出: ${roll}，技能值: ${skillValue} - ${resultText}`;
-                    detailsElement.className = `check-details ${resultClass}`;
-                    
-                    addLog(`${player.name} ${checkType}: ${roll}/${skillValue} - ${resultText}`, 'dice', player.name);
-                    
-                    // 返回结果
-                    const result = {
-                        player: player.name,
-                        roll: roll,
-                        skill: skillValue,
-                        success: roll <= skillValue,
-                        criticalSuccess: roll <= 5,
-                        criticalFailure: roll >= 96,
-                        successLevel: successLevel
-                    };
-                    
-                    // SAN Check
-                    if (checkType === '侦查检定' && roll > skillValue && roll >= 96) {
-                        setTimeout(() => {
-                            const sanLoss = Math.floor(Math.random() * 10) + 1;
-                            gameData.gameState.san -= sanLoss;
-                            updateStatus();
-                            addLog(`${player.name} SAN损失: ${sanLoss}点`, 'san', player.name);
-                        }, 500);
-                    }
-                    
-                    resolve(result);
-                }, 600);
-            });
-        }
-
-        function handleCheckResults(results, checkType) {
-            const room = gameData.currentRoom;
-            
-            addLog(`=== ${room} 调查结果 ===`, 'title');
-            
-            // 检查是否有玩家成功
-            const anySuccess = results.some(r => r.success);
-            const anyCriticalSuccess = results.some(r => r.criticalSuccess);
-            const allFailed = results.every(r => !r.success);
-            
-            // 根据结果触发剧情
-            if (roomEvents[room]) {
-                let eventKey = '';
-                
-                if (anyCriticalSuccess) {
-                    eventKey = '侦查大成功';
-                } else if (anySuccess) {
-                    eventKey = '侦查成功';
-                } else if (allFailed) {
-                    // 检查是否有大失败
-                    const anyCriticalFailure = results.some(r => r.criticalFailure);
-                    eventKey = anyCriticalFailure ? '侦查大失败' : '侦查失败';
-                }
-                
-                if (roomEvents[room][eventKey]) {
-                    // 显示剧情
-                    setTimeout(() => {
-                        addLog(roomEvents[room][eventKey], 'event');
-                        
-                        // 触发线索发现
-                        triggerClueDiscovery(room, eventKey);
-                        
-                        // 特殊事件
-                        triggerSpecialEvent(room, eventKey);
-                    }, 1000);
-                }
-            }
-            
-            // 记录到游戏状态
-            if (anySuccess) {
-                if (!gameData.gameState.clues.includes(`${room}_investigated`)) {
-                    gameData.gameState.clues.push(`${room}_investigated`);
-                }
+            // 特殊房间的额外秘密信息
+            if (room === '锁着的房间' && gameData.secretHolder) {
+                addLog('这是你布下法阵的房间...', 'secret', true);
             }
         }
 
-        function triggerClueDiscovery(room, result) {
-            // 客厅钥匙
-            if (room === '客厅' && (result === '侦查成功' || result === '侦查大成功')) {
-                if (!gameClues['客厅钥匙'].found) {
-                    gameClues['客厅钥匙'].found = true;
-                    gameData.gameState.items.push('铜钥匙');
-                    addLog('🎯 获得线索：铜钥匙', 'success');
-                    addLog('物品栏：铜钥匙（可以打开地下室的门）', 'info');
-                }
-            }
-            
-            // 魔法书
-            if (room === '餐厅' && (result === '侦查成功' || result === '侦查大成功')) {
-                if (!gameClues['魔法书'].found) {
-                    gameClues['魔法书'].found = true;
-                    addLog('🎯 获得线索：灵魂出窍的魔法书', 'success');
-                    addLog('书中记载：以姜饼为媒介，灵魂可暂离身体', 'info');
-                }
-            }
-            
-            // 身体发现
-            if (room === '主卧室' && (result === '侦查成功' || result === '侦查大成功')) {
-                if (!gameClues['身体发现'].found) {
-                    gameClues['身体发现'].found = true;
-                    addLog('🎯 重要发现：找到你们的身体了！', 'event');
-                    addLog('身体在床上，但灵魂被困在姜饼人中', 'info');
-                    
-                    // SAN Check
-                    setTimeout(() => {
-                        addLog('😱 看到自己的身体，进行SAN检定...', 'san');
-                        performSanCheck(5, '看到自己的身体');
-                    }, 1500);
-                }
-            }
-            
-            // 法阵草图
-            if (room === '书房' && (result === '侦查成功' || result === '侦查大成功')) {
-                if (!gameClues['法阵草图'].found) {
-                    gameClues['法阵草图'].found = true;
-                    addLog('🎯 获得线索：法阵结构图', 'success');
-                    addLog('图纸显示法阵需要两具身体作为锚点', 'info');
-                }
-            }
-            
-            // 仪式笔记
-            if (room === '书房' && result === '侦查大成功') {
-                if (!gameClues['仪式笔记'].found) {
-                    gameClues['仪式笔记'].found = true;
-                    addLog('🎯 获得线索：仪式手写笔记', 'success');
-                    addLog('笔记："必须双方都同意，才能让灵魂回归"', 'info');
-                }
-            }
-        }
-
-        function triggerSpecialEvent(room, result) {
-            // 法阵房间有钥匙
-            if (room === '法阵房间') {
-                if (gameData.gameState.items.includes('铜钥匙')) {
-                    setTimeout(() => {
-                        addLog('🗝️ 用铜钥匙打开了法阵房间的门！', 'event');
-                        addLog('房间里是发光的法阵，墙上刻着你们的名字...', 'description');
-                        
-                        // 结局触发条件
-                        gameData.gameState.clues.push('法阵房间打开');
-                    }, 2000);
-                }
-            }
-        }
-
-        function performSanCheck(loss, reason) {
-            const sanLoss = loss === 5 ? Math.floor(Math.random() * 5) + 1 : loss;
-            gameData.gameState.san -= sanLoss;
-            updateStatus();
-            
-            addLog(`SAN损失: ${sanLoss}点，原因: ${reason}`, 'san');
-            addLog(`当前SAN: ${gameData.gameState.san}`, 'info');
-            
-            if (gameData.gameState.san <= 0) {
-                addLog('💀 理智归零，陷入永久疯狂！', 'critical');
-            } else if (gameData.gameState.san < 50) {
-                addLog('⚠️ 理智低落，可能陷入临时疯狂', 'warning');
-            }
-        }
-
-        // ==================== 行动函数 ====================
         function investigateCurrentRoom() {
-            addLog(`调查${gameData.currentRoom}...`, 'info');
-            performCheckWithStory('侦查检定', 50);
+            const room = gameData.currentRoom;
+            addLog(`调查${room}...`, 'info');
+            
+            // 模拟检定
+            const roll = Math.floor(Math.random() * 100) + 1;
+            let result, description;
+            
+            if (roll <= 5) {
+                result = '大成功！';
+                description = gameData.roomEvents[room]?.['侦查大成功'] || '发现了重要线索！';
+            } else if (roll <= 50) {
+                result = '成功';
+                description = gameData.roomEvents[room]?.['侦查成功'] || '发现了一些东西。';
+            } else if (roll >= 96) {
+                result = '大失败！';
+                description = gameData.roomEvents[room]?.['侦查大失败'] || '调查时出了意外！';
+            } else {
+                result = '失败';
+                description = gameData.roomEvents[room]?.['侦查失败'] || '没有发现什么特别的东西。';
+            }
+            
+            showCheckModal(`${room}调查`, `${result} ${description}`);
+            
+            // 特殊发现
+            if (room === '客厅' && roll <= 50) {
+                gameData.gameState.items.push('铜钥匙');
+                addLog('获得线索：铜钥匙', 'success');
+            }
+            
+            if (room === '主卧室' && roll <= 50) {
+                gameData.gameState.clues.push('找到身体');
+                addLog('重要发现：找到你们的身体了！', 'critical');
+            }
         }
 
         function checkWindows() {
             if (gameData.currentRoom === '客厅') {
                 if (!gameData.gameState.windowClosed) {
-                    addLog('检查落地窗...', 'info');
-                    
-                    // 先显示剧情
-                    setTimeout(() => {
-                        addLog(roomEvents['客厅']['检查窗户'], 'event');
-                    }, 500);
-                    
-                    // 幸运检定避免野猫
-                    setTimeout(() => {
-                        addLog('需要进行幸运检定避免野生动物...', 'warning');
-                        performCheckWithStory('幸运检定', 60);
-                    }, 1500);
-                    
-                    // 无论检定结果如何，都尝试关闭
-                    setTimeout(() => {
-                        const success = Math.random() > 0.3; // 70%成功率
-                        if (success) {
-                            addLog('成功关上了落地窗！', 'success');
-                            gameData.gameState.windowClosed = true;
-                        } else {
-                            addLog('窗户卡住了，没关严！', 'warning');
-                            addLog('听到外面有猫叫声越来越近...', 'critical');
-                        }
-                    }, 3000);
+                    addLog('关上了落地窗！', 'success');
+                    gameData.gameState.windowClosed = true;
+                    showCheckModal('检查窗户', '成功关上了窗户，暂时安全了。');
                 } else {
                     addLog('窗户已关好。', 'info');
                 }
@@ -1567,33 +933,38 @@ function checkAllPlayersConfirmed() {
 
         function useGingerbreadAbility() {
             const abilities = [
-                '姜饼跳跃: 跳到平时两倍高度',
-                '饼干韧性: 承受摔落伤害减半',
-                '甜蜜气息: 可能影响动物行为',
-                '糖霜滑行: 在光滑表面快速移动'
+                '姜饼跳跃：跳到平时两倍高度',
+                '饼干韧性：承受摔落伤害减半',
+                '甜蜜气息：可能影响动物行为',
+                '糖霜滑行：在光滑表面快速移动'
             ];
-            
             const ability = abilities[Math.floor(Math.random() * abilities.length)];
-            addLog(`使用能力: ${ability}`, 'ability');
+            addLog(`使用能力: ${ability}`, 'info');
+            showCheckModal('姜饼人能力', ability);
         }
 
         function rollLuckCheck() {
-            addLog(`幸运检定...`, 'info');
-            performCheckWithStory('幸运检定', 50);
+            const roll = Math.floor(Math.random() * 100) + 1;
+            const result = roll <= 50 ? '幸运成功' : '幸运失败';
+            addLog(`幸运检定: ${roll}/50 ${result}`, result.includes('成功') ? 'success' : 'failure');
+            showCheckModal('幸运检定', `${result}！掷出: ${roll}`);
         }
 
         function rollSpotCheck() {
-            addLog(`侦查检定...`, 'info');
-            performCheckWithStory('侦查检定', 60);
-        }
-
-        function endTurnFromModal() {
-            closeModal();
-            endTurn();
+            const roll = Math.floor(Math.random() * 100) + 1;
+            const result = roll <= 60 ? '侦查成功' : '侦查失败';
+            
+            if (roll >= 96) {
+                addLog('SAN损失: 1d10点', 'warning');
+                gameData.gameState.san -= Math.floor(Math.random() * 10) + 1;
+                updateStatus();
+            }
+            
+            addLog(`侦查检定: ${roll}/60 ${result}`, result.includes('成功') ? 'success' : 'failure');
+            showCheckModal('侦查检定', `${result}！掷出: ${roll}`);
         }
 
         function endTurn() {
-            // 时间推进
             let [hours, minutes] = gameData.gameState.time.split(':').map(Number);
             minutes += 15;
             if (minutes >= 60) {
@@ -1603,26 +974,41 @@ function checkAllPlayersConfirmed() {
             gameData.gameState.time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             gameData.gameState.turn += 1;
             
-            addLog(`=== 回合 ${gameData.gameState.turn} 结束 ===`, 'title');
-            addLog(`时间推进到: ${gameData.gameState.time}`, 'time');
+            addLog(`=== 回合 ${gameData.gameState.turn} 结束 ===`, 'info');
+            addLog(`时间推进到: ${gameData.gameState.time}`, 'info');
             
             // 每2回合检查野猫
             if (gameData.gameState.turn % 2 === 0 && !gameData.gameState.windowClosed) {
-                addLog('⚠️ 30分钟过去，检查野生动物...', 'warning');
-                performCheckWithStory('幸运检定', 60);
+                addLog('⚠️ 时间流逝，检查周围环境...', 'warning');
             }
             
             updateStatus();
         }
 
+        // ==================== 模态框控制 ====================
+        function closeModal() {
+            document.getElementById('room-modal').classList.remove('active');
+        }
+
+        function closeModalAndEndTurn() {
+            closeModal();
+            endTurn();
+        }
+
+        function showCheckModal(title, description) {
+            document.getElementById('check-title').textContent = title;
+            document.getElementById('check-description').textContent = description;
+            document.getElementById('check-modal').classList.add('active');
+        }
+
+        function closeCheckModal() {
+            document.getElementById('check-modal').classList.remove('active');
+        }
+
         // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', function() {
-            addLog('游戏已加载，准备开始...', 'info');
+            addLog('游戏加载完成', 'info');
         });
-
-            });  // document.addEventListener 的闭合括号
-        
-    </script>  <!-- 这个必须有！ -->
+    </script>
 </body>
 </html>
-
