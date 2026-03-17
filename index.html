@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>🍪 姜饼人：平安夜的救赎契约</title>
+    <title>🍪 姜饼人：平安夜的友情契约</title>
     <style>
         :root {
             --gingerbread: #8B4513; --icing-red: #FF6B6B; --icing-green: #51A3A3;
@@ -10,33 +10,34 @@
             --star-gold: #FFD700;
         }
         body { font-family: '楷体', 'STKaiti', serif; background: var(--bg-dark); color: var(--icing-white); padding: 15px; line-height: 1.6; margin: 0; }
-        .container { max-width: 900px; margin: 0 auto; padding-bottom: 200px; } /* 为底部日志留空间 */
+        .container { max-width: 900px; margin: 0 auto; padding-bottom: 220px; }
         .game-phase { display: none; }
         .game-phase.active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- 属性分配 --- */
         .char-setup { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .char-card { background: var(--bg-card); border: 2px solid var(--icing-red); border-radius: 20px; padding: 20px; }
-        .name-input { width: 90%; background: rgba(0,0,0,0.4); border: 1px solid var(--icing-green); color: var(--star-gold); padding: 8px; border-radius: 8px; margin-bottom: 10px; text-align: center; }
+        .char-card { background: var(--bg-card); border: 2px solid var(--icing-red); border-radius: 20px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .name-tag { font-size: 0.8rem; color: var(--icing-green); margin-bottom: 5px; display: block; }
+        .name-input { width: 90%; background: rgba(0,0,0,0.4); border: 1px solid var(--icing-green); color: var(--star-gold); padding: 8px; border-radius: 8px; margin-bottom: 10px; text-align: center; font-family: inherit; }
         .stat-row { display: flex; align-items: center; justify-content: space-between; margin: 5px 0; font-size: 0.9rem; }
         .btn-ctrl { width: 28px; height: 28px; border: none; background: var(--icing-green); color: white; border-radius: 4px; cursor: pointer; }
 
         /* --- 主界面 --- */
-        .room-box { background: var(--bg-card); border-radius: 25px; padding: 30px; border: 2px solid var(--icing-green); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .room-box { background: var(--bg-card); border-radius: 25px; padding: 30px; border: 2px solid var(--icing-green); position: relative; }
         .action-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: var(--icing-white); color: var(--gingerbread); border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .nav-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
-        .nav-btn { padding: 12px; background: var(--icing-green); color: white; border: none; border-radius: 10px; cursor: pointer; }
+        .nav-btn { padding: 12px; background: var(--icing-green); color: white; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; }
         .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
 
-        /* --- 弹窗居中修复 --- */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; z-index: 1000; justify-content: center; align-items: center; }
+        /* --- 弹窗居中 --- */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
-        .modal-content { background: var(--bg-card); width: 80%; max-width: 500px; padding: 30px; border-radius: 25px; border: 3px solid var(--icing-red); text-align: center; cursor: pointer; }
+        .modal-content { background: var(--bg-card); width: 85%; max-width: 500px; padding: 30px; border-radius: 25px; border: 3px solid var(--icing-red); text-align: center; cursor: pointer; box-shadow: 0 0 30px var(--icing-red); }
 
         /* --- 剧情日志 --- */
-        #story-log { position: fixed; bottom: 0; left: 0; width: 100%; height: 180px; background: rgba(20, 10, 10, 0.95); border-top: 2px solid var(--icing-red); padding: 15px; overflow-y: auto; font-size: 0.9rem; color: #ccc; box-sizing: border-box; z-index: 500; }
-        .log-entry { margin-bottom: 8px; border-left: 3px solid var(--icing-green); padding-left: 10px; animation: slideIn 0.3s; }
+        #story-log { position: fixed; bottom: 0; left: 0; width: 100%; height: 200px; background: rgba(15, 8, 8, 0.98); border-top: 3px solid var(--icing-red); padding: 15px; overflow-y: auto; font-size: 0.9rem; color: #bbb; box-sizing: border-box; z-index: 500; }
+        .log-entry { margin-bottom: 10px; border-left: 3px solid var(--icing-green); padding-left: 10px; animation: slideIn 0.3s; }
         @keyframes slideIn { from { transform: translateX(-10px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
@@ -44,26 +45,29 @@
 
 <div class="container">
     <div id="phase-char" class="game-phase active">
-        <h1 style="text-align:center; color:var(--icing-red)">🕯️ 灵魂契约分配</h1>
+        <h1 style="text-align:center; color:var(--icing-red); text-shadow: 2px 2px 0px #000;">🕯️ 灵魂契约：损友的恶作剧？</h1>
+        <p style="text-align:center; font-style: italic; color: #aaa;">“这晚的酒很烈，你的挚友 B 似乎在担心明年毕业后的各奔东西...”</p>
         <div style="text-align:center; margin-bottom:15px; background:var(--gingerbread); padding:10px; border-radius:10px;">剩余灵魂能量：<span id="total-pool">900</span></div>
         <div class="char-setup" id="setup-root"></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
             <button class="action-btn" onclick="randomizeStats()">🎲 随机初始化</button>
-            <button class="action-btn" onclick="startGame()" style="background:var(--icing-red); color:white;">踏入梦境</button>
+            <button class="action-btn" onclick="startGame()" style="background:var(--icing-red); color:white;">进入那个平安夜</button>
         </div>
     </div>
 
     <div id="phase-main" class="game-phase">
-        <div style="display:flex; justify-content: space-between; margin-bottom:15px;">
-            <span>⌛ 剩余时间: <b id="time-display">06:00</b></span>
-            <span>⭐ 线索: <b id="star-display">0/5</b></span>
+        <div style="display:flex; justify-content: space-between; margin-bottom:15px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px;">
+            <span>⌛ 剩余时间: <b id="time-display" style="color:var(--icing-red)">06:00</b></span>
+            <span>⭐ 友情证据: <b id="star-display" style="color:var(--star-gold)">0/5</b></span>
             <span>🎒 <b id="inv-display">无道具</b></span>
         </div>
+        <div id="cat-status" style="display:none; color:var(--icing-red); text-align:center; font-weight:bold; margin-bottom:10px;">⚠️ 凶恶的野猫占据了客厅，通行变得危险！</div>
+        
         <div class="room-box">
             <h2 id="room-title" style="color:var(--star-gold); text-align: center; margin-top:0;"></h2>
-            <div id="room-desc" style="margin-bottom:20px; font-size:1.05rem;"></div>
+            <div id="room-desc" style="margin-bottom:20px; font-size:1.05rem; border-bottom: 1px solid #444; padding-bottom: 15px;"></div>
             <div id="action-list"></div>
-            <h3 style="font-size:1rem; border-top:1px solid #444; padding-top:15px;">移动至下一个区域：</h3>
+            <h3 style="font-size:1rem; margin-top:25px; color:var(--icing-green);">移动至：</h3>
             <div class="nav-grid" id="nav-grid"></div>
         </div>
     </div>
@@ -72,19 +76,22 @@
 <div id="modal-res" class="modal" onclick="closeModal()">
     <div class="modal-content">
         <div id="res-body"></div>
-        <p style="font-size:0.8rem; color:#888; margin-top:20px;">(点击任意位置继续)</p>
+        <p style="font-size:0.85rem; color:#777; margin-top:25px;">( 点击任意处继续 )</p>
     </div>
 </div>
 
 <div id="story-log">
-    <div style="color:var(--icing-red); font-weight:bold; margin-bottom:10px; border-bottom:1px solid #444;">📜 灵魂记忆日志</div>
+    <div style="color:var(--icing-red); font-weight:bold; margin-bottom:10px; border-bottom:1px solid #444; display:flex; justify-content: space-between;">
+        <span>📜 友情记忆日志</span>
+        <span id="log-stat" style="font-size:0.7rem;">灵魂极其稳定</span>
+    </div>
     <div id="log-content"></div>
 </div>
 
 <script>
     const state = {
         time: 360, stars: 0, currentRoom: '客厅', 
-        hasKey: false, windowClosed: false,
+        hasKey: false, windowClosed: false, catInLiving: false,
         explored: new Set(),
         players: [
             { id: 0, name: "A", stats: { STR:75, DEX:75, INT:75, POW:75, EDU:75, LUC:75 } },
@@ -94,51 +101,50 @@
 
     const storyDB = {
         '客厅': {
-            desc: "平安夜的余温正在散去。落地窗微微颤动，外面野猫的呼噜声在寒风中格外刺耳。[B]坐立难安，他记得自己昨晚喝了很多，因为害怕[A]离开而许下了荒唐的愿望。现在，那个愿望变成了禁锢灵魂的脆糖。",
-            actions: [{ label: "🔒 协力封死落地窗", skill: "DEX", difficulty: 55, 
-                        onSuccess: () => { state.windowClosed=true; return "[A]和[B]拼命抵住插销，在野猫扑上来前关严了窗。你们暂时安全了。"; },
-                        onFail: () => "窗户卡住了！冰冷的恶意渗透进来，你们的手指变得更加僵硬。" }],
+            desc: "这是你们平日里打游戏互损的地方。现在，由于[B]那场极其离谱的‘友情永驻魔法’，你们变成了巴掌大的姜饼。落地窗大开，外面的草丛里有一双金色的眼睛在晃动。如果你们不赶紧关窗，等野猫进来了，这客厅可就待不下去了。",
+            actions: [{ label: "🔒 协力关上落地窗", skill: "DEX", 
+                        onSuccess: () => { state.windowClosed=true; return "[A]和[B]互相搭手，总算在野猫跳进来前把沉重的窗户锁死了。野猫撞在玻璃上，发出了不甘心的抓挠声。"; },
+                        onFail: () => "你们的手指太酥脆了，插销纹丝不动！野猫发出了一声低沉的咆哮，已经走到了露台上。" }],
             next: ['厨房', '餐厅', '走廊']
         },
         '厨房': {
-            desc: "这里弥漫着蜂蜜和肉桂的味道。烤箱里跳动的火光映照着[B]苍白的脸。他在料理台上发现了一个空酒瓶，那是仪式开始的地方。",
-            actions: [{ label: "🥣 调查面粉中的仪式便签", skill: "INT", 
-                        onSuccess: () => { state.stars++; return "[B]从面粉堆里拣出字条：『如果永远是平安夜，你就不会走。』[B]的眼角湿润了。"; } }],
+            desc: "这里弥漫着蜂蜜和肉桂的味道。你们曾在这一起研究过怎么做宵夜（虽然最后焦了）。料理台上的空酒瓶倒在一边，那是[B]发酒疯的地方。他在那儿留下了悔恨的便签。",
+            actions: [{ label: "🥣 调查面粉中的仪式痕迹", skill: "INT", 
+                        onSuccess: () => { state.stars++; return "[B]在面粉里摸到了字条：『如果时间停在今晚，我们就不用各奔东西了。』[B]挠了挠头，显得十分尴尬：‘兄弟，我昨晚真喝多了。’"; } }],
             next: ['客厅', '餐厅', '走廊']
         },
         '餐厅': {
-            desc: "空荡荡的餐椅显得无比高大。你们曾经在这里举杯欢庆。现在，只有红酒渍在桌布上晕开，像是一块干涸的血迹。",
+            desc: "巨大的餐桌在你们头顶像一块巨石。红酒渍洒在白布上。你们发现这魔法不仅仅是好玩的，如果九点前不回归，你们真的会变成明天早餐桌上的饼干。",
             actions: [{ label: "🍷 翻找倾倒的高脚杯", skill: "DEX", 
-                        onSuccess: () => { state.hasKey=true; state.stars++; return "在酒杯碎片中，[A]找到了一把刻着『锁住寂寞』的【银钥匙】。"; } }],
+                        onSuccess: () => { state.hasKey=true; state.stars++; return "在酒杯碎片里，[A]找到了一把刻着『损友之印』的【银钥匙】。"; } }],
             next: ['客厅', '厨房', '走廊']
         },
         '走廊': {
-            desc: "挂画里的肉身看起来那么遥远。书房的门紧闭着，透出一丝诡异的红光。那是救赎的终点，也是秘密爆发的中心。",
-            actions: [{ label: "🖼️ 凝视那幅合影", skill: "POW", 
-                        onSuccess: () => { state.stars++; return "[B]紧握着[A]的手，这种强烈的愧疚与爱意产生了共鸣，灵魂变得坚固了。"; } }],
+            desc: "走廊墙上贴着你们出去旅行的照片。书房就在尽头，那是[B]平时搞古怪研究的地方。那里有能把你们变回去的唯一法阵。但前提是，[B]得亲手修正他的错误。",
+            actions: [{ label: "🖼️ 检查旅行照片后的刻痕", skill: "POW", 
+                        onSuccess: () => { state.stars++; return "照片后面刻着：『最好的朋友永不分离』。这份纯粹的友情让法阵产生了一丝正向的共鸣。"; } }],
             next: ['客厅', '厨房', '餐厅', '书房']
         },
         '书房': {
-            desc: "【终焉之地】书房里摊开着那本禁忌契约。[B]酒醒后的泪痕清晰可见。那是怕寂寞的罪，也是想挽回的爱。肉身近在咫尺，只要[B]亲手打碎这份诅咒……",
-            actions: [{ label: "📖 解读契约的最后一页", skill: "EDU", 
-                        onSuccess: () => { state.stars++; return "上面写着：『如果契约者真心悔悟，泪水便是解药。』"; } }],
+            desc: "【终点】书房里充满了悔恨的酒精味。禁忌之书上满是[B]酒醒后狂乱涂抹的印记。肉身近在咫尺，只要[B]能鼓起勇气承认那个‘怕寂寞’的愚蠢念头并逆转它……",
+            actions: [{ label: "📖 解读逆转指令", skill: "EDU", 
+                        onSuccess: () => { state.stars++; return "逆转指令写着：『唯有真诚的告白（不是那种告白）能解除执念。』"; } }],
             next: []
         }
     };
 
-    // --- 核心系统 ---
     function initStats() {
         const root = document.getElementById('setup-root');
         root.innerHTML = state.players.map(p => `
             <div class="char-card">
-                <div style="font-size:0.8rem; color:var(--icing-green)">玩家${p.id===0?'A':'B'}</div>
+                <span class="name-tag">玩家 ${p.id===0?'A':'B'}</span>
                 <input type="text" class="name-input" id="name-${p.id}" value="${p.name}" onchange="state.players[${p.id}].name=this.value">
                 ${Object.keys(p.stats).map(s => `
                     <div class="stat-row">
                         <span>${s}</span>
                         <div>
                             <button class="btn-ctrl" onclick="modStat(${p.id},'${s}',-5)">-</button>
-                            <span style="width:30px; display:inline-block; text-align:center;">${p.stats[s]}</span>
+                            <span style="width:30px; display:inline-block; text-align:center; font-weight:bold;">${p.stats[s]}</span>
                             <button class="btn-ctrl" onclick="modStat(${p.id},'${s}',5)">+</button>
                         </div>
                     </div>
@@ -167,15 +173,15 @@
         const logContent = document.getElementById('log-content');
         const entry = document.createElement('div');
         entry.className = 'log-entry';
-        const time = `[${Math.floor(state.time/60).toString().padStart(2,'0')}:00] `;
-        entry.innerHTML = `<span style="color:var(--star-gold)">${time}</span>${text}`;
+        const gameTime = `${Math.floor(state.time/60).toString().padStart(2,'0')}:00`;
+        entry.innerHTML = `<span style="color:var(--star-gold)">[${gameTime}]</span> ${text}`;
         logContent.prepend(entry);
     }
 
     function startGame() {
         document.getElementById('phase-char').classList.remove('active');
         document.getElementById('phase-main').classList.add('active');
-        addLog(`游戏开始。${state.players[0].name}和${state.players[1].name}在客厅醒来。`);
+        addLog(`平安夜。${state.players[1].name}酒后搞了个大活，把${state.players[0].name}和他自己都变成了饼干。`);
         updateUI();
     }
 
@@ -184,13 +190,13 @@
         const nA = state.players[0].name;
         const nB = state.players[1].name;
 
-        document.getElementById('room-title').textContent = state.currentRoom;
+        document.getElementById('room-title').textContent = `◈ ${state.currentRoom} ◈`;
         document.getElementById('room-desc').innerHTML = r.desc.replace(/\[A\]/g, nA).replace(/\[B\]/g, nB);
         document.getElementById('time-display').textContent = `${Math.floor(state.time/60).toString().padStart(2,'0')}:00`;
         document.getElementById('star-display').textContent = `${state.stars}/5`;
         document.getElementById('inv-display').textContent = state.hasKey ? "持有银钥匙" : "无道具";
+        document.getElementById('cat-status').style.display = state.catInLiving ? 'block' : 'none';
 
-        // 渲染动作
         const alist = document.getElementById('action-list');
         alist.innerHTML = '';
         r.actions.forEach(act => {
@@ -202,17 +208,15 @@
             alist.appendChild(b);
         });
 
-        // 书房专属 B 的抉择
         if(state.currentRoom === '书房') {
             const bBtn = document.createElement('button');
             bBtn.className = 'action-btn';
             bBtn.style.background = '#8B0000'; bBtn.style.color = '#FFD700';
-            bBtn.textContent = `✨ [${nB}的悔悟]：打破寂寞的契约`;
+            bBtn.textContent = `🤝 [${nB}的悔悟]：虽然很丢人，但我不想失去这个死党`;
             bBtn.onclick = () => triggerBEnding();
             alist.appendChild(bBtn);
         }
 
-        // 渲染移动（修复点：去过的房间不可再去，除了客厅）
         const ngrid = document.getElementById('nav-grid');
         ngrid.innerHTML = '';
         r.next.forEach(n => {
@@ -221,16 +225,23 @@
             const isVisited = state.explored.has(n) && n !== '客厅';
             const isLibraryLocked = (n === '书房' && !state.hasKey);
             
-            btn.textContent = isVisited ? `[封锁] ${n}` : `前往 ${n}`;
+            btn.textContent = isVisited ? `[已搜完] ${n}` : `前往 ${n}`;
             if(n === '书房' && !isLibraryLocked) btn.style.background = 'var(--icing-red)';
 
             btn.disabled = isVisited || isLibraryLocked;
             btn.onclick = () => {
+                // 如果要去客厅且猫在里面
+                if(n === '客厅' && state.catInLiving) {
+                    if(!confirm("野猫在客厅！强行通过可能会掉渣（扣除生命/属性），确定吗？")) return;
+                    state.players.forEach(p => Object.keys(p.stats).forEach(s => p.stats[s] -= 5));
+                    addLog("在客厅遭遇野猫，你们惊险逃脱，但身体受损。");
+                }
+                
                 if(state.currentRoom !== '客厅') state.explored.add(state.currentRoom);
                 state.currentRoom = n;
-                state.time += 30;
-                addLog(`移动到了 ${n}。`);
-                checkCat();
+                state.time += 20;
+                addLog(`移动至 ${n}。`);
+                checkCatLogic();
                 updateUI();
             };
             ngrid.appendChild(btn);
@@ -242,13 +253,13 @@
         const avg = (state.players[0].stats[act.skill] + state.players[1].stats[act.skill]) / 2;
         const success = roll <= avg;
         
-        let msg = success ? act.onSuccess() : "由于姜饼身体的脆弱，你们失败了。";
+        let msg = success ? act.onSuccess() : "由于动作不够麻利，你们搞砸了。";
         msg = msg.replace(/\[A\]/g, state.players[0].name).replace(/\[B\]/g, state.players[1].name);
 
         document.getElementById('res-body').innerHTML = `
-            <h2 style="color:${success?'#51A3A3':'#FF6B6B'}">${success?'检定成功':'检定失败'}</h2>
-            <p style="font-size:0.9rem; color:#aaa;">( 目标: ${Math.floor(avg)} | 投骰: ${roll} )</p>
-            <p style="font-size:1.1rem; margin-top:20px;">${msg}</p>
+            <h2 style="color:${success?'var(--icing-green)':'var(--icing-red)'}">${success?'【检定通过】':'【检定失败】'}</h2>
+            <p style="font-size:0.9rem; color:#aaa; margin-bottom:15px;">属性:${act.skill} | 难度:${Math.floor(avg)} | 投骰:${roll}</p>
+            <div style="text-align:left; background:rgba(0,0,0,0.2); padding:15px; border-radius:10px;">${msg}</div>
         `;
         document.getElementById('modal-res').classList.add('active');
         state.explored.add(state.currentRoom + act.label);
@@ -257,35 +268,39 @@
 
     function closeModal() {
         document.getElementById('modal-res').classList.remove('active');
-        state.time += 15;
-        if(state.time >= 540) triggerBE("🌌 结局：永远的姜饼 (时间耗尽)");
+        state.time += 10;
+        if(state.time >= 540) triggerEnding("🌌 坏结局：过期的姜饼", "阳光亮起。你们再也没能睁开作为人类的眼睛。");
         updateUI();
     }
 
-    function checkCat() {
-        if(!state.windowClosed && state.time >= 480) {
-            triggerBE("🐾 结局：沦为猫粮 (野猫闯入)");
+    function checkCatLogic() {
+        // 野猫不再直接杀，而是占据客厅
+        if(!state.windowClosed && state.time >= 420 && !state.catInLiving) {
+            state.catInLiving = true;
+            alert("🚨 【警告】野猫从窗户跳进来了！它现在盘踞在客厅，通过那里将变得非常危险！");
+            addLog("野猫闯入了客厅。");
         }
     }
 
     function triggerBEnding() {
+        const nA = state.players[0].name;
         const nB = state.players[1].name;
         if(state.stars >= 4) {
-            showEnd("☀️ 真结局：晨曦下的和解", `${nB} 颤抖着打碎了那瓶象征寂寞的酒。法阵消失，你们在温热的被窝里惊醒。这不是梦，这是重生的平安夜。`);
+            showEnd("☀️ 真结局：死党万岁 (TE)", `${nB} 看着变成姜饼的 ${nA}，深吸一口气承认了自己的矫情：‘我只是怕明年大家不在一起玩了...’ 话音刚落，法阵的光芒由红转蓝，暖流袭来。你们在书房的躺椅上醒来。${nA} 踹了 ${nB} 一脚：‘下次想聚会直说，别整这些玄学！’`);
         } else {
-            showEnd("🎁 好结局：苦涩的回归", `你们回到了肉身，但关于这一晚的记忆变得模糊。${nB} 依然在平安夜感到莫名的心惊胆战。`);
+            showEnd("🎁 好结局：健忘的早晨 (HE)", `诅咒勉强解开了。你们变回了人，但 ${nA} 似乎忘了这晚的事。${nB} 默默烧掉了那本日记，心虚地提议新年再去大吃一顿。`);
         }
     }
 
-    function triggerBE(title) {
-        showEnd(title, "诅咒生效了，你们的灵魂被永远禁锢在了酥脆的躯壳中。");
+    function triggerEnding(t, c) {
+        showEnd(t, c);
     }
 
     function showEnd(t, c) {
         document.body.innerHTML = `<div style="text-align:center; padding:100px 20px;">
             <h1 style="color:var(--star-gold)">${t}</h1>
             <p style="font-size:1.2rem; background:rgba(255,255,255,0.1); padding:40px; border-radius:20px;">${c}</p>
-            <button class="action-btn" onclick="location.reload()" style="width:200px; margin:20px auto;">重启轮回</button>
+            <button class="action-btn" onclick="location.reload()" style="width:200px; margin:20px auto;">重启平安夜</button>
         </div>`;
     }
 
