@@ -205,10 +205,38 @@
             line-height: 1.6;
         }
         
-        .modal-actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+        /* ==================== 检定结果样式 ==================== */
+        .check-results {
+            margin: 20px 0;
+        }
+        
+        .player-check {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .player-name {
+            color: var(--christmas-gold);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .dice-result {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 5px 0;
+        }
+        
+        .success { color: #4CAF50; }
+        .failure { color: #f44336; }
+        .critical { color: var(--christmas-gold); }
+        
+        .check-details {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
         }
         
         /* ==================== 日志样式 ==================== */
@@ -237,7 +265,6 @@
         .log-failure { color: #f44336; }
         .log-critical { color: var(--christmas-gold); }
         .log-warning { color: #ff9800; }
-        .log-secret { color: #9c27b0; font-style: italic; }
         
         /* ==================== 人物创建样式 ==================== */
         .player-form {
@@ -303,16 +330,6 @@
             cursor: pointer;
         }
         
-        /* ==================== 秘密样式 ==================== */
-        .secret-message {
-            background: rgba(156, 39, 176, 0.2);
-            border: 1px solid #9c27b0;
-            border-radius: 8px;
-            padding: 10px;
-            margin: 10px 0;
-            font-style: italic;
-        }
-        
         /* ==================== 响应式 ==================== */
         @media (max-width: 480px) {
             .map-grid {
@@ -324,10 +341,6 @@
             }
             
             .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .modal-actions {
                 grid-template-columns: 1fr;
             }
         }
@@ -356,7 +369,7 @@
                         
                         <div style="background: rgba(196, 30, 58, 0.1); padding: 10px; border-radius: 6px; border-left: 3px solid var(--christmas-red); margin: 15px 0;">
                             <strong>游戏时间：</strong>圣诞节 06:00 AM 开始<br>
-                            <strong>提示：</strong>其中一位玩家知道真相，但请保持沉默...
+                            <strong>目标：</strong>3小时内找回你们的身体！
                         </div>
                     </div>
                     
@@ -374,37 +387,6 @@
             
             <div id="character-creation" class="game-card">
                 <!-- 动态生成 -->
-            </div>
-        </div>
-        
-        <!-- 秘密选择 -->
-        <div id="phase-secret" class="game-phase">
-            <div class="title-section">
-                <h1 class="main-title">谁知晓真相？</h1>
-                <p class="subtitle">选择知晓真相的玩家（秘密由GM线下告知）</p>
-            </div>
-            
-            <div class="game-card" style="text-align: center;">
-                <div style="margin-bottom: 20px;">
-                    <p>在平安夜的地下室，其中一人步下了神秘的仪式...</p>
-                    <p>现在，选择哪一位玩家知道这个秘密：</p>
-                </div>
-                
-                <div style="display: flex; gap: 20px; justify-content: center; margin: 20px 0;">
-                    <div style="padding: 20px; background: rgba(196, 30, 58, 0.2); border-radius: 8px; width: 150px; cursor: pointer;" onclick="setSecretHolder('A')">
-                        <h3 style="color: var(--christmas-red);">玩家A</h3>
-                        <p id="playerA-name" style="color: var(--christmas-gold);">-</p>
-                    </div>
-                    
-                    <div style="padding: 20px; background: rgba(34, 139, 34, 0.2); border-radius: 8px; width: 150px; cursor: pointer;" onclick="setSecretHolder('B')">
-                        <h3 style="color: var(--christmas-green);">玩家B</h3>
-                        <p id="playerB-name" style="color: var(--christmas-gold);">-</p>
-                    </div>
-                </div>
-                
-                <div style="background: rgba(196, 30, 58, 0.1); padding: 15px; border-radius: 8px; margin-top: 20px;">
-                    <p><strong>注意：</strong>只有被选中的玩家会在游戏中看到秘密提示。</p>
-                </div>
             </div>
         </div>
         
@@ -458,7 +440,7 @@
                 <div class="floor-section">
                     <h3 class="floor-title">地下室</h3>
                     <button class="room-btn" onclick="enterRoom('储藏室')">储藏室</button>
-                    <button class="room-btn" onclick="enterRoom('锁着的房间')">锁着的房间</button>
+                    <button class="room-btn" onclick="enterRoom('神秘房间')">神秘房间（锁）</button>
                     <button class="room-btn" onclick="enterRoom('锅炉房')">锅炉房</button>
                     <button class="room-btn" onclick="enterRoom('酒窖')">酒窖</button>
                 </div>
@@ -482,19 +464,30 @@
                 </div>
             </div>
         </div>
+        
+        <!-- 游戏结束界面 -->
+        <div id="phase-ending" class="game-phase">
+            <div class="title-section">
+                <h1 class="main-title" id="ending-title">游戏结束</h1>
+            </div>
+            <div class="game-card">
+                <div id="ending-content" style="text-align: center; padding: 30px;">
+                    <!-- 结局内容 -->
+                </div>
+                <button class="btn" onclick="restartGame()">重新开始</button>
+            </div>
+        </div>
     </div>
     
-    <!-- 剧情弹出窗口 -->
+    <!-- 房间描述窗口 -->
     <div id="room-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="modal-room-title" class="modal-title">房间名称</h3>
+            <div id="modal-room-time" style="color: var(--christmas-gold); margin-bottom: 10px;">时间：06:00</div>
             <div id="modal-room-description" class="modal-description">
                 <!-- 动态填充 -->
             </div>
-            <div class="modal-actions">
-                <button class="btn btn-small" onclick="closeModal()">离开</button>
-                <button class="btn btn-small btn-green" onclick="closeModalAndEndTurn()">离开并结束回合</button>
-            </div>
+            <button class="btn" onclick="closeRoomModal()">关闭</button>
         </div>
     </div>
     
@@ -502,10 +495,13 @@
     <div id="check-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="check-title" class="modal-title">检定结果</h3>
-            <div id="check-description" class="modal-description">
-                <!-- 动态填充 -->
+            <div class="check-results" id="check-results">
+                <!-- 动态生成检定结果 -->
             </div>
-            <button class="btn" onclick="closeCheckModal()">确认</button>
+            <div id="check-story" class="modal-description" style="margin-top: 20px; display: none;">
+                <!-- 剧情发展 -->
+            </div>
+            <button class="btn" onclick="closeCheckModal()" id="check-confirm-btn" style="display: none;">确认</button>
         </div>
     </div>
 
@@ -514,10 +510,25 @@
         const gameData = {
             phase: 'intro',
             players: [
-                { name: '玩家A', stats: null, san: 75, hp: 10, mp: 10 },
-                { name: '玩家B', stats: null, san: 75, hp: 10, mp: 10 }
+                { 
+                    name: '玩家A', 
+                    stats: null, 
+                    san: 75, 
+                    hp: 10, 
+                    mp: 10,
+                    playerLetter: 'A',
+                    color: 'var(--christmas-red)'
+                },
+                { 
+                    name: '玩家B', 
+                    stats: null, 
+                    san: 75, 
+                    hp: 10, 
+                    mp: 10,
+                    playerLetter: 'B',
+                    color: 'var(--christmas-green)'
+                }
             ],
-            secretHolder: null,  // 'A' 或 'B' 或 null
             currentRoom: '客厅',
             gameState: {
                 time: '06:00',
@@ -528,80 +539,124 @@
                 clues: [],
                 items: [],
                 catEncounter: false,
-                gameStartTime: null,  // 游戏开始时间戳
-                timeWarningShown: false
+                gameStartTime: null,
+                timeWarningShown: false,
+                timeCriticalShown: false,
+                foundKey: false,      // 找到客厅钥匙
+                foundBook: false,     // 找到魔法书
+                foundBodies: false,   // 发现身体
+                ritualRoomOpen: false, // 神秘房间是否打开
+                hasCopperKey: false,  // 有铜钥匙
+                hasSpellbook: false,  // 有魔法书
+                sanChecked: false     // 是否进行过SAN检定
             },
-            // 公共房间描述（对无秘密玩家）
-            publicRoomDescriptions: {
+            // 公开描述（两人都能看到）
+            roomDescriptions: {
                 '客厅': '宽敞的客厅，壁炉已经熄灭。巨大的沙发像山一样耸立。落地窗没有关严，寒风吹动窗帘。房间里的圣诞树装饰闪闪发光。',
-                '餐厅': '长餐桌上摆着圣诞大宴的残骸。酒杯倾倒，蜡烛燃尽。盘子上的食物对现在的你们来说如同小山。',
-                '厨房': '危险的领域！锋利的刀具，滚烫的炉灶。水槽里还有未清洗的餐具。',
-                '玄关': '前门紧闭，门把手高不可及。衣帽架上挂着大衣，口袋深不见底。',
-                '主卧室': '宽敞的卧室，king size床上有两个人。等等，那是你们自己！呼吸平稳，但怎么也叫不醒。',
-                '次卧室': '整洁的客房，床头柜上有本日记。书页间夹着干枯的植物。',
-                '书房': '书架林立，书桌上有台老式电脑。书桌上散落着一些图纸。',
-                '浴室': '浴缸里还有昨晚的泡泡浴残迹。洗漱台上的物品都巨大无比。',
-                '阁楼': '满是灰尘和旧物。蜘蛛网在角落里闪烁。',
-                '儿童房': '玩具散落一地。一个娃娃屋的比例刚好适合姜饼人大小。',
-                '阳台': '寒风刺骨，但视野开阔。可以看到整个街区的圣诞装饰。',
-                '储藏室': '蜘蛛网遍布，旧家具堆积如山。',
-                '锁着的房间': '门被锁住了。但门缝下透出奇异的光芒。',
-                '锅炉房': '温暖但危险的机器轰鸣。管道纵横交错。',
-                '酒窖': '成排的酒架，空气中弥漫着醇香。'
+                '餐厅': '长餐桌上摆着圣诞大宴的残骸。酒杯倾倒，蜡烛燃尽。盘子上的食物对现在的你们来说如同小山。一本厚重的古书摊在桌上。',
+                '厨房': '危险的领域！锋利的刀具，滚烫的炉灶。水槽里还有未清洗的餐具。必须小心前进。',
+                '玄关': '前门紧闭，门把手高不可及。衣帽架上挂着大衣，口袋深不见底。地垫上有奇怪的印记。',
+                '主卧室': '宽敞的卧室，king size床上有两个人。等等，那是...你们的身体？呼吸平稳，但怎么也叫不醒。床头柜上有奇怪的图案。',
+                '次卧室': '整洁的客房，床头柜上有本日记。书页间夹着干枯的槲寄生。床单的花纹在你们眼中如同迷宫。',
+                '书房': '书架林立，书桌上有台老式电脑。书桌上散落着一些图纸，画着复杂的几何图形。',
+                '浴室': '浴缸里还有昨晚的泡泡浴残迹。洗漱台上的物品都巨大无比。镜子里的姜饼人身影让人不安。',
+                '阁楼': '满是灰尘和旧物。蜘蛛网在角落里闪烁。一个奇怪的木箱吸引了你的注意。',
+                '儿童房': '玩具散落一地。一个娃娃屋的比例刚好适合姜饼人大小。玩具士兵仿佛在守卫什么。',
+                '阳台': '寒风刺骨，但视野开阔。可以看到整个街区的圣诞装饰。铁栏杆的缝隙足够姜饼人穿过。',
+                '储藏室': '蜘蛛网遍布，旧家具堆积如山。灰尘在空气中飘浮。角落里有个发光的物体。',
+                '神秘房间': '门被锁住了。但门缝下透出奇异的光芒，是微弱的蓝光。门上刻着复杂的螺旋图案。',
+                '锅炉房': '温暖但危险的机器轰鸣。管道纵横交错，热气从缝隙中漏出。对姜饼人来说很危险。',
+                '酒窖': '成排的酒架，空气中弥漫着醇香。酒瓶像纪念碑一样耸立。有些瓶子的标签很特别。'
             },
-            // 秘密房间描述（只有知晓真相的玩家看到）
-            secretRoomDescriptions: {
-                '客厅': '宽敞的客厅，壁炉已经熄灭。巨大的沙发下似乎有什么东西在发光。',
-                '锁着的房间': '门被锁住了。但门缝下透出法阵的蓝色光芒，是平安夜你亲自布下的...',
-                '主卧室': '你们的身体在床上。床头柜上的符号是法阵的一部分，必须两人都同意仪式才能解除。',
-                '书房': '书桌上的图纸详细画着灵魂交换的法阵，还有你潦草的笔记。'
-            },
-            // 剧情事件
+            // 剧情事件（根据检定结果触发）
             roomEvents: {
                 '客厅': {
-                    '侦查成功': '你在沙发下发现一把小巧的铜钥匙，上面刻着螺旋花纹。',
-                    '侦查大成功': '不仅找到钥匙，还发现了一张写着"平安夜仪式"的纸条。',
-                    '侦查失败': '翻找时不小心弄脏了姜饼身体。',
-                    '检查窗户': '窗外有爪印...昨晚有东西来过。必须关好窗户！',
-                    '有钥匙': '这把钥匙能打开地下室的锁。'
+                    '侦查成功': '你在沙发下发现一把小巧的铜钥匙，上面刻着螺旋花纹，似乎和某个门锁匹配。',
+                    '侦查大成功': '不仅找到铜钥匙，还发现窗台上有奇怪的爪印，似乎是大型猫科动物留下的...而且爪印还很新鲜！',
+                    '侦查失败': '翻找时不小心弄脏了姜饼身体，糖霜开始融化，必须小心水汽。',
+                    '侦查大失败': '碰倒了圣诞树装饰，巨大的装饰球滚向你！需要进行敏捷检定闪避！'
+                },
+                '餐厅': {
+                    '侦查成功': '古书记载着奇异的仪式："在特定的夜晚，灵魂可以暂离身体，但需要特殊的媒介..."',
+                    '侦查大成功': '你理解了仪式的核心："平安夜，姜饼为媒介，两人同心，灵魂可暂离..."这解释了现状！',
+                    '侦查失败': '书页用古老的墨水书写，字迹模糊难以辨认。',
+                    '检查窗户': '这里的窗户是封闭的，无法打开。但从玻璃反光中，你们看到自己是姜饼人。'
                 },
                 '主卧室': {
-                    '侦查成功': '你认出了自己的身体！床头柜上有奇怪的符号在发光。',
-                    '侦查大成功': '符号组成法阵的一部分，需要两人共同解除。',
-                    '看到身体': 'SAN检定：意识到灵魂被困在姜饼人中。'
+                    '侦查成功': '确认床上的就是你们的身体！但胸口有奇怪的红色印记，形状像是复杂的几何图案。',
+                    '侦查大成功': '印记似乎和门上的图案呼应，在微弱地发光...而且图案在缓慢旋转！',
+                    '侦查失败': '床太高了，姜饼身体爬不上去，无法看清细节。',
+                    '侦查大失败': '试图攀爬时从床上摔下来，HP-1！姜饼身体出现了裂痕。'
                 },
-                '锁着的房间': {
-                    '侦查成功': '门上的符号和你们身上的装饰一模一样。',
-                    '有钥匙': '用铜钥匙打开了门！里面是...',
-                    'secret': '发光的法阵，墙上刻着你们的名字。这就是平安夜的仪式现场。'
+                '神秘房间': {
+                    '侦查成功': '门上的螺旋图案由深红色物质绘制，现已褪成褐色。图案似乎在微微发光。',
+                    '侦查大成功': '你认出了图案的规律，这是某种仪式的结构图！而且图案在呼吸般脉动。',
+                    '有钥匙': '铜钥匙完美地插入了锁孔，门缓缓打开...里面是满地蜡烛和奇异的红色图案。',
+                    '侦查失败': '门锁得很紧，图案似乎有某种排斥力，无法靠近。'
+                },
+                '书房': {
+                    '侦查成功': '图纸上画着复杂的几何图案，似乎是某种古老仪式的布置图。',
+                    '侦查大成功': '图纸边缘有潦草的笔记："平安夜，两人，姜饼媒介，灵魂暂离，必须共同解除..."',
+                    '侦查失败': '图纸对姜饼人来说像壁画，比例太大看不懂。',
+                    '检查窗户': '书房的窗户能看到后院，雪地上有奇怪的脚印...'
+                }
+            },
+            // 线索进度
+            clues: {
+                'copperKey': { 
+                    found: false, 
+                    name: '铜钥匙', 
+                    description: '一把刻有螺旋花纹的铜钥匙',
+                    use: '可以打开某个锁着的门'
+                },
+                'spellbook': { 
+                    found: false, 
+                    name: '古老魔法书', 
+                    description: '记载灵魂出窍仪式的古书',
+                    use: '解释了现状的原理'
+                },
+                'bodiesFound': { 
+                    found: false, 
+                    name: '身体发现', 
+                    description: '在主卧室找到你们的身体',
+                    use: '知道了目标位置'
+                },
+                'ritualRoom': { 
+                    found: false, 
+                    name: '神秘房间', 
+                    description: '地下室锁着的房间',
+                    use: '可能是仪式的关键地点'
                 }
             }
         };
 
         // ==================== 工具函数 ====================
-        function addLog(message, type = 'info', isSecret = false) {
+        function addLog(message, type = 'info') {
             const log = document.getElementById('game-log');
             const entry = document.createElement('div');
             entry.className = `log-entry log-${type}`;
-            
-            if (isSecret) {
-                entry.className += ' log-secret';
-            }
             
             const time = new Date().toLocaleTimeString('zh-CN', { 
                 hour: '2-digit', 
                 minute: '2-digit'
             });
             
-            entry.innerHTML = `<span class="log-time">${time}</span> ${message}`;
+            let icon = '📝';
+            switch(type) {
+                case 'success': icon = '✅'; break;
+                case 'failure': icon = '❌'; break;
+                case 'critical': icon = '💀'; break;
+                case 'warning': icon = '⚠️'; break;
+                case 'dice': icon = '🎲'; break;
+                case 'san': icon = '😱'; break;
+                case 'event': icon = '✨'; break;
+                case 'clue': icon = '🔍'; break;
+                case 'item': icon = '🗝️'; break;
+            }
+            
+            entry.innerHTML = `<span class="log-time">${time}</span> ${icon} ${message}`;
             log.appendChild(entry);
             log.scrollTop = log.scrollHeight;
-            
-            // 如果是秘密消息，只有知晓真相的玩家看到
-            if (isSecret && gameData.secretHolder) {
-                const player = gameData.secretHolder === 'A' ? '玩家A' : '玩家B';
-                showCheckModal('秘密提示', `【仅${player}可见】${message}`);
-            }
         }
 
         function updateStatus() {
@@ -610,21 +665,7 @@
             document.getElementById('current-san').textContent = gameData.gameState.san;
             document.getElementById('current-turn').textContent = gameData.gameState.turn;
             
-            // 检查强制时间
             checkTimeLimit();
-        }
-
-        // ==================== 游戏流程控制 ====================
-        function setPhase(phase) {
-            document.querySelectorAll('.game-phase').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.getElementById(`phase-${phase}`).classList.add('active');
-            gameData.phase = phase;
-            
-            if (phase === 'game' && !gameData.gameState.gameStartTime) {
-                gameData.gameState.gameStartTime = Date.now();
-            }
         }
 
         // ==================== 强制时间逻辑 ====================
@@ -637,16 +678,79 @@
             if (elapsedHours >= 1 && !gameData.gameState.timeWarningShown) {
                 gameData.gameState.timeWarningShown = true;
                 addLog('⏰ 已经过去一小时了！时间紧迫！', 'warning');
+                showCheckModal('时间紧迫', '已经过去一小时了！如果还没找到解决方法，就来不及了！', true);
                 
-                // 触发强制事件
                 if (!gameData.gameState.windowClosed) {
-                    addLog('🐱 野猫从窗户进来了！游戏失败！', 'critical');
-                    showCheckModal('时间到！', '野猫发现了你们，姜饼人被吃掉了。游戏结束。');
-                } else if (!gameData.gameState.clues.includes('找到身体')) {
-                    addLog('😱 时间流逝，SAN值开始下降...', 'critical');
-                    gameData.gameState.san -= 20;
-                    updateStatus();
+                    addLog('🐱 窗外传来猫叫声，越来越近...', 'warning');
                 }
+            }
+            
+            if (elapsedHours >= 2 && !gameData.gameState.timeCriticalShown) {
+                gameData.gameState.timeCriticalShown = true;
+                addLog('😱 两小时了！灵魂开始不稳定！', 'critical');
+                showCheckModal('紧急情况', '两小时过去了！你们的灵魂开始不稳定，必须尽快找回身体！', true);
+                
+                // 每回合SAN下降
+                gameData.gameState.san -= 5;
+                addLog('SAN值下降5点！', 'san');
+            }
+            
+            if (elapsedHours >= 3) {
+                endGame('timeout', '三小时过去，时间耗尽。你们的灵魂永远被困在姜饼人中...');
+            }
+        }
+
+        // ==================== 游戏结束 ====================
+        function endGame(type, message) {
+            let title, content;
+            
+            switch(type) {
+                case 'timeout':
+                    title = '⏰ 时间耗尽';
+                    content = '三小时过去，姜饼身体开始崩解，你们的灵魂消散在空气中...';
+                    break;
+                case 'cat':
+                    title = '🐱 野猫来袭';
+                    content = '野猫发现了你们，姜饼人被当作零食吃掉了...';
+                    break;
+                case 'success':
+                    title = '🎉 成功逃脱';
+                    content = '你们成功解除了仪式，灵魂回到了身体！';
+                    break;
+                default:
+                    title = '游戏结束';
+                    content = message;
+            }
+            
+            document.getElementById('ending-title').textContent = title;
+            document.getElementById('ending-content').innerHTML = `
+                <h2 style="color: ${type === 'success' ? 'var(--christmas-green)' : 'var(--christmas-red)'}; margin-bottom: 20px;">
+                    ${title}
+                </h2>
+                <p style="font-size: 1.2rem; margin-bottom: 20px;">${content}</p>
+                <p>游戏时间：${gameData.gameState.time}</p>
+                <p>总回合数：${gameData.gameState.turn}</p>
+            `;
+            
+            setPhase('ending');
+        }
+
+        function restartGame() {
+            location.reload();
+        }
+
+        // ==================== 游戏流程控制 ====================
+        function setPhase(phase) {
+            document.querySelectorAll('.game-phase').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(`phase-${phase}`).classList.add('active');
+            gameData.phase = phase;
+            
+            if (phase === 'game') {
+                gameData.gameState.gameStartTime = Date.now();
+                addLog('=== 游戏开始！圣诞节 06:00 ===', 'event');
+                addLog('你们变成了姜饼人，必须在3小时内找回身体！', 'warning');
             }
         }
 
@@ -655,7 +759,6 @@
             { id: 'str', name: '力量(STR)', value: 0 },
             { id: 'dex', name: '敏捷(DEX)', value: 0 },
             { id: 'int', name: '智力(INT)', value: 0 },
-            { id: 'app', name: '外貌(APP)', value: 0 },
             { id: 'pow', name: '意志(POW)', value: 0 },
             { id: 'siz', name: '体型(SIZ)', value: 5 },
             { id: 'edu', name: '教育(EDU)', value: 0 },
@@ -680,7 +783,7 @@
                 const playerDiv = document.createElement('div');
                 playerDiv.className = 'player-form';
                 playerDiv.innerHTML = `
-                    <h3 style="color: ${i === 0 ? 'var(--christmas-red)' : 'var(--christmas-green)'};">玩家 ${String.fromCharCode(65 + i)}</h3>
+                    <h3 style="color: ${gameData.players[i].color};">玩家 ${gameData.players[i].playerLetter}</h3>
                     <div class="form-group">
                         <label class="form-label">玩家姓名</label>
                         <input type="text" class="form-input" id="player${i}-name" placeholder="输入姓名" oninput="updatePlayerPoints(${i})">
@@ -800,7 +903,7 @@
 
         function confirmPlayer(playerIndex) {
             const nameInput = document.getElementById(`player${playerIndex}-name`);
-            const name = nameInput.value.trim() || `玩家${String.fromCharCode(65 + playerIndex)}`;
+            const name = nameInput.value.trim() || `玩家${gameData.players[playerIndex].playerLetter}`;
             
             const usedPoints = calculateUsedPoints(playerIndex);
             if (usedPoints !== TOTAL_POINTS) {
@@ -816,6 +919,7 @@
             });
             
             gameData.players[playerIndex] = {
+                ...gameData.players[playerIndex],
                 name,
                 stats,
                 san: stats.pow * 5,
@@ -829,100 +933,233 @@
             confirmBtn.textContent = '✓ 已确认';
             confirmBtn.disabled = true;
             
-            // 更新名字显示
-            if (playerIndex === 0) {
-                document.getElementById('playerA-name').textContent = name;
-            } else {
-                document.getElementById('playerB-name').textContent = name;
-            }
-            
-            // 检查是否都确认了
             if (confirmedPlayers[0] && confirmedPlayers[1]) {
-                setTimeout(() => setPhase('secret'), 1000);
+                setTimeout(() => startGame(), 1000);
             }
-        }
-
-        // ==================== 秘密系统 ====================
-        function setSecretHolder(player) {
-            gameData.secretHolder = player;
-            addLog(`玩家${player}知晓真相`, 'secret', true);
-            startGame();
-        }
-
-        function getRoomDescription(room) {
-            if (gameData.secretHolder && gameData.secretRoomDescriptions[room]) {
-                return gameData.secretRoomDescriptions[room];
-            }
-            return gameData.publicRoomDescriptions[room] || '一个陌生的房间...';
         }
 
         // ==================== 主游戏系统 ====================
         function startGame() {
             setPhase('game');
             updateStatus();
-            addLog('=== 游戏开始 ===', 'info');
-            addLog('圣诞节 06:00，你们在客厅醒来，发现自己变成了姜饼人！', 'info');
         }
 
         function enterRoom(room) {
             gameData.currentRoom = room;
             updateStatus();
             
-            const description = getRoomDescription(room);
+            let description = gameData.roomDescriptions[room] || '一个陌生的房间...';
+            
             document.getElementById('modal-room-title').textContent = room;
+            document.getElementById('modal-room-time').textContent = `时间：${gameData.gameState.time}`;
             document.getElementById('modal-room-description').textContent = description;
             document.getElementById('room-modal').classList.add('active');
             
             addLog(`进入: ${room}`, 'info');
-            
-            // 特殊房间的额外秘密信息
-            if (room === '锁着的房间' && gameData.secretHolder) {
-                addLog('这是你布下法阵的房间...', 'secret', true);
-            }
         }
 
+        function closeRoomModal() {
+            document.getElementById('room-modal').classList.remove('active');
+        }
+
+        // 双玩家检定系统
         function investigateCurrentRoom() {
             const room = gameData.currentRoom;
             addLog(`调查${room}...`, 'info');
             
-            // 模拟检定
+            showCheckModal('调查房间', '正在调查中...', false);
+            
+            const resultsDiv = document.getElementById('check-results');
+            resultsDiv.innerHTML = '';
+            
+            let allResults = [];
+            let completedChecks = 0;
+            
+            gameData.players.forEach((player, index) => {
+                setTimeout(() => {
+                    const result = performPlayerCheck(player, index, '侦查', 50);
+                    allResults[index] = result;
+                    completedChecks++;
+                    
+                    if (completedChecks === 2) {
+                        processInvestigationResults(room, allResults);
+                    }
+                }, index * 1000);
+            });
+        }
+
+        function performPlayerCheck(player, index, checkType, skillValue) {
+            const resultsDiv = document.getElementById('check-results');
+            
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'player-check';
+            playerDiv.style.borderLeft = `3px solid ${player.color}`;
+            
             const roll = Math.floor(Math.random() * 100) + 1;
-            let result, description;
+            let resultClass, resultText;
             
             if (roll <= 5) {
-                result = '大成功！';
-                description = gameData.roomEvents[room]?.['侦查大成功'] || '发现了重要线索！';
-            } else if (roll <= 50) {
-                result = '成功';
-                description = gameData.roomEvents[room]?.['侦查成功'] || '发现了一些东西。';
+                resultClass = 'critical';
+                resultText = '💥 大成功！';
+            } else if (roll <= skillValue) {
+                resultClass = 'success';
+                resultText = '✅ 成功';
             } else if (roll >= 96) {
-                result = '大失败！';
-                description = gameData.roomEvents[room]?.['侦查大失败'] || '调查时出了意外！';
+                resultClass = 'critical';
+                resultText = '💀 大失败！';
             } else {
-                result = '失败';
-                description = gameData.roomEvents[room]?.['侦查失败'] || '没有发现什么特别的东西。';
+                resultClass = 'failure';
+                resultText = '❌ 失败';
             }
             
-            showCheckModal(`${room}调查`, `${result} ${description}`);
+            playerDiv.innerHTML = `
+                <div class="player-name" style="color: ${player.color}">${player.name}</div>
+                <div class="dice-result ${resultClass}">${roll}</div>
+                <div class="check-details">${resultText} (${roll}/${skillValue})</div>
+            `;
             
-            // 特殊发现
-            if (room === '客厅' && roll <= 50) {
-                gameData.gameState.items.push('铜钥匙');
-                addLog('获得线索：铜钥匙', 'success');
+            resultsDiv.appendChild(playerDiv);
+            
+            addLog(`${player.name} ${checkType}: ${roll}/${skillValue} ${resultText}`, 'dice');
+            
+            return {
+                player: player.playerLetter,
+                name: player.name,
+                roll,
+                skillValue,
+                success: roll <= skillValue,
+                criticalSuccess: roll <= 5,
+                criticalFailure: roll >= 96,
+                resultClass,
+                resultText
+            };
+        }
+
+        function processInvestigationResults(room, results) {
+            const anySuccess = results.some(r => r.success);
+            const anyCriticalSuccess = results.some(r => r.criticalSuccess);
+            const allFailed = results.every(r => !r.success);
+            
+            let eventKey = '侦查失败';
+            if (anyCriticalSuccess) {
+                eventKey = '侦查大成功';
+            } else if (anySuccess) {
+                eventKey = '侦查成功';
+            } else if (allFailed) {
+                const anyCriticalFailure = results.some(r => r.criticalFailure);
+                eventKey = anyCriticalFailure ? '侦查大失败' : '侦查失败';
             }
             
-            if (room === '主卧室' && roll <= 50) {
-                gameData.gameState.clues.push('找到身体');
-                addLog('重要发现：找到你们的身体了！', 'critical');
+            let story = gameData.roomEvents[room]?.[eventKey] || '没有发现什么特别的东西。';
+            
+            // 特殊发现处理
+            if (room === '客厅' && anySuccess) {
+                if (!gameData.gameState.hasCopperKey) {
+                    gameData.gameState.hasCopperKey = true;
+                    gameData.clues.copperKey.found = true;
+                    story += '\n\n🗝️ 获得：铜钥匙';
+                    addLog('获得物品：铜钥匙', 'item');
+                }
+            }
+            
+            if (room === '餐厅' && anySuccess) {
+                if (!gameData.gameState.hasSpellbook) {
+                    gameData.gameState.hasSpellbook = true;
+                    gameData.clues.spellbook.found = true;
+                    story += '\n\n📖 发现：古老魔法书，记载了灵魂出窍的仪式';
+                    addLog('获得线索：灵魂出窍仪式的记载', 'clue');
+                }
+            }
+            
+            if (room === '主卧室' && anySuccess) {
+                if (!gameData.gameState.foundBodies) {
+                    gameData.gameState.foundBodies = true;
+                    gameData.clues.bodiesFound.found = true;
+                    
+                    // SAN 检定
+                    results.forEach(result => {
+                        if (result.criticalFailure) {
+                            const sanLoss = Math.floor(Math.random() * 10) + 1;
+                            gameData.gameState.san -= sanLoss;
+                            addLog(`${result.name} SAN损失: ${sanLoss}点 (看到自己的身体)`, 'san');
+                        }
+                    });
+                    
+                    story += '\n\n⚠️ 重要发现：找到你们的身体了！';
+                    addLog('关键线索：在主卧室找到身体', 'clue');
+                }
+            }
+            
+            if (room === '神秘房间' && anySuccess) {
+                if (gameData.gameState.hasCopperKey) {
+                    gameData.gameState.ritualRoomOpen = true;
+                    gameData.clues.ritualRoom.found = true;
+                    story += '\n\n🗝️ 用铜钥匙打开了门！里面是仪式现场！';
+                    addLog('用铜钥匙打开了神秘房间', 'event');
+                }
+            }
+            
+            // 特殊事件：如果找到所有线索并打开房间
+            if (gameData.clues.ritualRoom.found && 
+                gameData.clues.bodiesFound.found && 
+                gameData.clues.spellbook.found) {
+                checkForEnding();
+            }
+            
+            document.getElementById('check-story').innerHTML = story;
+            document.getElementById('check-story').style.display = 'block';
+            document.getElementById('check-confirm-btn').style.display = 'block';
+        }
+
+        function checkForEnding() {
+            // 检查是否达成好结局条件
+            if (gameData.gameState.ritualRoomOpen && 
+                gameData.gameState.foundBodies) {
+                
+                // 需要两人都在仪式房间才能解除
+                if (gameData.currentRoom === '神秘房间') {
+                    addLog('🎉 你们站在仪式现场，面对自己的身体...', 'event');
+                    setTimeout(() => {
+                        endGame('success', '你们成功解除了平安夜的仪式，灵魂回到了身体中！圣诞快乐！');
+                    }, 2000);
+                }
             }
         }
 
+        function showCheckModal(title, message, showButton = true) {
+            document.getElementById('check-title').textContent = title;
+            const resultsDiv = document.getElementById('check-results');
+            resultsDiv.innerHTML = `<div class="modal-description">${message}</div>`;
+            document.getElementById('check-story').style.display = 'none';
+            document.getElementById('check-confirm-btn').style.display = showButton ? 'block' : 'none';
+            document.getElementById('check-modal').classList.add('active');
+        }
+
+        function closeCheckModal() {
+            document.getElementById('check-modal').classList.remove('active');
+        }
+
+        // 其他行动
         function checkWindows() {
             if (gameData.currentRoom === '客厅') {
                 if (!gameData.gameState.windowClosed) {
-                    addLog('关上了落地窗！', 'success');
-                    gameData.gameState.windowClosed = true;
-                    showCheckModal('检查窗户', '成功关上了窗户，暂时安全了。');
+                    const roll = Math.floor(Math.random() * 100) + 1;
+                    if (roll <= 60) {
+                        addLog('成功关上了落地窗！', 'success');
+                        gameData.gameState.windowClosed = true;
+                        showCheckModal('检查窗户', '✅ 成功关上了窗户，暂时安全了。', true);
+                    } else {
+                        addLog('窗户卡住了，没关严！', 'warning');
+                        showCheckModal('检查窗户', '❌ 窗户卡住了，没关严！听到外面有猫叫声...', true);
+                        
+                        // 有概率触发野猫事件
+                        if (roll >= 90) {
+                            setTimeout(() => {
+                                addLog('🐱 野猫从窗户缝挤进来了！', 'critical');
+                                endGame('cat', '野猫发现了美味的姜饼人...');
+                            }, 3000);
+                        }
+                    }
                 } else {
                     addLog('窗户已关好。', 'info');
                 }
@@ -940,28 +1177,39 @@
             ];
             const ability = abilities[Math.floor(Math.random() * abilities.length)];
             addLog(`使用能力: ${ability}`, 'info');
-            showCheckModal('姜饼人能力', ability);
+            showCheckModal('姜饼人能力', ability, true);
         }
 
         function rollLuckCheck() {
-            const roll = Math.floor(Math.random() * 100) + 1;
-            const result = roll <= 50 ? '幸运成功' : '幸运失败';
-            addLog(`幸运检定: ${roll}/50 ${result}`, result.includes('成功') ? 'success' : 'failure');
-            showCheckModal('幸运检定', `${result}！掷出: ${roll}`);
+            showCheckModal('幸运检定', '正在检定中...', false);
+            
+            const resultsDiv = document.getElementById('check-results');
+            resultsDiv.innerHTML = '';
+            
+            gameData.players.forEach((player, index) => {
+                setTimeout(() => {
+                    performPlayerCheck(player, index, '幸运', 50);
+                }, index * 1000);
+            });
         }
 
         function rollSpotCheck() {
-            const roll = Math.floor(Math.random() * 100) + 1;
-            const result = roll <= 60 ? '侦查成功' : '侦查失败';
+            showCheckModal('侦查检定', '正在侦查中...', false);
             
-            if (roll >= 96) {
-                addLog('SAN损失: 1d10点', 'warning');
-                gameData.gameState.san -= Math.floor(Math.random() * 10) + 1;
-                updateStatus();
-            }
+            const resultsDiv = document.getElementById('check-results');
+            resultsDiv.innerHTML = '';
             
-            addLog(`侦查检定: ${roll}/60 ${result}`, result.includes('成功') ? 'success' : 'failure');
-            showCheckModal('侦查检定', `${result}！掷出: ${roll}`);
+            gameData.players.forEach((player, index) => {
+                setTimeout(() => {
+                    const result = performPlayerCheck(player, index, '侦查', 60);
+                    
+                    if (result.criticalFailure) {
+                        const sanLoss = Math.floor(Math.random() * 10) + 1;
+                        gameData.gameState.san -= sanLoss;
+                        addLog(`${result.name} SAN损失: ${sanLoss}点`, 'san');
+                    }
+                }, index * 1000);
+            });
         }
 
         function endTurn() {
@@ -974,35 +1222,14 @@
             gameData.gameState.time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             gameData.gameState.turn += 1;
             
-            addLog(`=== 回合 ${gameData.gameState.turn} 结束 ===`, 'info');
+            addLog(`=== 回合 ${gameData.gameState.turn} 结束 ===`, 'event');
             addLog(`时间推进到: ${gameData.gameState.time}`, 'info');
             
-            // 每2回合检查野猫
             if (gameData.gameState.turn % 2 === 0 && !gameData.gameState.windowClosed) {
-                addLog('⚠️ 时间流逝，检查周围环境...', 'warning');
+                addLog('⚠️ 时间流逝，注意周围环境...', 'warning');
             }
             
             updateStatus();
-        }
-
-        // ==================== 模态框控制 ====================
-        function closeModal() {
-            document.getElementById('room-modal').classList.remove('active');
-        }
-
-        function closeModalAndEndTurn() {
-            closeModal();
-            endTurn();
-        }
-
-        function showCheckModal(title, description) {
-            document.getElementById('check-title').textContent = title;
-            document.getElementById('check-description').textContent = description;
-            document.getElementById('check-modal').classList.add('active');
-        }
-
-        function closeCheckModal() {
-            document.getElementById('check-modal').classList.remove('active');
         }
 
         // ==================== 初始化 ====================
