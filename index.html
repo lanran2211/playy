@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>🍪 姜饼人：永恒友情的幻梦</title>
+    <title>🍪 姜饼人：灵魂契约</title>
     <style>
         :root {
             --gingerbread: #8B4513; --icing-red: #FF6B6B; --icing-green: #51A3A3;
@@ -15,20 +15,25 @@
         .game-phase.active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 顶部状态栏 */
-        .status-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .status-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--icing-green); text-align: center; font-size: 0.9rem; font-weight: bold; }
-        .inventory-box { color: var(--star-gold); border-color: var(--star-gold); }
+        /* --- 配点界面样式 --- */
+        .char-setup { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .char-card { background: var(--bg-card); border: 2px solid var(--icing-red); border-radius: 20px; padding: 20px; }
+        .stat-row { display: flex; align-items: center; justify-content: space-between; margin: 8px 0; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 12px; }
+        .pool-box { text-align: center; font-size: 1.2rem; color: var(--star-gold); margin-bottom: 15px; background: var(--gingerbread); padding: 10px; border-radius: 15px; border: 2px solid var(--star-gold); }
+        .btn-ctrl { width: 30px; height: 30px; border: none; background: var(--icing-green); color: white; border-radius: 5px; cursor: pointer; }
+        .stat-val { width: 40px; text-align: center; font-weight: bold; color: var(--star-gold); }
+        input[type="text"] { background: rgba(0,0,0,0.5); border: 1px solid var(--icing-green); color: white; padding: 8px; border-radius: 8px; width: 80%; }
 
-        /* 游戏主体 */
+        /* --- 游戏界面样式 --- */
+        .status-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .status-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--icing-green); text-align: center; font-size: 0.9rem; }
         .room-box { background: var(--bg-card); border-radius: 20px; padding: 25px; border: 3px solid var(--icing-green); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .action-btn { display: block; width: 100%; padding: 14px; margin: 10px 0; background: var(--icing-white); color: var(--gingerbread); border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 1rem; transition: 0.2s; }
-        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .action-btn { display: block; width: 100%; padding: 14px; margin: 10px 0; background: var(--icing-white); color: var(--gingerbread); border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-family: inherit; }
         .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .nav-btn { padding: 12px; background: var(--icing-green); color: white; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 0.9rem; }
+        .nav-btn { padding: 12px; background: var(--icing-green); color: white; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; }
         .nav-locked { background: #444; color: #888; cursor: not-allowed; }
 
-        /* 弹窗 */
+        /* --- 判定弹窗 --- */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; z-index: 100; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
         .modal-content { background: var(--bg-card); width: 90%; max-width: 650px; padding: 30px; border-radius: 25px; border: 4px solid var(--icing-red); }
@@ -40,15 +45,20 @@
 
 <div class="container">
     <div id="phase-char" class="game-phase active">
-        <h1 style="text-align:center; color:var(--icing-red)">🎄 平安夜：姜饼人的抉择 🎄</h1>
-        <p style="text-align:center; color:#aaa;">(本游戏为线下同屏博弈，请 A 负责决策，B 负责“引导”)</p>
-        <button class="action-btn" onclick="tryStart()">开始这段旅程 🕯️</button>
+        <h1 style="text-align:center; color:var(--icing-red)">📜 灵魂契约：姜饼人化</h1>
+        <p style="text-align:center; font-size: 0.9rem;">分配灵魂点数（总计900点），决定你们在梦境中的能力。</p>
+        <div class="pool-box">剩余灵魂能量: <span id="total-pool">0</span></div>
+        <div class="char-setup" id="setup-root"></div>
+        <div style="margin-top:20px; display:flex; gap:10px;">
+            <button class="action-btn" onclick="randomStats()">🎲 均等分配</button>
+            <button class="action-btn" onclick="tryStart()" style="background:var(--icing-red); color:white;">签订契约进入梦境 🕯️</button>
+        </div>
     </div>
 
     <div id="phase-main" class="game-phase">
         <div class="status-grid">
             <div id="time-display" class="status-item">⌛ 06:00</div>
-            <div id="inventory-display" class="status-item inventory-box">🎒 道具: 无</div>
+            <div id="inventory-display" class="status-item" style="color:var(--star-gold);">🎒 道具: 无</div>
             <div id="star-display" class="status-item">⭐ 0/7</div>
         </div>
         <div class="room-box">
@@ -62,9 +72,9 @@
 
 <div id="modal-res" class="modal">
     <div class="modal-content">
-        <h3 id="res-title" style="text-align:center; color:var(--star-gold)">🎲 判定结果</h3>
+        <h3 id="res-title" style="text-align:center; color:var(--star-gold)">🎲 灵魂感知结果</h3>
         <div class="res-split" id="res-body"></div>
-        <button class="action-btn" onclick="closeModal()">继续探索 ✨</button>
+        <button class="action-btn" onclick="closeModal()">收悉线索 ✨</button>
     </div>
 </div>
 
@@ -72,48 +82,51 @@
     const state = {
         time: 360, stars: 0, currentRoom: '客厅', hasKey: false,
         players: [
-            { id: 0, name: "A", hp: 10, san: 100 },
-            { id: 1, name: "B", hp: 10, san: 100 }
+            { id: 0, name: "A", stats: { STR:75, DEX:75, INT:75, POW:75, EDU:75, LUC:75 } },
+            { id: 1, name: "B", stats: { STR:75, DEX:75, INT:75, POW:75, EDU:75, LUC:75 } }
         ]
     };
 
+    const STATS = ['STR', 'DEX', 'INT', 'POW', 'EDU', 'LUC'];
+
+    // --- 剧情数据库：高度伪装版（B的描述看起来像“幸运”或“直觉”） ---
     const storyDB = {
         '客厅': {
-            desc: "壁炉火光跳动。电视里正播着天文预报。落地窗外，野猫‘糖霜’似乎在暗处窥视。",
+            desc: "壁炉里火苗不安地跳动。电视里播着奇特的极光预报。沙发缝隙里隐约有东西在闪光。",
             actions: [
                 { label: "🛋️ 搜查沙发", skill: "DEX",
-                  p0: { success: "你找到一张日记碎纸：『...想去一个永远冒险的地方...』，笔迹像是还没干透。", fail: "除了一些掉落的糖粉，你什么也没发现。", crit: "你找到一颗星星！并在沙发下发现了一张手绘的草图，目的地画着红圈。", fumbles: "你撞倒了旁边的台灯！巨大的响声惊动了外面的野猫！" },
-                  p1: { success: "你抢在 [P1] 读完日记前指着地上的脚印，试图让他分心。", fail: "你没能阻止 [P1] 看到那张带有新鲜笔迹的日记。", crit: "你轻巧地把真正关键的‘法阵草稿’踢进死角，没露出一丁点破绽。", fumbles: "你手忙脚乱地想挡住线索，却差点把自己的姜饼纽扣扯掉。" }
+                  p0: { success: "你翻到一张日记碎纸：『...想去一个永远冒险的地方...』，笔迹像是还没干透。", fail: "除了一些掉落的糖粉，你什么也没发现。", crit: "你找到一颗星星！并在沙发下发现了一张奇怪的草图，目的地画着红圈。", fumbles: "你撞倒了旁边的台灯！巨大的响声惊动了外面的黑影！" },
+                  p1: { success: "你手气不错，摸到了沙发缝里的另一枚糖果，刚好挡住了 [P1] 继续深挖的视线。", fail: "你没能找到任何东西，只能眼睁睁看着 [P1] 读那张日记。", crit: "你的直觉告诉你沙发深处不安全，你巧妙地带离了 [P1] 的注意力，并意外护住了一张草图。", fumbles: "你用力过猛，不小心撕破了沙发垫，这让气氛变得尴尬。" }
                 }
             ],
             nav: ['卧室', '餐厅', '儿童房']
         },
         '卧室': {
-            desc: "两具肉身并排躺着，呼吸频率诡异地同步。月光照在枕头边缘，那里反射着冷冽的银光。",
+            desc: "两具肉身并排躺着。枕头的一角反射着银色的光芒，那似乎是唯一的出路。",
             actions: [
-                { label: "🗝️ 检查枕头下 (寻找钥匙)", skill: "DEX",
-                  p0: { success: "你摸到了一把冰冷的银钥匙。但你注意到肉身的手指似乎由于你的触碰而抽动了一下。", fail: "你不敢靠近那些‘沉睡’的躯壳，手缩了回来。", crit: "拿到钥匙的同时，你发现枕头套上绣着一行极小的字：『永远在一起』，字迹很新。", fumbles: "肉身突然睁开了眼！那种空洞感让你感到理智在崩塌！(SAN-10)" },
-                  p1: { success: "你配合着拿到了钥匙，并感觉到这具肉身对灵魂的束缚已经微乎其微了。", fail: "你的动作引起了肉身的反应，发出了细微的摩擦声。", crit: "你在帮 [P1] 拿钥匙时，悄悄在床单下抹掉了一道回归咒文。", fumbles: "你不小心扯下了肉身的一根头发，这种剧痛瞬间反馈到了你的姜饼身体上。" }
+                { label: "🗝️ 检查枕头 (寻找钥匙)", skill: "DEX",
+                  p0: { success: "你拿到了银钥匙。但当你触碰它时，你发现 [P2] 的肉身似乎在微微发热。", fail: "你不敢靠近那些身体，手缩了回来。", crit: "拿到钥匙的同时，你发现枕头套上绣着字：『永不分离』，看起来是刚绣上去的。", fumbles: "肉身突然发出了沉重的呼吸声！这种压迫感让你几乎窒息！" },
+                  p1: { success: "你顺手帮 [P1] 稳住了钥匙，你感到自己的姜饼身体与床上的肉身产生了一种奇妙的脱离感。", fail: "你的手滑了一下，差点让钥匙掉进缝隙里。", crit: "你似乎与这里的环境产生了共鸣，在拿钥匙时，你无意识地抚平了床单上的一处褶皱（那其实是符文）。", fumbles: "你感到一阵强烈的头晕，仿佛你的灵魂正在拒绝回到那个沉睡的身体里。" }
                 }
             ],
             nav: ['客厅']
         },
         '餐厅': {
-            desc: "餐桌上的《幻梦境考据》摊开着。空气中弥漫着一种像过期蜂蜜一样甜得发苦的味道。",
+            desc: "餐桌上摆着《幻梦境考据》。空气中弥漫着一种过期蜂蜜的甜腻味道。",
             actions: [
                 { label: "📖 阅读魔法书", skill: "EDU",
-                  p0: { success: "书中写道：『姜饼为舟，七星为引，可入永恒。』你发现这一页被折了一个小角。", fail: "古老的字符在跳动，你无法集中注意力。", crit: "你读到了一行加粗的警告：『若无引路者，误入者必将迷失。』这一行被红墨水划掉了。", fumbles: "书中的插画突然扭曲，那些姜饼人的脸变成了你们的样子！(SAN-10)" },
-                  p1: { success: "你翻到了关于‘永久定型’的段落。书页对你的指尖有种诡异的吸附感。", fail: "魔法书的波动让你感到眩晕，你没能读到关键的一页。", crit: "你确认了那一行警告确实已被你抹去。现在，一切障碍都扫清了。", fumbles: "书页在你的触碰下变黑了，这似乎是某种契约即将断裂的征兆。" }
+                  p0: { success: "书中写道：『姜饼为舟，七星为引。』你发现这一页被折了一个小角。", fail: "文字扭曲变幻，你什么也读不出来。", crit: "你读到了一行加粗的警告：『若无引路者，误入者必将迷失。』但这一行被红墨水划掉了。", fumbles: "书中的插画突然扭曲，那些姜饼人的脸变成了你们的样子！" },
+                  p1: { success: "你的感知力爆发，瞬间读到了‘永久化’的段落。你觉得留在这里似乎也是个不错的选择。", fail: "书上的内容太枯燥了，你完全看不进去。", crit: "你仿佛在这本书里读到了某种使命感。你发现划掉警告的红墨水颜色竟然和你的糖霜一样。", fumbles: "书页在你的触碰下瞬间枯萎，这似乎是某种契约即将断裂的征兆。" }
                 }
             ],
             nav: ['客厅', '儿童房']
         },
         '儿童房': {
-            desc: "娃娃屋亮着不自然的粉光。茶壶正吐着紫色的蒸汽，发出『欢迎回来』的声音。",
+            desc: "娃娃屋亮着不自然的粉光。这里的玩具似乎都在窃窃私语。",
             actions: [
                 { label: "🏠 检查娃娃屋", skill: "LUC",
-                  p0: { success: "你在微缩浴缸里找到了一颗星星！但这屋里的假人让你感到莫名的压抑。", fail: "玩具们冷冰冰地注视着你。", crit: "你发现娃娃屋里摆着两个姜饼人，正是你和 [P2] 的缩小版。旁边还有一颗星星！", fumbles: "玩具士兵倒下，差点砸断了你的细腿！(HP-1)" },
-                  p1: { success: "你看着这温馨的小屋。只要仪式完成，这就是你们未来的‘新家’。", fail: "这里的陈设由于魔法不稳而显得有些扭曲。", crit: "你顺手在这里放下一颗星星，让幻梦的磁场更加强大。", fumbles: "娃娃屋的屋顶突然塌了，这不祥的预兆让你感到烦躁。" }
+                  p0: { success: "你在微缩浴缸里找到了一颗星星！但这屋里的假人让你感到莫名的压抑。", fail: "玩具们冷冰冰地注视着你。", crit: "你发现娃娃屋里有两个姜饼人，正是你和 [P2] 的样子。旁边还有一颗星星！", fumbles: "玩具士兵倒下，差点砸断了你的细腿！" },
+                  p1: { success: "你觉得这个娃娃屋异常亲切。你在这里发现了一枚只有你认识的徽章。", fail: "玩具们似乎并不欢迎你。", crit: "你觉得这里的布局本该如此。你在整理玩偶时，悄悄为这片小天地注入了‘生机’。", fumbles: "你不小心碰倒了积木，巨大的响声引起了 [P1] 的不安。" }
                 }
             ],
             nav: ['客厅', '餐厅']
@@ -122,18 +135,68 @@
             desc: "书房门被银钥匙开启。地面的蜂蜜六芒星阵正发出剧烈的金光，七星的倒影已汇聚在阵眼！",
             actions: [
                 { label: "⚖️ 决定命运的瞬间", skill: "POW",
-                  p0: { success: "你站在阵中心，感到一股强烈的吸力要将你与现实彻底切断！你必须做出抉择！", fail: "你的意识开始模糊，仿佛只要闭上眼就能获得永恒的快乐。", crit: "你猛然看清了：这不是诅咒，而是 [P2] 亲手为你布置的‘礼物’！", fumbles: "你彻底放弃了抵抗，灵魂开始融进这个甜腻的世界。" },
-                  p1: { success: "你感到前所未有的自由。你只需要牵住 [P1] 的手，你们就永远不会分开了。", fail: "最后的一丝愧疚感拉扯着你，法阵发出了不安的轰鸣。", crit: "你成为了这里的主宰。你可以决定 [P1] 是作为你的伴侣留下，还是作为祭品消散。", fumbles: "法阵反噬！你感到姜饼身体正在迅速瓦解！" }
+                  p0: { success: "你站在阵中心，感到一股强烈的吸力要将你与现实切断！你必须做出抉择！", fail: "你的意识开始模糊，仿佛只要闭上眼就能获得永恒的快乐。", crit: "你猛然看清了真相：这个法阵的能量源头竟然是 [P2] 的意志！", fumbles: "你彻底放弃了抵抗，灵魂开始融进这个世界。" },
+                  p1: { success: "你感到前所未有的自由。这里的每一个符号都像是为你而生。你只需牵住 [P1] 的手...", fail: "最后的一丝犹豫拉扯着你，法阵发出了不安的轰鸣。", crit: "你成为了这里的主宰。你意识到，只要你想，[P1] 永远都不可能离开你的身边。", fumbles: "法阵反噬！你感到你的‘梦想世界’正在崩塌！" }
                 }
             ],
             nav: ['客厅']
         }
     };
 
+    // --- 初始化配点界面 ---
+    function initStats() {
+        const root = document.getElementById('setup-root');
+        root.innerHTML = state.players.map(p => `
+            <div class="char-card">
+                <h3>玩家 ${p.id === 0 ? 'A' : 'B'}</h3>
+                <input type="text" id="name-${p.id}" placeholder="输入姜饼人代号" value="${p.id === 0 ? '小糖霜' : '小肉桂'}">
+                <div style="margin-top:15px;">
+                ${STATS.map(s => `
+                    <div class="stat-row">
+                        <span>${s}</span>
+                        <div>
+                            <button class="btn-ctrl" onclick="modStat(${p.id},'${s}',-5)">-</button>
+                            <span class="stat-val" id="v-${p.id}-${s}">${p.stats[s]}</span>
+                            <button class="btn-ctrl" onclick="modStat(${p.id},'${s}',5)">+</button>
+                        </div>
+                    </div>
+                `).join('')}
+                </div>
+            </div>
+        `).join('');
+        updatePool();
+    }
+
+    function modStat(pid, s, v) {
+        const p = state.players[pid];
+        const currentTotal = state.players.reduce((sum, py) => sum + Object.values(py.stats).reduce((a,b)=>a+b), 0);
+        if(v > 0 && currentTotal >= 900) return;
+        if(p.stats[s] + v < 10) return;
+        p.stats[s] += v;
+        document.getElementById(`v-${pid}-${s}`).textContent = p.stats[s];
+        updatePool();
+    }
+
+    function updatePool() { document.getElementById('total-pool').textContent = 900 - state.players.reduce((sum, py) => sum + Object.values(py.stats).reduce((a,b)=>a+b), 0); }
+
+    function randomStats() {
+        state.players.forEach(p => STATS.forEach(s => p.stats[s] = 75));
+        initStats();
+    }
+
+    // --- 游戏逻辑 ---
+    function tryStart() {
+        state.players[0].name = document.getElementById('name-0').value || "A";
+        state.players[1].name = document.getElementById('name-1').value || "B";
+        document.getElementById('phase-char').classList.remove('active');
+        document.getElementById('phase-main').classList.add('active');
+        updateUI();
+    }
+
     function updateUI() {
         const r = storyDB[state.currentRoom];
         document.getElementById('room-title').textContent = state.currentRoom;
-        document.getElementById('room-desc').textContent = r.desc.replace(/\[P1\]/g, "A").replace(/\[P2\]/g, "B");
+        document.getElementById('room-desc').textContent = r.desc.replace(/\[P1\]/g, state.players[0].name).replace(/\[P2\]/g, state.players[1].name);
         
         document.getElementById('time-display').textContent = `⌛ ${Math.floor(state.time/60)}:00`;
         document.getElementById('star-display').textContent = `⭐ ${state.stars}/7`;
@@ -151,8 +214,6 @@
 
         const ngrid = document.getElementById('nav-grid');
         ngrid.innerHTML = '';
-        
-        // 核心逻辑：卧室拿钥匙解锁书房
         const currentNav = [...r.nav];
         if(state.currentRoom === '客厅' && state.hasKey) currentNav.push('书房');
         
@@ -164,7 +225,6 @@
             ngrid.appendChild(btn);
         });
         
-        // 如果钥匙没拿到，在客厅显示书房为“锁定”
         if(state.currentRoom === '客厅' && !state.hasKey) {
             const locked = document.createElement('button');
             locked.className = 'nav-btn nav-locked';
@@ -177,15 +237,15 @@
 
     function rollAction(act) {
         let results = [];
-        [0, 1].forEach(i => {
+        state.players.forEach((p, i) => {
             const roll = Math.floor(Math.random() * 100) + 1;
-            const target = 75; // 简化判定，固定为75
+            const target = p.stats[act.skill] || 75;
             let level = roll <= 5 ? 'crit' : (roll <= target ? 'success' : (roll >= 96 ? 'fumbles' : 'fail'));
             
             if(level === 'crit') state.stars++;
             if(act.label.includes("钥匙") && level !== 'fail') state.hasKey = true;
 
-            results.push({ name: i === 0 ? "A" : "B", level, text: act['p' + i][level].replace(/\[P1\]/g, "A").replace(/\[P2\]/g, "B") });
+            results.push({ name: p.name, level, text: act['p' + i][level].replace(/\[P1\]/g, state.players[0].name).replace(/\[P2\]/g, state.players[1].name) });
         });
         showModal(results);
     }
@@ -193,29 +253,30 @@
     function showModal(res) {
         document.getElementById('res-body').innerHTML = res.map(r => `
             <div class="res-item">
-                <strong>玩家 ${r.name}</strong> [${translate(r.level)}]:<br>
+                <strong>姜饼人 ${r.name}</strong> [${translate(r.level)}]:<br>
                 <span>${r.text}</span>
             </div>
         `).join('');
         document.getElementById('modal-res').classList.add('active');
     }
 
-    function translate(l) { return {crit:'大成功', success:'成功', fail:'失败', fumbles:'大失败'}[l]; }
+    function translate(l) { return {crit:'感知爆发', success:'成功', fail:'失败', fumbles:'灵魂震荡'}[l]; }
     function closeModal() { document.getElementById('modal-res').classList.remove('active'); state.time += 20; updateUI(); }
-    function tryStart() { document.getElementById('phase-char').classList.remove('active'); document.getElementById('phase-main').classList.add('active'); updateUI(); }
 
     function checkEnding() {
         if(state.stars >= 7 || state.time >= 540) {
             setTimeout(() => {
-                const choice = confirm("【仪式点燃】\nB，这是你最后的机会。你是要带走 A 享受永恒，还是毁掉一切送他回去？\n(确定：带走 / 取消：牺牲)");
+                const choice = confirm(`【第七颗星已连线】\n${state.players[1].name}，仪式已经到达顶点。你是要彻底切断联系，带 ${state.players[0].name} 去幻梦境；还是牺牲自己的姜饼灵魂，送他一个人回去？\n(确定：带走 / 取消：放手)`);
                 if(choice) {
-                    document.body.innerHTML = "<div style='text-align:center; padding:100px;'><h1>🌌 真结局：永恒的圣诞幻梦</h1><p>B牵着A的手，走进了星光的大门。现实中，他们再也没有醒来。</p></div>";
+                    document.body.innerHTML = "<div style='text-align:center; padding:100px;'><h1>🌌 真结局：永恒的圣诞幻梦</h1><p>B牵着A的手，跨越了星门。他们成为了童话的一部分，代价是现实世界中永远的沉睡。</p></div>";
                 } else {
-                    document.body.innerHTML = "<div style='text-align:center; padding:100px;'><h1>🎄 善结局：苦涩的重逢</h1><p>A在床上醒来，泪流满面。B的肉身就在旁边，却早已成了一具空壳。枕边留下一枚碎裂的、肉桂味的姜饼。</p></div>";
+                    document.body.innerHTML = "<div style='text-align:center; padding:100px;'><h1>🎄 善结局：苦涩的生还</h1><p>A在床上醒来，泪水浸湿了枕头。身边的B面色苍白，再也没有醒来。手里握着一块碎掉的、肉桂味的姜饼。</p></div>";
                 }
             }, 1000);
         }
     }
+
+    initStats();
 </script>
 </body>
 </html>
