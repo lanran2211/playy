@@ -3,414 +3,394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍪 姜饼人圣诞夜：完备版 🎄</title>
+    <title>🍪 姜饼人圣诞夜：幻梦终章 🎄</title>
     <style>
         :root {
             --gingerbread: #8B4513; --icing-red: #FF6B6B; --icing-green: #51A3A3;
             --icing-white: #FFF8E7; --bg-dark: #1A0F0F; --bg-card: #2D1B1B;
-            --text-light: #FFF8E7; --star-gold: #FFD700;
+            --star-gold: #FFD700; --magic-purple: #9B59B6;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Comic Sans MS', '楷体', sans-serif;
+            font-family: '楷体', 'Source Han Serif', serif;
             background: linear-gradient(135deg, var(--bg-dark) 0%, #2D1B1B 100%);
-            color: var(--text-light); min-height: 100vh; padding: 10px; overflow-x: hidden;
+            color: var(--icing-white); min-height: 100vh; padding: 15px; line-height: 1.6;
         }
-        .snowflakes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .snowflake { position: absolute; color: var(--icing-white); font-size: 1.5rem; animation: fall linear infinite; }
+        .snowflakes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; opacity: 0.6; }
+        .snowflake { position: absolute; color: white; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
-        .game-phase { display: none; animation: fadeIn 0.3s ease; }
+
+        .container { max-width: 700px; margin: 0 auto; position: relative; z-index: 2; }
+        .game-phase { display: none; animation: fadeIn 0.8s ease; }
         .game-phase.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .container { max-width: 600px; margin: 0 auto; position: relative; z-index: 2; }
-        .title-section { text-align: center; padding: 20px 0; }
-        .main-title { font-size: 2.5rem; color: var(--icing-red); text-shadow: 3px 3px 0 var(--gingerbread); animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .game-card { background: var(--bg-card); border: 3px solid var(--icing-red); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; }
-        .status-card { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 15px; }
-        .status-item { text-align: center; padding: 5px; background: var(--gingerbread); border-radius: 10px; border: 2px solid var(--icing-red); }
-        .status-label { font-size: 0.7rem; }
-        .status-value { font-size: 1.1rem; font-weight: bold; color: var(--star-gold); }
-        .inventory-items { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .item { padding: 5px 10px; background: linear-gradient(135deg, var(--icing-red), var(--icing-green)); border-radius: 8px; font-size: 0.8rem; border: 1px solid var(--star-gold); }
-        .map-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
-        .floor-section { background: rgba(139, 69, 19, 0.3); border: 2px solid var(--icing-red); border-radius: 15px; padding: 10px; }
-        .room-btn { width: 100%; padding: 10px; margin: 5px 0; background: var(--icing-red); border: 2px solid var(--star-gold); border-radius: 10px; color: white; cursor: pointer; transition: 0.2s; }
-        .room-btn.current-room { background: var(--icing-green); }
-        .room-btn.disabled { background: #666; cursor: not-allowed; opacity: 0.6; }
-        .log-container { background: #000; border-radius: 10px; padding: 10px; height: 150px; overflow-y: auto; font-size: 0.85rem; }
-        .btn { padding: 12px; background: var(--icing-red); border: 3px solid var(--star-gold); border-radius: 15px; color: white; cursor: pointer; width: 100%; font-family: inherit; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: var(--bg-card); border: 4px solid var(--icing-red); border-radius: 20px; padding: 20px; width: 100%; max-height: 90vh; overflow-y: auto; }
-        .action-option { padding: 12px; margin: 8px 0; background: var(--gingerbread); border: 2px solid var(--icing-red); border-radius: 10px; cursor: pointer; }
-        .action-option.used { opacity: 0.5; cursor: not-allowed; }
-        .dice-result { text-align: center; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; margin: 5px; }
-        .critical-success { color: #4CAF50; font-weight: bold; }
-        .critical-failure { color: #FF4444; font-weight: bold; }
-        .consequence-box { padding: 8px; border-radius: 5px; margin: 5px 0; border-left: 4px solid; }
-        .consequence-good { background: rgba(76, 175, 80, 0.2); border-color: #4CAF50; }
-        .consequence-bad { background: rgba(244, 67, 54, 0.2); border-color: #F44336; }
+
+        .game-card { 
+            background: var(--bg-card); border: 3px solid var(--icing-red); 
+            border-radius: 20px; padding: 25px; margin-bottom: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .status-bar { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; 
+        }
+        .status-item { 
+            background: var(--gingerbread); border: 2px solid var(--star-gold); 
+            border-radius: 12px; text-align: center; padding: 8px; 
+        }
+        .status-value { font-weight: bold; color: var(--star-gold); font-size: 1.1rem; }
+
+        .room-title { color: var(--icing-red); font-size: 2rem; text-align: center; margin-bottom: 15px; text-shadow: 2px 2px 0 #000; }
+        .room-desc { font-size: 1.05rem; margin-bottom: 20px; padding: 15px; border-left: 4px solid var(--icing-green); background: rgba(255,255,255,0.05); }
+        
+        .action-list { display: flex; flex-direction: column; gap: 12px; }
+        .action-btn { 
+            background: var(--icing-white); color: var(--gingerbread); border: none;
+            padding: 18px; border-radius: 15px; font-weight: bold; cursor: pointer;
+            transition: 0.2s; border-bottom: 5px solid #ccc; font-size: 1rem;
+        }
+        .action-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        
+        .map-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .nav-btn { 
+            padding: 15px; background: var(--icing-green); color: white; border: none;
+            border-radius: 15px; cursor: pointer; border-bottom: 4px solid #3d7a7a; font-size: 0.9rem;
+        }
+
+        .game-log { 
+            background: #000; border-radius: 15px; padding: 15px; 
+            height: 180px; overflow-y: auto; font-size: 0.9rem; border: 1px solid #444; margin-top: 15px;
+        }
+        .log-entry { margin-bottom: 8px; color: #ddd; border-bottom: 1px solid #222; padding-bottom: 4px; }
+
+        .modal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); display: none; z-index: 100; align-items: center; justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content { 
+            background: var(--bg-card); width: 95%; max-width: 600px; padding: 30px; 
+            border-radius: 25px; border: 4px solid var(--star-gold); overflow-y: auto; max-height: 90vh;
+        }
+        
+        .story-block { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 10px 0; border-left: 4px solid var(--icing-red); }
+        .dice-tag { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 0.8rem; margin-top: 5px; }
+        .tag-crit-success { background: #4CAF50; color: white; }
+        .tag-success { background: #8BC34A; color: white; }
+        .tag-fail { background: #F44336; color: white; }
+        .tag-crit-fail { background: #b71c1c; color: white; }
+
+        input { padding: 10px; border-radius: 8px; border: none; font-size: 1rem; }
     </style>
 </head>
 <body>
-    <div class="snowflakes" id="snowflakes"></div>
+    <div class="snowflakes" id="snow-container"></div>
     <div class="container">
-        <div id="phase-intro" class="game-phase active">
-            <div class="title-section"><h1 class="main-title">🍪 姜饼人圣诞夜 🎄</h1></div>
+        <div id="phase-start" class="game-phase active">
+            <div class="game-card" style="text-align: center;">
+                <h1 style="font-size: 3rem; color: var(--icing-red); margin-bottom: 20px;">🍪 姜饼人圣诞夜</h1>
+                <p>“嘘——听，那是群星连珠的声音。✨”</p>
+                <button class="action-btn" style="width: 100%; margin-top: 40px;" onclick="showPhase('phase-char')">编织童话 🪄</button>
+            </div>
+        </div>
+
+        <div id="phase-char" class="game-phase">
             <div class="game-card">
-                <p>🎁 魔法让你们变成了姜饼人！你们只有3小时的时间（12回合）。</p><br>
-                <p>探索别墅，收集7颗星星，或者寻找解除魔法的仪式。小心饥饿的野猫！</p><br>
-                <button class="btn" onclick="startCharacterCreation()">开始冒险 ✨</button>
+                <h2 class="room-title">人物卡录入</h2>
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px;">
+                    <p>玩家 A 姓名: <input type="text" id="p0-name" value="小糖霜"></p>
+                    <p>玩家 B 姓名: <input type="text" id="p1-name" value="小肉桂"></p>
+                    <p style="font-size: 0.8rem; color: #aaa; margin-top: 10px;">* 属性将由系统为您注入（共计450点）。</p>
+                </div>
+                <button class="action-btn" style="width: 100%; margin-top: 20px;" onclick="startGame()">苏醒 🕯️</button>
             </div>
         </div>
 
-        <div id="phase-creation" class="game-phase">
-            <div class="title-section"><h1 class="main-title">塑造姜饼人</h1></div>
-            <div id="character-creation" class="game-card"></div>
-        </div>
-
-        <div id="phase-game" class="game-phase">
-            <div class="status-card">
-                <div class="status-item"><div class="status-label">时间</div><div id="game-time" class="status-value">06:00</div></div>
-                <div class="status-item"><div class="status-label">位置</div><div id="current-location" class="status-value">客厅</div></div>
-                <div class="status-item"><div class="status-label">星星</div><div id="star-count" class="status-value">0/7</div></div>
-                <div class="status-item"><div class="status-label">回合</div><div id="current-turn" class="status-value">1</div></div>
-                <div class="status-item"><div class="status-label">剩余</div><div id="time-left" class="status-value">180m</div></div>
+        <div id="phase-main" class="game-phase">
+            <div class="status-bar">
+                <div class="status-item"><small>⏳ 时间线</small><br><span id="stat-time" class="status-value">06:00</span></div>
+                <div class="status-item"><small>⭐ 星之数</small><br><span id="stat-stars" class="status-value">0/7</span></div>
+                <div class="status-item"><small>💖 状态</small><br><span id="stat-hp" class="status-value">完美</span></div>
             </div>
             <div class="game-card">
-                <h4 style="color:var(--icing-green)">📦 物品栏 (<span id="item-count">0</span>)</h4>
-                <div class="inventory-items" id="inventory-items"></div>
+                <h2 id="room-name" class="room-title">加载中...</h2>
+                <div id="room-desc" class="room-desc"></div>
+                <div id="action-list" class="action-list"></div>
             </div>
-            <div class="game-card" id="player-status"></div>
-            <div class="map-grid" id="map-btns">
-                <div class="floor-section">
-                    <h5>一楼</h5>
-                    <button class="room-btn" onclick="tryEnterRoom('客厅')">客厅 🛋️</button>
-                    <button class="room-btn" onclick="tryEnterRoom('餐厅')">餐厅 🍽️</button>
-                    <button class="room-btn" onclick="tryEnterRoom('厨房')">厨房 🔪</button>
-                </div>
-                <div class="floor-section">
-                    <h5>二楼</h5>
-                    <button class="room-btn" onclick="tryEnterRoom('主卧室')">主卧室 🛏️</button>
-                    <button class="room-btn" onclick="tryEnterRoom('书房')">书房 📚</button>
-                </div>
-                <div class="floor-section">
-                    <h5>三楼/户外</h5>
-                    <button class="room-btn" onclick="tryEnterRoom('阳台')">阳台 🌟</button>
-                    <button class="room-btn" onclick="tryEnterRoom('花园')">花园 🌷</button>
-                </div>
+            <div class="map-grid">
+                <button class="nav-btn" onclick="moveTo('客厅')">客厅 🛋️</button>
+                <button class="nav-btn" onclick="moveTo('餐厅')">餐厅 🍽️</button>
+                <button class="nav-btn" onclick="moveTo('厨房')">厨房 🔪</button>
+                <button class="nav-btn" onclick="moveTo('卧室')">卧室 🛏️</button>
+                <button class="nav-btn" onclick="moveTo('书房')">书房 📚</button>
+                <button class="nav-btn" onclick="moveTo('儿童房')">儿童房 🧸</button>
+                <button class="nav-btn" onclick="moveTo('花园')" style="grid-column: span 2;">花园 ❄️</button>
             </div>
-            <div class="log-container" id="game-log"></div>
-        </div>
-
-        <div id="phase-ending" class="game-phase">
-            <div class="game-card" style="text-align:center">
-                <h1 id="ending-title" class="main-title"></h1>
-                <div id="ending-icon" style="font-size:4rem"></div>
-                <div id="ending-content" style="margin:20px 0; line-height:1.6"></div>
-                <button class="btn" onclick="location.reload()">重新开始 🔄</button>
-            </div>
+            <div class="game-log" id="game-log"></div>
         </div>
     </div>
 
-    <div id="room-modal" class="modal-overlay">
+    <div id="modal-res" class="modal">
         <div class="modal-content">
-            <h3 id="modal-room-title" style="color:var(--icing-red)"></h3>
-            <p id="modal-room-description" style="margin:10px 0; font-size:0.9rem"></p>
-            <div id="room-actions"></div>
-            <button class="btn" style="background:var(--icing-green)" onclick="endTurn()">结束回合离开 🚪</button>
+            <h2 id="res-title" style="text-align:center; color:var(--star-gold)"></h2>
+            <div id="res-body"></div>
+            <button class="action-btn" style="width:100%; margin-top:20px" onclick="closeModal()">了解了 ✨</button>
         </div>
     </div>
+<script>
+    const state = {
+        turn: 1, time: 360, stars: 0,
+        players: [], inventory: [], flags: {}, currentRoom: '客厅'
+    };
 
-    <div id="check-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="check-title"></h3>
-            <div id="check-story"></div>
-            <div id="dice-results"></div>
-            <div id="consequences"></div>
-            <button class="btn" onclick="closeCheckModal()">继续 ➡️</button>
-        </div>
-    </div>
-    <script>
-        // --- 核心数据修复 ---
-        const gameData = {
-            players: [
-                { name: '', stats: {str:50, dex:50, int:50, pow:50, edu:50, luc:50}, hp:10, san:100, starsCollected:0, playerLetter:'A', color:'var(--icing-red)' },
-                { name: '', stats: {str:50, dex:50, int:50, pow:50, edu:50, luc:50}, hp:10, san:100, starsCollected:0, playerLetter:'B', color:'var(--icing-green)' }
-            ],
-            currentRoom: '客厅',
-            gameState: {
-                time: '06:00', turn: 1, stars: 0, totalStars: 7, timeLeft: 180,
-                items: [], windowClosed: false, ritualRoomOpen: false, foundBodies: false,
-                spellbookRead: false, silverKeyFound: false
-            },
-            currentTurnActions: []
-        };
-
-        const roomDescriptions = {
-            '客厅': '落地窗开着一条缝，寒风夹杂雪花飘入。壁炉已熄灭，沙发缝里似乎有东西。',
-            '餐厅': '桌上摆着精美但冰冷的圣诞大餐。一本地卷边缘发黄的《幻梦境考据》放在主位。',
-            '厨房': '锋利的刀具和沉重的锅碗瓢盆对姜饼人来说像巨人的武器。',
-            '主卧室': '两个熟悉的人影（你们的身体）躺在床上沉睡，枕头下露出一角金属光泽。',
-            '书房': '房门紧锁，需要特定的钥匙。如果你进去了，那里有解除魔法的最后线索。',
-            '阳台': '从这里可以俯瞰花园。今晚的七颗星正连成一条诡异的直线。',
-            '花园': '雪地里有一串猫爪印。雪人弗洛斯蒂似乎在注视着你们。'
-        };
-
-        // --- 初始化雪花 ---
-        function initSnow() {
-            const container = document.getElementById('snowflakes');
-            for(let i=0; i<30; i++) {
-                const s = document.createElement('div');
-                s.className = 'snowflake';
-                s.innerHTML = '❄️';
-                s.style.left = Math.random()*100+'%';
-                s.style.animationDuration = (Math.random()*5+5)+'s';
-                s.style.opacity = Math.random();
-                container.appendChild(s);
-            }
-        }
-
-        // --- 状态更新 ---
-        function updateUI() {
-            document.getElementById('game-time').textContent = gameData.gameState.time;
-            document.getElementById('current-location').textContent = gameData.currentRoom;
-            document.getElementById('star-count').textContent = `${gameData.gameState.stars}/7`;
-            document.getElementById('current-turn').textContent = gameData.gameState.turn;
-            document.getElementById('time-left').textContent = (180 - (gameData.gameState.turn-1)*15) + 'm';
-            
-            const inv = document.getElementById('inventory-items');
-            inv.innerHTML = gameData.gameState.items.length ? '' : '<div class="item">空</div>';
-            gameData.gameState.items.forEach(it => {
-                inv.innerHTML += `<div class="item">${it}</div>`;
-            });
-            document.getElementById('item-count').textContent = gameData.gameState.items.length;
-
-            const ps = document.getElementById('player-status');
-            ps.innerHTML = '<h4 style="color:var(--icing-green)">👥 角色状态</h4><div style="display:flex;gap:10px">';
-            gameData.players.forEach(p => {
-                ps.innerHTML += `<div style="flex:1;border:1px solid ${p.color};padding:5px;border-radius:10px">
-                    <b style="color:${p.color}">${p.name}</b><br>❤️ HP: ${p.hp} | 😊 SAN: ${p.san}</div>`;
-            });
-            ps.innerHTML += '</div>';
-            
-            checkEndings();
-        }
-
-        function addLog(msg) {
-            const log = document.getElementById('game-log');
-            log.innerHTML += `<div>[${gameData.gameState.time}] ${msg}</div>`;
-            log.scrollTop = log.scrollHeight;
-        }
-
-        // --- 核心逻辑：房间进入 ---
-        function tryEnterRoom(room) {
-            if (room === '书房' && !gameData.gameState.ritualRoomOpen) {
-                if (gameData.gameState.items.includes('银钥匙')) {
-                    addLog("你使用银钥匙打开了书房！");
-                    gameData.gameState.ritualRoomOpen = true;
-                } else {
-                    addLog("书房门锁着，你需要找到钥匙。");
-                    return;
+    // --- 剧情文字库：深度差分版 ---
+    // [P1] = 玩家A, [P2] = 玩家B
+    const storyDB = {
+        '客厅': {
+            intro: "熄灭的壁炉冒着青烟。电视里正重播着天文预报，落地窗外潜伏着野猫贪婪的绿眼睛。沙发下似乎有B藏起来的秘密。",
+            actions: [
+                {
+                    title: "推上落地窗 🪟", skill: "str",
+                    results: {
+                        crit_success: "[P1]和[P2]展现了惊人的默契！你们像跳舞一样合力一撞，窗户纹丝不动地锁死，一颗星星受震动落入[P1]怀中！",
+                        success: "嘿咻！虽然身为姜饼人，但你们的力量不可小觑。窗户关上了，[P2]抹了抹额头的糖霜，感到一阵安心。",
+                        fail: "窗户太沉了，[P1]不小心滑了一跤，糖霜外壳磕掉了一块。寒风呼啸着嘲笑你们的弱小。",
+                        crit_fail: "糟糕！窗户不仅没关上，反弹的力道把[P1]和[P2]一起撞飞。野猫的爪子差点钩到[P2]的衣角！"
+                    },
+                    effect: (r) => { if(r.includes('success')) state.stars++; else state.players.forEach(p=>p.hp-=1); }
+                },
+                {
+                    title: "翻找沙发 🕵️", skill: "int",
+                    results: {
+                        crit_success: "[P2]在沙发缝里不仅找到了日记碎片，还发现了一颗闪闪发光的星星！日记上写着：『...我们要永远在一起...』",
+                        success: "[P1]冷静地分析，从海绵垫下勾出了日记残页。B（[P2]）在一旁眼神闪烁，似乎在担心你看到更多内容。",
+                        fail: "沙发里只有令人过敏的灰尘。[P1]打了个喷嚏，觉得自己快要散架了。什么都没找到。",
+                        crit_fail: "你们掉进了深不见底的沙发缝隙！这种被黑暗吞噬的感觉让你们的理智（SAN）受到了极大冲击。"
+                    },
+                    effect: (r) => { if(r.includes('success')) state.stars++; else state.players.forEach(p=>p.san-=10); }
                 }
-            }
-            enterRoom(room);
-        }
-
-        function enterRoom(room) {
-            gameData.currentRoom = room;
-            gameData.currentTurnActions = [];
-            const modal = document.getElementById('room-modal');
-            document.getElementById('modal-room-title').textContent = room;
-            document.getElementById('modal-room-description').textContent = roomDescriptions[room];
-            renderActions(room);
-            modal.classList.add('active');
-            updateUI();
-        }
-
-        function renderActions(room) {
-            const container = document.getElementById('room-actions');
-            container.innerHTML = '';
-            const actions = getActionsForRoom(room);
-            actions.forEach(act => {
-                const div = document.createElement('div');
-                div.className = 'action-option' + (gameData.currentTurnActions.includes(act.id) ? ' used' : '');
-                div.innerHTML = `<b>${act.title}</b><br><small>${act.desc}</small>`;
-                if(!gameData.currentTurnActions.includes(act.id)) {
-                    div.onclick = () => performAction(act);
+            ]
+        },
+        '餐厅': {
+            intro: "餐桌上方的吊灯忽明忽暗。那本《幻梦境考据》在主位上散发着甜腻的魔力。B（[P2]）催促你快点看。",
+            actions: [
+                {
+                    title: "研读魔法书 📖", skill: "edu",
+                    results: {
+                        crit_success: "[P1]看破了伪装的文字！你意识到这不只是变回人类的咒语，更是通往永恒的阶梯。书中掉出了一枚带有魔力的星星。",
+                        success: "[P2]兴奋地指着书页：『看！它说收集满星星就能解脱！』[P1]虽然半信半疑，但也从中找到了一颗星星。",
+                        fail: "文字像小虫子一样乱爬。[P1]看得双眼发酸，而[P2]在一旁焦急地解释，让你感到一种莫名的压力。",
+                        crit_fail: "书页中伸出了半透明的触角！[P1]和[P2]被吓得瘫倒在桌上，那种不可名状的恐惧让你们几乎无法思考。"
+                    },
+                    effect: (r) => { if(r.includes('success')) state.stars++; else state.players.forEach(p=>p.san-=15); }
                 }
-                container.appendChild(div);
-            });
+            ]
+        },
+        '卧室': {
+            intro: "你们沉睡的人类身体看起来是那么沉重、乏味。枕头下的银钥匙在月光下闪着光。",
+            actions: [
+                {
+                    title: "偷走银钥匙 🗝️", skill: "dex",
+                    results: {
+                        crit_success: "[P1]轻盈如猫，从枕头下无声地滑过。拿到了！钥匙环上居然挂着一颗星星！床上的[P1]发出了一声舒服的呢喃。",
+                        success: "[P2]用钩索（一根棉线）成功钓到了钥匙。[P1]看着自己的肉身，心中泛起一种异样的酸楚。",
+                        fail: "[P1]惊醒了！虽然身体只是翻了个身，但巨大的手掌差点压碎[P2]。你们惊险地退回了床脚。",
+                        crit_fail: "床上的身体猛地坐起！[P1]和[P2]直视了那双无神的眼睛。SAN值狂降，你们落荒而逃，钥匙也没拿到。"
+                    },
+                    effect: (r) => { if(r.includes('success')){ state.stars++; state.inventory.push('银钥匙'); } else state.players.forEach(p=>p.san-=20); }
+                }
+            ]
+        },
+        '厨房': {
+            intro: "果酱像血一样在地板上蔓延，烤箱的余温充满了诱惑。这里是甜蜜与危险的交界处。",
+            actions: [
+                {
+                    title: "搜查糖罐 🍬", skill: "luc",
+                    results: {
+                        crit_success: "[P1]在糖罐底部发现了一个星星礼盒！[P2]吃掉了一块方糖，感觉身体从未如此强壮。",
+                        success: "甜甜的味道！[P1]和[P2]各找到一颗糖果星星。你们的姜饼身体得到了极大的修复。",
+                        fail: "糖罐是空的。只有几只蚂蚁在虎视眈眈，[P1]感到非常失望。",
+                        crit_fail: "糖罐倒了！巨大的声响吸引了远处的猫。你们被粘在了砂糖里，费力挣扎才脱身，HP受损。"
+                    },
+                    effect: (r) => { if(r.includes('success')){ state.stars++; state.players.forEach(p=>p.hp=10); } else state.players.forEach(p=>p.hp-=2); }
+                }
+            ]
+        },
+        '儿童房': {
+            intro: "娃娃屋里灯火通明。玩具兵们整齐划一地举枪致敬：『欢迎进入永恒的乐园，[P1]、[P2]！』",
+            actions: [
+                {
+                    title: "进入娃娃屋生活 🧸", skill: "pow",
+                    results: {
+                        crit_success: "这里的舒适感超乎想象！[P1]在小床上发现了一颗星。玩具们耳语：『留下来吧，这里没有衰老和痛苦。』",
+                        success: "虽然这种热情很诡异，但你们还是在娃娃屋的阁楼里找到了一颗星星。[P2]看起来非常喜欢这里。",
+                        fail: "玩具兵的目光让[P1]感到毛骨悚然。你们没能找到星星，反而觉得自己的心智正在被同化。",
+                        crit_fail: "娃娃屋的门关上了！你们被关在里面差点变成了真正的摆件。在绝望的挣扎中，[P1]损失了大量SAN值。"
+                    },
+                    effect: (r) => { if(r.includes('success')) state.stars++; else state.players.forEach(p=>p.san-=10); }
+                }
+            ]
+        },
+        '花园': {
+            intro: "弗洛斯蒂（雪人）的煤球眼睛深邃如海。天上的七星正汇聚成一线，照亮了整个夜空。",
+            actions: [
+                {
+                    title: "观测七星连珠 ⭐", skill: "int",
+                    results: {
+                        crit_success: "[P1]看到了宇宙的真理！星光灌注进你的姜饼身体，你瞬间获得了两颗星星。你感觉到，幻梦境的大门已经开启了。",
+                        success: "[P2]兴奋地指给[P1]看。你们共同沐浴在星光下，捡到了从天而降的星星碎片。",
+                        fail: "云层遮住了视线。寒冷的雪花拍打在[P1]脸上，这种孤独感让你们想哭。",
+                        crit_fail: "星光中闪过一丝疯狂的色彩。[P1]因为直视禁忌的光芒，陷入了短暂的混乱，差点在雪地里融化。"
+                    },
+                    effect: (r) => { if(r.includes('success')) state.stars+=2; else state.players.forEach(p=>p.hp-=1); }
+                }
+            ]
+        },
+        '书房': {
+            intro: "这里是最后的祭坛。糖霜与蜂蜜画就的法阵散发着金光。B（[P2]）紧紧抓住[P1]的手，手心里全是汗。",
+            actions: [
+                {
+                    title: "研究法阵真相 🔍", skill: "int",
+                    results: {
+                        crit_success: "[P1]彻底明白了！这不是解除诅咒，这是单向的灵魂迁徙！你转头看向[P2]，发现他/她的眼神中藏着疯狂的期待。",
+                        success: "你发现法阵需要七颗星。只要启动，就能通往新世界。至于肉身会怎样...法阵上没说。",
+                        fail: "法阵的线条太复杂了。[P1]看不出所以然，只觉得它很漂亮。而[P2]已经在低声吟唱了。",
+                        crit_fail: "法阵反噬！[P1]被一道强光击中，身体布满了裂纹。你们感到时间正在被某种存在吞噬。"
+                    },
+                    effect: (r) => { if(r.includes('fail')) state.players.forEach(p=>p.hp-=3); }
+                }
+            ]
         }
+    };
 
-        function performAction(act) {
-            gameData.currentTurnActions.push(act.id);
-            document.getElementById('check-title').textContent = act.title;
-            const storyDiv = document.getElementById('check-story');
-            const diceDiv = document.getElementById('dice-results');
-            const consDiv = document.getElementById('consequences');
-            storyDiv.innerHTML = ''; diceDiv.innerHTML = ''; consDiv.innerHTML = '';
+    // --- 逻辑引擎 ---
+    function startGame() {
+        const n1 = document.getElementById('p0-name').value;
+        const n2 = document.getElementById('p1-name').value;
+        state.players = [
+            { name: n1, hp: 10, san: 100, str: 70, dex: 60, int: 80, pow: 60, edu: 70, luc: 50 },
+            { name: n2, hp: 10, san: 100, str: 60, dex: 70, int: 70, pow: 80, edu: 60, luc: 60 }
+        ];
+        showPhase('phase-main');
+        moveTo('客厅');
+    }
 
-            gameData.players.forEach(p => {
-                const roll = Math.floor(Math.random()*100)+1;
-                const target = p.stats[act.skill] || 50;
-                let res = roll <= target ? 'success' : 'failure';
-                if(roll <= 5) res = 'crit_success';
-                if(roll >= 96) res = 'crit_fail';
-
-                const outcome = act.outcomes[res];
-                diceDiv.innerHTML += `<div class="dice-result"><span style="color:${p.color}">${p.name}</span> 掷骰: ${roll}/${target} -> <span class="${res.includes('crit')?res.replace('_','-'):''}">${res}</span></div>`;
-                storyDiv.innerHTML += `<p style="margin:5px 0;border-left:3px solid ${p.color};padding-left:5px">${p.name}: ${outcome.text}</p>`;
-                
-                if(outcome.hp) p.hp += outcome.hp;
-                if(outcome.san) p.san += outcome.san;
-                if(outcome.star) { gameData.gameState.stars++; p.starsCollected++; }
-                if(outcome.item && !gameData.gameState.items.includes(outcome.item)) gameData.gameState.items.push(outcome.item);
-                if(outcome.flag) gameData.gameState[outcome.flag] = true;
-            });
-
-            document.getElementById('check-modal').classList.add('active');
-            renderActions(gameData.currentRoom);
-            updateUI();
+    function moveTo(room) {
+        if(room === '书房' && !state.inventory.includes('银钥匙')) {
+            addLog("🚪 书房的门锁着。也许钥匙在卧室的枕头下？");
+            return;
         }
+        state.currentRoom = room;
+        updateUI();
+    }
 
-        function endTurn() {
-            document.getElementById('room-modal').classList.remove('active');
-            gameData.gameState.turn++;
-            let [h, m] = gameData.gameState.time.split(':').map(Number);
-            m += 15; if(m>=60){ h++; m=0; }
-            gameData.gameState.time = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-            
-            // 随机猫袭击判定
-            if(!gameData.gameState.windowClosed && Math.random() < 0.2) {
-                addLog("🐱 野猫糖霜从窗户潜入了！姜饼人们受到了惊吓！");
-                gameData.players.forEach(p => p.san -= 5);
-            }
-            updateUI();
+    function updateUI() {
+        const h = Math.floor(state.time / 60);
+        const m = state.time % 60;
+        document.getElementById('stat-time').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        document.getElementById('stat-stars').textContent = `${state.stars}/7`;
+        document.getElementById('stat-hp').textContent = state.players[0].hp > 5 ? '良好' : '虚弱';
+        document.getElementById('room-name').textContent = state.currentRoom;
+        
+        const rData = storyDB[state.currentRoom];
+        document.getElementById('room-desc').textContent = rData.intro;
+        
+        const list = document.getElementById('action-list');
+        list.innerHTML = '';
+        rData.actions.forEach(act => {
+            const btn = document.createElement('button');
+            btn.className = 'action-btn';
+            btn.textContent = act.title;
+            btn.onclick = () => doAction(act);
+            list.appendChild(btn);
+        });
+
+        // 加入最终选择
+        if(state.currentRoom === '书房' && state.stars >= 7) {
+            const finalBtn = document.createElement('button');
+            finalBtn.className = 'action-btn';
+            finalBtn.style.background = 'var(--magic-purple)';
+            finalBtn.style.color = 'white';
+            finalBtn.textContent = "⚖️ 决定命运时刻";
+            finalBtn.onclick = handleFinalEnding;
+            list.appendChild(finalBtn);
         }
+    }
 
-        function closeCheckModal() {
-            document.getElementById('check-modal').classList.remove('active');
-            checkEndings();
+    function doAction(act) {
+        const p1 = state.players[0];
+        const p2 = state.players[1];
+        const roll = Math.floor(Math.random() * 100) + 1;
+        const target = p1[act.skill];
+        
+        let resultKey = 'fail';
+        if(roll <= 5) resultKey = 'crit_success';
+        else if(roll <= target) resultKey = 'success';
+        else if(roll >= 96) resultKey = 'crit_fail';
+
+        let text = act.results[resultKey];
+        text = text.replace(/\[P1\]/g, p1.name).replace(/\[P2\]/g, p2.name);
+
+        const titleMap = { crit_success: '🌟 大成功！', success: '✅ 成功', fail: '❌ 失败', crit_fail: '💀 大失败' };
+        document.getElementById('res-title').textContent = titleMap[resultKey];
+        document.getElementById('res-body').innerHTML = `<div class="story-block">${text}</div><div class="dice-tag tag-${resultKey.replace('_','-')}">${p1.name} 掷骰: ${roll}/${target}</div>`;
+        
+        act.effect(resultKey);
+        state.time += 15;
+        document.getElementById('modal-res').classList.add('active');
+        updateUI();
+    }
+
+    function handleFinalEnding() {
+        const choice = confirm(`【B的终极抉择】\n${state.players[1].name}，你是否要向${state.players[0].name}坦白真相并等待七星连珠？\n确定：等待真结局（TE）\n取消：紧急解除（HE）`);
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        const inner = document.createElement('div');
+        inner.className = 'modal-content';
+        
+        if(choice) {
+            inner.innerHTML = `<h1>🌌 真结局：幻梦境的旅人</h1><p>七星连珠的光芒如瀑布般落下！[P2]抱住[P1]轻声说：『别怕，我们去一个永远没有痛苦的地方。』你们的姜饼身体变成了纯金。随着驯鹿的鸣叫，你们飞向了星空深处...</p>`.replace(/\[P1\]/g, state.players[0].name).replace(/\[P2\]/g, state.players[1].name);
+        } else {
+            inner.innerHTML = `<h1>🎄 好结局：平凡的幸福</h1><p>在最后一刻，[P2]按下了逆转开关。魔法崩解，你们在冰冷的地板上醒来。虽然错失了永恒，但握住对方温热的手时，你们知道这才是真实的圣诞节。</p>`.replace(/\[P1\]/g, state.players[0].name).replace(/\[P2\]/g, state.players[1].name);
         }
+        
+        inner.innerHTML += `<button class="action-btn" style="width:100%" onclick="location.reload()">命运轮回</button>`;
+        modal.appendChild(inner);
+        document.body.appendChild(modal);
+    }
 
-        // --- 剧情库修复与扩充 ---
-        function getActionsForRoom(room) {
-            const base = {
-                '客厅': [
-                    { id:'l1', title:'关窗', skill:'str', desc:'用力推上沉重的落地窗', outcomes: {
-                        crit_success: { text:'不仅关上了窗，还在窗缝里捡到一颗星星！', star:1, flag:'windowClosed' },
-                        success: { text:'窗户关紧了，现在很安全。', flag:'windowClosed' },
-                        failure: { text:'窗户纹丝不动，你太弱小了。' },
-                        crit_fail: { text:'窗户反弹撞到了你！', hp:-1 }
-                    }},
-                    { id:'l2', title:'搜查沙发', skill:'int', desc:'在坐垫下寻找线索', outcomes: {
-                        success: { text:'你找到了一张日记碎片，记录着仪式的方法。', flag:'foundDiary' },
-                        failure: { text:'除了陈年灰尘一无所获。' },
-                        crit_success: { text:'你找到了日记，还有一颗掉落的星星！', star:1, flag:'foundDiary' },
-                        crit_fail: { text:'你掉进了沙发缝里，费了好大劲才爬出来。', san:-5 }
-                    }}
-                ],
-                '餐厅': [
-                    { id:'d1', title:'阅读魔法书', skill:'edu', desc:'解析晦涩难懂的古文字', outcomes: {
-                        success: { text:'你理解了咒语：必须集齐星星才能回归。', flag:'spellbookRead' },
-                        failure: { text:'这些字像是在扭动，让你头晕目眩。', san:-2 },
-                        crit_success: { text:'书中掉出了一颗星星！', star:1, flag:'spellbookRead' },
-                        crit_fail: { text:'不可名状的恐怖内容冲击了你的大脑！', san:-10 }
-                    }}
-                ],
-                '主卧室': [
-                    { id:'m1', title:'搜查枕头', skill:'dex', desc:'轻手轻脚地翻找', outcomes: {
-                        success: { text:'你找到了闪烁着寒光的银钥匙！', item:'银钥匙' },
-                        failure: { text:'枕头下只有一团乱糟糟的棉花。' },
-                        crit_success: { text:'你拿到了钥匙，还顺带发现了一颗星！', item:'银钥匙', star:1 },
-                        crit_fail: { text:'你惊醒了沉睡的身体，san值狂掉！', san:-15 }
-                    }}
-                ],
-                '书房': [
-                    { id:'s1', title:'启动仪式', skill:'pow', desc:'利用收集的星星引导灵魂回归', outcomes: {
-                        success: { text:'仪式发出了光芒！回归进度增加了。', flag:'ritualProgress' },
-                        failure: { text:'魔力不足，星星没有反应。' },
-                        crit_success: { text:'强烈的圣光笼罩了你们！', star:1, flag:'ritualProgress' },
-                        crit_fail: { text:'仪式反噬！你的姜饼身体几乎碎裂。', hp:-3 }
-                    }}
-                ],
-                '花园': [
-                    { id:'g1', title:'与雪人对话', skill:'luc', desc:'它似乎想告诉你什么', outcomes: {
-                        success: { text:'雪人吐出一颗星星，并祝你好运。', star:1 },
-                        failure: { text:'它只是个普通的雪堆。' },
-                        crit_success: { text:'雪人把隐藏的星星全给了你！', star:2 },
-                        crit_fail: { text:'雪人倒塌压住了你，极其倒霉。', hp:-1 }
-                    }}
-                ],
-                '阳台': [
-                    { id:'y1', title:'观测星空', skill:'int', desc:'寻找星星的规律', outcomes: {
-                        success: { text:'你捕捉到了一颗正在坠落的微型星！', star:1 },
-                        failure: { text:'天太冷了，你只想回屋。' },
-                        crit_success: { text:'七星连珠的能量汇聚在你们身上！', star:2 },
-                        crit_fail: { text:'你在边缘滑了一跤，差点掉下去！', san:-5 }
-                    }}
-                ]
-            };
-            return base[room] || [{id:'none', title:'调查', skill:'luc', outcomes:{success:{text:'没什么发现。'},failure:{text:'没什么发现。'}}}];
+    function closeModal() {
+        document.getElementById('modal-res').classList.remove('active');
+        if(state.players[0].hp <= 0 || state.players[0].san <= 0) {
+            alert("你们碎裂了... 变成了无魂的姜饼。");
+            location.reload();
         }
-
-        // --- 结局判定 ---
-        function checkEndings() {
-            if (gameData.gameState.stars >= 7) {
-                showEnding("完美回归！", "🎄", "你们收集了所有的星星，在平安夜的最后一秒，姜饼身体融化，你们在温暖的床上醒来。");
-            } else if (gameData.gameState.turn > 12) {
-                showEnding("永恒的姜饼", "🍪", "时间到了。你们没能变回人类，从此成为了圣诞树上最精致的装饰品。");
-            } else if (gameData.players.some(p => p.hp <= 0)) {
-                showEnding("支离破碎", "💔", "姜饼身体太脆弱了，你们最终碎成了甜美的残渣。");
-            } else if (gameData.players.some(p => p.san <= 0)) {
-                showEnding("疯狂的饼干", "😱", "无法理解的魔法让你们的精神彻底崩溃，你们现在认为自己真的只是一块饼干。");
-            }
+        if(state.time >= 540) {
+            alert("时间到了... 你们永远困在了姜饼身体里。");
+            location.reload();
         }
+    }
 
-        function showEnding(title, icon, text) {
-            document.getElementById('phase-game').classList.remove('active');
-            document.getElementById('phase-ending').classList.add('active');
-            document.getElementById('ending-title').textContent = title;
-            document.getElementById('ending-icon').textContent = icon;
-            document.getElementById('ending-content').textContent = text;
-        }
+    function showPhase(id) {
+        document.querySelectorAll('.game-phase').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
 
-        // --- 人物创建流程 ---
-        function startCharacterCreation() {
-            const container = document.getElementById('character-creation');
-            container.innerHTML = '<h3>分配属性点 (每人固定属性)</h3>';
-            gameData.players.forEach((p, i) => {
-                container.innerHTML += `
-                    <div style="margin:10px 0; border:1px solid ${p.color}; padding:10px; border-radius:10px">
-                        玩家 ${p.playerLetter} 名字: <input type="text" id="p${i}-name" value="姜饼人${p.playerLetter}"><br>
-                        力量(STR): <input type="number" id="p${i}-str" value="50" style="width:50px"> 
-                        敏捷(DEX): <input type="number" id="p${i}-dex" value="50" style="width:50px"><br>
-                        智力(INT): <input type="number" id="p${i}-int" value="50" style="width:50px"> 
-                        意志(POW): <input type="number" id="p${i}-pow" value="50" style="width:50px">
-                    </div>`;
-            });
-            container.innerHTML += `<button class="btn" onclick="confirmCharacters()">完成并进入客厅</button>`;
-            document.getElementById('phase-intro').classList.remove('active');
-            document.getElementById('phase-creation').classList.add('active');
-        }
+    function addLog(m) {
+        const log = document.getElementById('game-log');
+        log.innerHTML = `<div class="log-entry">> ${m}</div>` + log.innerHTML;
+    }
 
-        function confirmCharacters() {
-            gameData.players.forEach((p, i) => {
-                p.name = document.getElementById(`p${i}-name`).value;
-                p.stats.str = parseInt(document.getElementById(`p${i}-str`).value);
-                p.stats.dex = parseInt(document.getElementById(`p${i}-dex`).value);
-                p.stats.int = parseInt(document.getElementById(`p${i}-int`).value);
-                p.stats.pow = parseInt(document.getElementById(`p${i}-pow`).value);
-            });
-            document.getElementById('phase-creation').classList.remove('active');
-            document.getElementById('phase-game').classList.add('active');
-            addLog("游戏开始！你们在客厅的壁炉旁醒来...");
-            updateUI();
-        }
-
-        window.onload = () => { initSnow(); };
-    </script>
+    // 初始化雪花
+    const container = document.getElementById('snow-container');
+    for(let i=0; i<30; i++) {
+        const s = document.createElement('div');
+        s.className = 'snowflake'; s.textContent = '❄️';
+        s.style.left = Math.random()*100 + '%';
+        s.style.animationDuration = (Math.random()*3+2) + 's';
+        s.style.opacity = Math.random();
+        container.appendChild(s);
+    }
+</script>
 </body>
 </html>
